@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4YES — Ingyenes AI Konzultáció Foglalás</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; scroll-behavior: smooth; }
+body { font-family: 'Outfit', sans-serif; background: #0F1923; color: #fff; overflow-x: hidden; }
+
+/* ===== DESIGN TOKENS ===== */
+:root {
+  --bg-primary: #0F1923;
+  --bg-alt: #141F2B;
+  --accent: #C3F73A;
+  --accent-hover: #d4ff5a;
+  --accent-muted: rgba(195,247,58,0.08);
+  --accent-border: rgba(195,247,58,0.2);
+  --text-primary: #FFFFFF;
+  --text-secondary: #8399A2;
+  --text-muted: #748E99;
+  --text-dark: #0F1923;
+  --border-subtle: rgba(131,153,162,0.12);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 100px;
+  --bg-warm: #EEECEA;
+  --bg-warm-alt: #F5F4F2;
+  --lt-text-heading: #0F1923;
+  --lt-text-body: #555F6A;
+  --lt-text-caption: #8E969E;
+  --lt-border-card: rgba(0,0,0,0.06);
+  --lt-shadow-card: 0 1px 2px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.04);
+  --error: #ef4444;
+  --error-bg: rgba(239,68,68,0.06);
+  --success: #22c55e;
+}
+
+/* ===== NOISE OVERLAY ===== */
+body::after {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9998; opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* ===== NAVBAR ===== */
+.navbar-wrapper {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: center;
+  padding: 20px 24px; pointer-events: none;
+}
+.navbar {
+  pointer-events: all;
+  display: flex; align-items: center; gap: 32px;
+  padding: 12px 16px 12px 24px; border-radius: 100px;
+  background: rgba(15, 25, 35, 0.78);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(131,153,162,0.12);
+  animation: navSlideDown 0.8s ease-out 0.1s backwards;
+}
+.nav-logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
+.nav-logo-text { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+.nav-logo-text span { color: var(--accent); }
+.nav-back {
+  font-size: 13px; font-weight: 500; color: var(--text-secondary);
+  text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.3s;
+}
+.nav-back:hover { color: #fff; }
+.nav-back svg { width: 16px; height: 16px; }
+
+/* ===== FULL-PAGE FORM LAYOUT ===== */
+@property --mesh-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@property --glow-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+
+.page-body {
+  min-height: 100vh;
+  padding: 100px 24px 60px;
+  display: flex; align-items: flex-start; justify-content: center;
+  background:
+    conic-gradient(from var(--mesh-angle) at 30% 30%, rgba(195,247,58,0.05) 0%, transparent 25%, rgba(30,80,140,0.03) 50%, transparent 75%, rgba(195,247,58,0.05) 100%),
+    radial-gradient(ellipse at 20% 0%, rgba(195,247,58,0.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(195,247,58,0.03) 0%, transparent 50%),
+    var(--bg-primary);
+  animation: meshRotate 25s linear infinite;
+}
+@keyframes meshRotate { to { --mesh-angle: 360deg; } }
+
+/* ===== MAIN CARD ===== */
+.main-card {
+  width: 100%; max-width: 680px;
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(131,153,162,0.1);
+  border-radius: var(--radius-xl);
+  padding: 0;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25), 0 0 0 1px rgba(195,247,58,0.04) inset;
+  position: relative; overflow: hidden;
+}
+/* Animated border glow */
+.main-card::before {
+  content: ''; position: absolute; inset: -1px;
+  border-radius: inherit; padding: 1px;
+  background: linear-gradient(var(--glow-angle), transparent 30%, rgba(195,247,58,0.25) 50%, transparent 70%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: borderGlow 5s linear infinite; pointer-events: none;
+}
+@keyframes borderGlow { to { --glow-angle: 360deg; } }
+
+/* ===== CARD HEADER ===== */
+.card-header {
+  padding: 36px 40px 28px;
+  border-bottom: 1px solid rgba(131,153,162,0.08);
+  position: relative; z-index: 2;
+}
+.card-header-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.card-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: var(--radius-pill);
+  background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2);
+}
+.card-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--success);
+  animation: livePulse 2s ease-in-out infinite;
+}
+@keyframes livePulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.6; } }
+.card-badge-text { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.7); }
+.card-badge-text strong { color: #fff; }
+
+.step-pills {
+  display: flex; gap: 6px;
+}
+.step-pill {
+  height: 3px; border-radius: 2px; flex: 1;
+  background: rgba(255,255,255,0.08);
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: pointer;
+}
+.step-pill.active {
+  background: var(--accent);
+  flex: 1.5;
+}
+.step-pill.completed {
+  background: rgba(195,247,58,0.35);
+}
+
+.card-title {
+  font-size: clamp(22px, 3vw, 28px); font-weight: 800;
+  letter-spacing: -0.03em; color: #fff; line-height: 1.2;
+  margin-bottom: 6px;
+  transition: all 0.3s;
+}
+.card-title .accent { color: var(--accent); }
+.card-subtitle {
+  font-size: 14px; font-weight: 300; color: var(--text-secondary); line-height: 1.6;
+}
+
+/* ===== CARD BODY ===== */
+.card-body {
+  padding: 32px 40px 36px;
+  position: relative; z-index: 2;
+}
+
+/* ===== STEP PANELS ===== */
+.step-panel { display: none; }
+.step-panel.active {
+  display: block;
+  animation: stepIn 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes stepIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== DARK FORM FIELDS ===== */
+.field-group { margin-bottom: 22px; }
+.field-row { display: flex; gap: 14px; }
+.field-row .field-group { flex: 1; }
+
+.field-label {
+  display: block; font-size: 12px; font-weight: 600;
+  color: var(--text-secondary); margin-bottom: 8px;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+
+.field-input-wrapper { position: relative; }
+.field-input-wrapper::after {
+  content: ''; position: absolute; bottom: 0; left: 0;
+  width: 0; height: 2px; background: var(--accent); border-radius: 1px;
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.field-input-wrapper:focus-within::after { width: 100%; }
+
+.field-input, .field-select {
+  width: 100%; padding: 14px 16px;
+  border: 1.5px solid rgba(131,153,162,0.15);
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.04);
+  font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 400;
+  color: #fff; transition: all 0.25s; outline: none; -webkit-appearance: none;
+}
+.field-input::placeholder { color: rgba(131,153,162,0.5); font-weight: 300; }
+.field-input:focus, .field-select:focus {
+  border-color: rgba(195,247,58,0.45);
+  background: rgba(255,255,255,0.06);
+  box-shadow: 0 0 0 3px rgba(195,247,58,0.08), 0 0 20px rgba(195,247,58,0.04);
+}
+.field-input.error, .field-select.error {
+  border-color: var(--error); box-shadow: 0 0 0 3px var(--error-bg);
+}
+.field-error { font-size: 12px; color: var(--error); margin-top: 6px; display: none; }
+.field-input.error ~ .field-error,
+.field-select.error ~ .field-error { display: block; }
+
+.field-select {
+  cursor: pointer; color: rgba(131,153,162,0.6);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23748E99' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px;
+}
+.field-select option { background: var(--bg-alt); color: #fff; }
+.field-select:valid { color: #fff; }
+
+/* Teaser box in step 1 */
+.savings-teaser {
+  margin-top: 8px; padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: rgba(195,247,58,0.04);
+  border: 1px solid rgba(195,247,58,0.12);
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.savings-teaser-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(195,247,58,0.1);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.savings-teaser-icon svg { width: 18px; height: 18px; color: var(--accent); }
+.savings-teaser-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.savings-teaser-text strong { color: #fff; font-weight: 600; }
+
+/* ===== STEP 2 — CALCULATOR ===== */
+.calc-result-hero {
+  text-align: center; padding: 24px 0 28px;
+  border-bottom: 1px solid rgba(131,153,162,0.08);
+  margin-bottom: 28px;
+}
+.calc-result-label-big {
+  font-size: 13px; font-weight: 500; color: var(--text-secondary);
+  margin-bottom: 8px; letter-spacing: 0.02em;
+}
+.calc-result-huge {
+  font-size: clamp(36px, 5vw, 52px); font-weight: 900;
+  color: var(--accent); letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1; margin-bottom: 6px;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.calc-result-sub-big {
+  font-size: 14px; color: var(--text-muted); font-weight: 300;
+}
+
+.calc-stats-row {
+  display: flex; gap: 12px; margin-bottom: 28px;
+}
+.calc-stat-card {
+  flex: 1; padding: 16px; border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(131,153,162,0.08);
+  text-align: center;
+}
+.calc-stat-number {
+  font-size: 22px; font-weight: 800; color: #fff;
+  letter-spacing: -0.02em; margin-bottom: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.calc-stat-label {
+  font-size: 11px; font-weight: 500; color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.calc-slider-group { margin-bottom: 24px; }
+.calc-slider-group:last-of-type { margin-bottom: 0; }
+.calc-slider-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 12px;
+}
+.calc-slider-label { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.7); }
+.calc-slider-val {
+  font-size: 16px; font-weight: 700; color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 6px; border-radius: 3px;
+  background: rgba(255,255,255,0.08); outline: none; cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent); border: 3px solid var(--bg-primary);
+  box-shadow: 0 0 0 3px rgba(195,247,58,0.15), 0 2px 8px rgba(0,0,0,0.3);
+  cursor: grab; transition: box-shadow 0.2s;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 0 5px rgba(195,247,58,0.2), 0 4px 12px rgba(0,0,0,0.4);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent); border: 3px solid var(--bg-primary);
+  box-shadow: 0 0 0 3px rgba(195,247,58,0.15);
+}
+
+.calc-source {
+  margin-top: 24px; padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(131,153,162,0.06);
+  font-size: 11px; color: var(--text-muted); line-height: 1.6;
+}
+.calc-source a {
+  color: var(--text-secondary); text-decoration: underline;
+  text-decoration-color: rgba(131,153,162,0.3);
+  transition: color 0.2s;
+}
+.calc-source a:hover { color: var(--accent); }
+.calc-source svg { width: 12px; height: 12px; vertical-align: -1px; margin-right: 4px; color: var(--text-muted); }
+
+/* ===== STEP 3 — CALENDAR ===== */
+.calendar-wrapper { margin-top: 4px; }
+
+.calendar-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.calendar-nav-title {
+  font-size: 15px; font-weight: 700; color: #fff; letter-spacing: -0.01em;
+}
+.calendar-nav-btns { display: flex; gap: 6px; }
+.cal-nav-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1px solid rgba(131,153,162,0.12);
+  background: rgba(255,255,255,0.04); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; color: var(--text-secondary);
+}
+.cal-nav-btn:hover { border-color: rgba(131,153,162,0.25); color: #fff; }
+.cal-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.cal-nav-btn svg { width: 14px; height: 14px; }
+
+/* Day cards */
+.calendar-days { display: flex; gap: 8px; margin-bottom: 20px; }
+.day-card {
+  flex: 1; padding: 12px 6px; border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.03);
+  border: 1.5px solid rgba(131,153,162,0.08);
+  text-align: center; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.day-card:hover { border-color: rgba(131,153,162,0.2); background: rgba(255,255,255,0.05); }
+.day-card.active {
+  border-color: var(--accent); background: rgba(195,247,58,0.06);
+  box-shadow: 0 0 0 3px rgba(195,247,58,0.08);
+}
+.day-card-name {
+  font-size: 10px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;
+}
+.day-card-date {
+  font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -0.02em; margin-bottom: 4px;
+}
+.day-card.today .day-card-date { color: var(--accent); }
+.day-card-avail { font-size: 10px; font-weight: 500; color: var(--text-muted); }
+.day-card.active .day-card-avail { color: var(--accent); font-weight: 600; }
+.avail-bar {
+  width: 100%; height: 2px; border-radius: 1px;
+  background: rgba(255,255,255,0.06); margin-top: 6px; overflow: hidden;
+}
+.avail-bar-fill { height: 100%; border-radius: 1px; background: var(--accent); transition: width 0.5s ease; }
+
+/* Time periods */
+.time-periods { min-height: 160px; }
+.time-period { margin-bottom: 18px; }
+.time-period-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text-muted);
+}
+.time-period-header svg { width: 14px; height: 14px; color: var(--accent); }
+.time-period-header::after { content: ''; flex: 1; height: 1px; background: rgba(131,153,162,0.08); }
+
+.time-slots-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.slot-btn {
+  padding: 10px 6px; border-radius: var(--radius-sm);
+  border: 1px solid rgba(131,153,162,0.1);
+  background: rgba(255,255,255,0.03);
+  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-secondary); cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.slot-btn:hover {
+  border-color: rgba(195,247,58,0.3); background: rgba(195,247,58,0.05);
+  color: #fff; transform: translateY(-1px);
+}
+.slot-btn.selected {
+  background: var(--accent); border-color: var(--accent);
+  color: var(--text-dark); font-weight: 700;
+  box-shadow: 0 0 0 3px rgba(195,247,58,0.12), 0 4px 12px rgba(195,247,58,0.1);
+}
+.no-slots-msg {
+  text-align: center; padding: 32px 16px;
+  color: var(--text-muted); font-size: 13px;
+}
+
+/* Selected summary */
+.selected-summary {
+  margin-top: 16px; padding: 14px 16px; border-radius: var(--radius-md);
+  background: rgba(195,247,58,0.05); border: 1px solid rgba(195,247,58,0.12);
+  display: none; align-items: center; gap: 12px;
+  animation: fadeUp 0.4s ease-out;
+}
+.selected-summary.visible { display: flex; }
+.selected-summary-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(195,247,58,0.12);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.selected-summary-icon svg { width: 18px; height: 18px; color: var(--accent); }
+.selected-summary-text { font-size: 14px; font-weight: 600; color: #fff; }
+.selected-summary-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* ===== NAV BUTTONS ===== */
+.step-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 32px; padding-top: 24px;
+  border-top: 1px solid rgba(131,153,162,0.08);
+}
+.btn-next {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 32px; border-radius: var(--radius-pill);
+  background: var(--accent); color: var(--text-dark);
+  font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700;
+  border: none; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative; overflow: hidden;
+}
+.btn-next:hover:not(:disabled) {
+  background: var(--accent-hover); transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(195,247,58,0.2);
+}
+.btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-next svg { width: 18px; height: 18px; }
+.btn-next.loading { pointer-events: none; color: transparent; }
+.btn-next.loading::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent) 0%, #d4ff5a 50%, var(--accent) 100%);
+  background-size: 200% 100%; animation: btnShimmer 1.5s ease-in-out infinite;
+}
+@keyframes btnShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* Big CTA for step 2 → step 3 transition */
+.btn-next.btn-cta-big {
+  width: 100%; justify-content: center;
+  padding: 18px 32px; font-size: 16px;
+  box-shadow: 0 4px 20px rgba(195,247,58,0.15);
+}
+.btn-next.btn-cta-big:hover:not(:disabled) {
+  box-shadow: 0 8px 32px rgba(195,247,58,0.3);
+}
+
+.btn-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 16px; border-radius: var(--radius-pill);
+  background: transparent; color: var(--text-secondary);
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500;
+  border: none; cursor: pointer; transition: all 0.3s;
+}
+.btn-back:hover { color: #fff; }
+.btn-back svg { width: 16px; height: 16px; }
+
+/* ===== CONFIRMATION ===== */
+.confirmation {
+  display: none; text-align: center; padding: 12px 0 0;
+}
+.confirmation.active {
+  display: block;
+  animation: stepIn 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.confirm-icon-wrap {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: rgba(195,247,58,0.1);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 24px;
+  animation: confirmPop 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes confirmPop { from { transform: scale(0.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.confirm-icon-wrap svg { width: 32px; height: 32px; color: var(--accent); }
+.confirm-icon-wrap svg path {
+  stroke-dasharray: 30; stroke-dashoffset: 30;
+  animation: drawCheck 0.6s ease 0.4s forwards;
+}
+@keyframes drawCheck { to { stroke-dashoffset: 0; } }
+
+.confirm-title {
+  font-size: 24px; font-weight: 800; color: #fff;
+  letter-spacing: -0.02em; margin-bottom: 8px;
+}
+.confirm-subtitle {
+  font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 28px;
+}
+.confirm-details {
+  padding: 20px; border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(131,153,162,0.08);
+  text-align: left; margin-bottom: 28px;
+}
+.confirm-detail-row {
+  display: flex; align-items: center; gap: 12px; padding: 9px 0;
+}
+.confirm-detail-row:not(:last-child) { border-bottom: 1px solid rgba(131,153,162,0.06); }
+.confirm-detail-icon { width: 18px; height: 18px; color: var(--accent); flex-shrink: 0; }
+.confirm-detail-label { font-size: 12px; color: var(--text-muted); min-width: 52px; }
+.confirm-detail-value { font-size: 14px; font-weight: 600; color: #fff; }
+
+.confirm-prep-title {
+  font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 12px; text-align: left;
+}
+.confirm-prep-list { list-style: none; text-align: left; margin-bottom: 28px; }
+.confirm-prep-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 7px 0; font-size: 13px; color: var(--text-secondary); line-height: 1.5;
+}
+.confirm-prep-item svg { width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+
+.btn-home {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 28px; border-radius: var(--radius-pill);
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(131,153,162,0.12);
+  color: #fff; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
+  text-decoration: none; transition: all 0.3s;
+}
+.btn-home:hover { background: rgba(255,255,255,0.1); border-color: rgba(131,153,162,0.2); transform: translateY(-2px); }
+
+/* ===== LIVE ACTIVITY TOAST ===== */
+.activity-toast {
+  position: fixed; bottom: 24px; left: 24px; z-index: 90;
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 20px 12px 12px; border-radius: var(--radius-md);
+  background: rgba(15,25,35,0.92); backdrop-filter: blur(16px);
+  border: 1px solid rgba(131,153,162,0.1);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  transform: translateY(120%); opacity: 0;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.activity-toast.visible { transform: translateY(0); opacity: 1; }
+.activity-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, rgba(195,247,58,0.1), rgba(195,247,58,0.2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: var(--accent);
+}
+.activity-text { font-size: 12px; color: var(--text-secondary); }
+.activity-text strong { color: #fff; font-weight: 600; }
+
+/* ===== FOOTER ===== */
+.booking-footer {
+  padding: 24px 48px; background: var(--bg-primary);
+  border-top: 1px solid rgba(131,153,162,0.06); text-align: center;
+}
+.booking-footer p { font-size: 12px; color: var(--text-muted); }
+.booking-footer a { color: var(--text-secondary); text-decoration: none; }
+.booking-footer a:hover { color: #fff; }
+
+/* ===== CONFETTI ===== */
+.confetto { position: fixed; pointer-events: none; z-index: 9999; }
+
+/* ===== KEYFRAMES ===== */
+@keyframes navSlideDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .page-body { padding: 80px 12px 40px; }
+  .main-card { border-radius: var(--radius-lg); }
+  .card-header { padding: 24px 20px 20px; }
+  .card-body { padding: 24px 20px 28px; }
+  .card-title { font-size: 22px; }
+  .field-row { flex-direction: column; gap: 0; }
+  .calc-stats-row { flex-direction: column; gap: 8px; }
+  .calc-result-huge { font-size: 36px; }
+  .calendar-days { overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 6px; }
+  .day-card { min-width: 68px; flex: 0 0 68px; }
+  .time-slots-grid { grid-template-columns: repeat(3, 1fr); }
+  .step-nav { flex-direction: column-reverse; gap: 12px; }
+  .btn-next { width: 100%; justify-content: center; }
+  .activity-toast { left: 12px; right: 12px; bottom: 12px; }
+}
+@media (max-width: 420px) {
+  .card-header { padding: 20px 16px 16px; }
+  .card-body { padding: 20px 16px 24px; }
+  .time-slots-grid { grid-template-columns: repeat(2, 1fr); }
+  .savings-teaser { flex-direction: column; gap: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar-wrapper">
+  <nav class="navbar">
+    <a href="/" class="nav-logo"><span class="nav-logo-text">4<span>YES</span></span></a>
+    <a href="/" class="nav-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Vissza a főoldalra
+    </a>
+  </nav>
+</div>
+
+<!-- MAIN -->
+<div class="page-body">
+  <div class="main-card">
+
+    <!-- HEADER -->
+    <div class="card-header">
+      <div class="card-header-top">
+        <div class="card-badge">
+          <div class="card-badge-dot"></div>
+          <span class="card-badge-text">Ingyenes konzultáció</span>
+        </div>
+        <div class="step-pills">
+          <div class="step-pill active" data-pill="1"></div>
+          <div class="step-pill" data-pill="2"></div>
+          <div class="step-pill" data-pill="3"></div>
+        </div>
+      </div>
+      <h1 class="card-title" id="card-title">Foglalj <span class="accent">30 perces</span> konzultációt</h1>
+      <p class="card-subtitle" id="card-subtitle">Add meg az adataidat, és kiszámoljuk, mennyit spórolhatsz AI-val.</p>
+    </div>
+
+    <!-- BODY -->
+    <div class="card-body">
+
+      <!-- ==================== STEP 1: CONTACT + COMPANY ==================== -->
+      <div class="step-panel active" data-step="1">
+
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Teljes név</label>
+            <div class="field-input-wrapper">
+              <input type="text" class="field-input" id="field-name" placeholder="Kovács Péter" required>
+            </div>
+            <div class="field-error">Kérjük, add meg a neved.</div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Telefonszám</label>
+            <div class="field-input-wrapper">
+              <input type="tel" class="field-input" id="field-phone" placeholder="+36 30 123 4567" required>
+            </div>
+            <div class="field-error">Kérjük, adj meg egy érvényes telefonszámot.</div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Email cím</label>
+          <div class="field-input-wrapper">
+            <input type="email" class="field-input" id="field-email" placeholder="kovacs.peter@ceg.hu" required>
+          </div>
+          <div class="field-error">Kérjük, adj meg egy érvényes email címet.</div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Cégnév</label>
+            <div class="field-input-wrapper">
+              <input type="text" class="field-input" id="field-company" placeholder="Példa Kft." required>
+            </div>
+            <div class="field-error">Kérjük, add meg a cégnevet.</div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Cégméret</label>
+            <select class="field-select" id="field-size" required>
+              <option value="" disabled selected>Válassz...</option>
+              <option value="1-5">1–5 fő</option>
+              <option value="6-20">6–20 fő</option>
+              <option value="21-50">21–50 fő</option>
+              <option value="51-200">51–200 fő</option>
+              <option value="200+">200+ fő</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Iparág</label>
+          <select class="field-select" id="field-industry" required>
+            <option value="" disabled selected>Válassz iparágat...</option>
+            <option value="ecommerce">E-commerce</option>
+            <option value="szolgaltatas">Szolgáltatás</option>
+            <option value="gyartas">Gyártás</option>
+            <option value="penzugy">Pénzügy / Számvitel</option>
+            <option value="egeszsegugy">Egészségügy</option>
+            <option value="it">IT / Szoftverfejlesztés</option>
+            <option value="marketing">Marketing / Média</option>
+            <option value="logisztika">Logisztika / Szállítmányozás</option>
+            <option value="egyeb">Egyéb</option>
+          </select>
+        </div>
+
+        <div class="savings-teaser">
+          <div class="savings-teaser-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+          <div class="savings-teaser-text">
+            <strong>A következő lépésben kiszámoljuk</strong>, hogy a céged mérete és iparága alapján mennyit spórolhatsz AI automatizációval — személyre szabva, azonnal.
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <div></div>
+          <button class="btn-next" onclick="goToStep(2)">
+            Számold ki a megtakarításod
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ==================== STEP 2: ROI CALCULATOR ==================== -->
+      <div class="step-panel" data-step="2">
+
+        <div class="calc-result-hero">
+          <div class="calc-result-label-big">A céged becsült havi megtakarítása</div>
+          <div class="calc-result-huge" id="res-monthly">864 000 Ft</div>
+          <div class="calc-result-sub-big">évente akár <strong id="res-yearly-inline" style="color:var(--accent);font-weight:700">10 368 000 Ft</strong></div>
+        </div>
+
+        <div class="calc-stats-row">
+          <div class="calc-stat-card">
+            <div class="calc-stat-number" id="res-hours">360</div>
+            <div class="calc-stat-label">megtakarított óra / hó</div>
+          </div>
+          <div class="calc-stat-card">
+            <div class="calc-stat-number" id="res-fte">2.1</div>
+            <div class="calc-stat-label">FTE egyenértékű</div>
+          </div>
+          <div class="calc-stat-card">
+            <div class="calc-stat-number" id="res-pct">60%</div>
+            <div class="calc-stat-label">automatizálható</div>
+          </div>
+        </div>
+
+        <div class="calc-slider-group">
+          <div class="calc-slider-header">
+            <span class="calc-slider-label">Alkalmazottak száma</span>
+            <span class="calc-slider-val" id="val-employees">10</span>
+          </div>
+          <input type="range" id="slider-employees" min="1" max="200" value="10" oninput="updateCalc()">
+        </div>
+
+        <div class="calc-slider-group">
+          <div class="calc-slider-header">
+            <span class="calc-slider-label">Heti manuális munkaóra / fő</span>
+            <span class="calc-slider-val" id="val-hours">15 óra</span>
+          </div>
+          <input type="range" id="slider-hours" min="2" max="40" value="15" oninput="updateCalc()">
+        </div>
+
+        <div class="calc-slider-group">
+          <div class="calc-slider-header">
+            <span class="calc-slider-label">Átlagos órabér (bruttó)</span>
+            <span class="calc-slider-val" id="val-wage">4 000 Ft</span>
+          </div>
+          <input type="range" id="slider-wage" min="1500" max="15000" value="4000" step="500" oninput="updateCalc()">
+        </div>
+
+        <div class="calc-source">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          A becslés a <a href="https://www.mckinsey.com/mgi/our-research/a-new-future-of-work-the-race-to-deploy-ai-and-raise-skills-in-europe-and-beyond" target="_blank" rel="noopener">McKinsey Global Institute (2025)</a> kutatásán alapul, miszerint a munkaórák 57%-a már ma automatizálható. A <a href="https://www.smartsheet.com/content-center/product-news/automation/workers-waste-quarter-work-week-manual-repetitive-tasks" target="_blank" rel="noopener">Smartsheet felmérése</a> szerint a dolgozók 40%-a hetente legalább 10 órát tölt repetitív, manuális feladatokkal.
+        </div>
+
+        <div class="step-nav" style="border-top:none;padding-top:28px;margin-top:24px;flex-direction:column;gap:12px;">
+          <button class="btn-next btn-cta-big" onclick="goToStep(3)">
+            Foglalj időpontot és valósítsd meg!
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <button class="btn-back" onclick="goToStep(1)" style="align-self:center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Adatok módosítása
+          </button>
+        </div>
+      </div>
+
+      <!-- ==================== STEP 3: CALENDAR ==================== -->
+      <div class="step-panel" data-step="3">
+
+        <div class="calendar-wrapper">
+          <div class="calendar-nav">
+            <button class="cal-nav-btn" id="cal-prev" onclick="changeWeek(-1)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <span class="calendar-nav-title" id="cal-title"></span>
+            <button class="cal-nav-btn" id="cal-next" onclick="changeWeek(1)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+          <div class="calendar-days" id="calendar-days"></div>
+          <div class="time-periods" id="time-periods"></div>
+          <div class="selected-summary" id="selected-summary">
+            <div class="selected-summary-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <div>
+              <div class="selected-summary-text" id="summary-text">—</div>
+              <div class="selected-summary-sub">30 perces online konzultáció</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-back" onclick="goToStep(2)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Vissza
+          </button>
+          <button class="btn-next" id="btn-confirm" onclick="submitBooking()" disabled>
+            Foglalás megerősítése
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ==================== CONFIRMATION ==================== -->
+      <div class="confirmation" id="confirmation">
+        <div class="confirm-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+        </div>
+        <h2 class="confirm-title">Sikeres foglalás!</h2>
+        <p class="confirm-subtitle">Minden részletet elküldtünk emailben. Alig várjuk a beszélgetést!</p>
+        <div class="confirm-details">
+          <div class="confirm-detail-row">
+            <svg class="confirm-detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span class="confirm-detail-label">Dátum</span>
+            <span class="confirm-detail-value" id="confirm-date">—</span>
+          </div>
+          <div class="confirm-detail-row">
+            <svg class="confirm-detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="confirm-detail-label">Időpont</span>
+            <span class="confirm-detail-value" id="confirm-time">—</span>
+          </div>
+          <div class="confirm-detail-row">
+            <svg class="confirm-detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span class="confirm-detail-label">Email</span>
+            <span class="confirm-detail-value" id="confirm-email">—</span>
+          </div>
+        </div>
+        <h3 class="confirm-prep-title">Készülj a konzultációra:</h3>
+        <ul class="confirm-prep-list">
+          <li class="confirm-prep-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+            Gondold végig, melyik folyamatotok emészt fel legtöbb időt
+          </li>
+          <li class="confirm-prep-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+            Készíts listát a jelenleg használt szoftverekről
+          </li>
+          <li class="confirm-prep-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+            Ha van, hozd el a költségvetési kereteket
+          </li>
+        </ul>
+        <a href="/" class="btn-home">
+          Vissza a főoldalra
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ACTIVITY TOAST -->
+<div class="activity-toast" id="activity-toast">
+  <div class="activity-avatar" id="activity-avatar">KP</div>
+  <div class="activity-text" id="activity-text"><strong>Kovács P.</strong> foglalt 2 órája</div>
+</div>
+
+<!-- FOOTER -->
+<footer class="booking-footer">
+  <p>&copy; 2026 4YES — AI Automatizációs Ügynökség &nbsp;|&nbsp; <a href="/">Főoldal</a></p>
+</footer>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let currentStep = 1;
+let selectedSlot = null;
+let selectedDayIndex = 0;
+let currentWeekStart = getMonday(new Date());
+let weekSlots = {};
+
+// Industry default hours (heti manuális óra/fő — iparág-specifikus becslés)
+const INDUSTRY_DEFAULTS = {
+  ecommerce: { hours: 18, wage: 3500 },
+  szolgaltatas: { hours: 14, wage: 3500 },
+  gyartas: { hours: 12, wage: 3000 },
+  penzugy: { hours: 20, wage: 5000 },
+  egeszsegugy: { hours: 16, wage: 4000 },
+  it: { hours: 10, wage: 6000 },
+  marketing: { hours: 16, wage: 4000 },
+  logisztika: { hours: 22, wage: 3000 },
+  egyeb: { hours: 15, wage: 4000 }
+};
+
+// Company size → employee count mapping
+const SIZE_MAP = {
+  '1-5': 3, '6-20': 12, '21-50': 35, '51-200': 100, '200+': 250
+};
+
+// Step titles & subtitles
+const STEP_CONTENT = {
+  1: {
+    title: 'Foglalj <span class="accent">30 perces</span> konzultációt',
+    subtitle: 'Add meg az adataidat, és kiszámoljuk, mennyit spórolhatsz AI-val.'
+  },
+  2: {
+    title: 'Ennyit spórolhatsz <span class="accent">AI-val</span>',
+    subtitle: 'Húzd a csúszkákat és nézd meg a személyre szabott becslésed.'
+  },
+  3: {
+    title: 'Válassz <span class="accent">időpontot</span>',
+    subtitle: '30 perces online konzultáció — hétköznapokon 10:00–18:00.'
+  }
+};
+
+// ============================================================
+// STEP NAVIGATION
+// ============================================================
+function goToStep(step) {
+  if (step > currentStep && !validateStep(currentStep)) return;
+
+  currentStep = step;
+
+  // Panels
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  const panel = document.querySelector(`.step-panel[data-step="${step}"]`);
+  if (panel) panel.classList.add('active');
+
+  // Pills
+  document.querySelectorAll('.step-pill').forEach(p => {
+    const n = parseInt(p.dataset.pill);
+    p.classList.remove('active', 'completed');
+    if (n === step) p.classList.add('active');
+    else if (n < step) p.classList.add('completed');
+  });
+
+  // Title/subtitle
+  const sc = STEP_CONTENT[step];
+  if (sc) {
+    document.getElementById('card-title').innerHTML = sc.title;
+    document.getElementById('card-subtitle').textContent = sc.subtitle;
+  }
+
+  // Step 2: prefill calculator from company data
+  if (step === 2) prefillCalc();
+
+  // Step 3: render calendar
+  if (step === 3) renderCalendar();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateStep(step) {
+  let valid = true;
+  if (step === 1) {
+    valid = validateField('field-name', v => v.trim().length >= 2)
+          & validateField('field-email', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v))
+          & validateField('field-phone', v => v.trim().length >= 6)
+          & validateField('field-company', v => v.trim().length >= 1);
+  }
+  return valid;
+}
+
+function validateField(id, check) {
+  const el = document.getElementById(id);
+  if (!el) return true;
+  const ok = check(el.value);
+  el.classList.toggle('error', !ok);
+  return ok;
+}
+
+document.querySelectorAll('.field-input, .field-select').forEach(el => {
+  el.addEventListener('input', () => el.classList.remove('error'));
+  el.addEventListener('change', () => el.classList.remove('error'));
+});
+
+// ============================================================
+// ROI CALCULATOR
+// ============================================================
+function prefillCalc() {
+  const industry = document.getElementById('field-industry').value;
+  const size = document.getElementById('field-size').value;
+
+  const defaults = INDUSTRY_DEFAULTS[industry] || INDUSTRY_DEFAULTS.egyeb;
+  const empCount = SIZE_MAP[size] || 10;
+
+  document.getElementById('slider-employees').value = empCount;
+  document.getElementById('slider-hours').value = defaults.hours;
+  document.getElementById('slider-wage').value = defaults.wage;
+
+  updateCalc();
+}
+
+function updateCalc() {
+  const employees = parseInt(document.getElementById('slider-employees').value);
+  const hours = parseInt(document.getElementById('slider-hours').value);
+  const wage = parseInt(document.getElementById('slider-wage').value);
+
+  const automationRate = 0.6;
+  const weeklyHoursSaved = employees * hours * automationRate;
+  const monthlySavedHours = Math.round(weeklyHoursSaved * 4.33);
+  const monthlySavings = monthlySavedHours * wage;
+  const yearlySavings = monthlySavings * 12;
+  const fte = (weeklyHoursSaved / 40).toFixed(1);
+
+  document.getElementById('val-employees').textContent = employees;
+  document.getElementById('val-hours').textContent = hours + ' óra';
+  document.getElementById('val-wage').textContent = formatNum(wage) + ' Ft';
+
+  animateNumber('res-monthly', monthlySavings, ' Ft');
+  document.getElementById('res-yearly-inline').textContent = formatNum(yearlySavings) + ' Ft';
+  animateNumber('res-hours', monthlySavedHours, '');
+  document.getElementById('res-fte').textContent = fte;
+  document.getElementById('res-pct').textContent = Math.round(automationRate * 100) + '%';
+
+  updateSliderTrack('slider-employees', 1, 200);
+  updateSliderTrack('slider-hours', 2, 40);
+  updateSliderTrack('slider-wage', 1500, 15000);
+}
+
+function updateSliderTrack(id, min, max) {
+  const el = document.getElementById(id);
+  const pct = ((el.value - min) / (max - min)) * 100;
+  el.style.background = `linear-gradient(90deg, var(--accent) 0%, var(--accent) ${pct}%, rgba(255,255,255,0.08) ${pct}%)`;
+}
+
+function formatNum(n) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+let animFrames = {};
+function animateNumber(elId, target, suffix) {
+  if (animFrames[elId]) cancelAnimationFrame(animFrames[elId]);
+  const el = document.getElementById(elId);
+  const current = parseInt(el.textContent.replace(/[^\d]/g, '')) || 0;
+  const diff = target - current;
+  const duration = 500;
+  const start = performance.now();
+  function step(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = formatNum(Math.round(current + diff * eased)) + suffix;
+    if (progress < 1) animFrames[elId] = requestAnimationFrame(step);
+  }
+  animFrames[elId] = requestAnimationFrame(step);
+}
+
+// ============================================================
+// CALENDAR
+// ============================================================
+const HU_DAYS = ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek'];
+const HU_DAYS_SHORT = ['H', 'K', 'Sze', 'Cs', 'P'];
+const HU_MONTHS = ['január', 'február', 'március', 'április', 'május', 'június',
+                   'július', 'augusztus', 'szeptember', 'október', 'november', 'december'];
+
+function getMonday(d) {
+  const date = new Date(d);
+  const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+  date.setDate(diff); date.setHours(0,0,0,0);
+  return date;
+}
+
+function changeWeek(dir) {
+  currentWeekStart = new Date(currentWeekStart);
+  currentWeekStart.setDate(currentWeekStart.getDate() + dir * 7);
+  const today = getMonday(new Date());
+  if (currentWeekStart < today) currentWeekStart = today;
+  const maxWeek = new Date(today); maxWeek.setDate(maxWeek.getDate() + 28);
+  if (currentWeekStart > maxWeek) return;
+  selectedDayIndex = 0;
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const daysContainer = document.getElementById('calendar-days');
+  const title = document.getElementById('cal-title');
+  const friday = new Date(currentWeekStart);
+  friday.setDate(friday.getDate() + 4);
+  title.textContent = `${currentWeekStart.getFullYear()}. ${HU_MONTHS[currentWeekStart.getMonth()]} ${currentWeekStart.getDate()}.–${friday.getDate()}.`;
+
+  const today = getMonday(new Date());
+  document.getElementById('cal-prev').disabled = (currentWeekStart <= today);
+
+  const now = new Date();
+  weekSlots = {};
+  let daysHtml = '';
+
+  for (let i = 0; i < 5; i++) {
+    const day = new Date(currentWeekStart);
+    day.setDate(day.getDate() + i);
+    const dateStr = day.toISOString().split('T')[0];
+    const isToday = day.toDateString() === now.toDateString();
+    const isPast = day < new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    let slots = [];
+    if (!isPast) {
+      for (let h = 10; h < 18; h++) {
+        for (let m = 0; m < 60; m += 30) {
+          if (h === 17 && m === 30) continue;
+          if (isToday && (h < now.getHours() || (h === now.getHours() && m <= now.getMinutes()))) continue;
+          if (Math.random() < 0.25) continue;
+          slots.push(`${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`);
+        }
+      }
+    }
+    weekSlots[dateStr] = slots;
+    const pct = Math.round((slots.length / 15) * 100);
+
+    daysHtml += `<div class="day-card${i === selectedDayIndex ? ' active' : ''}${isToday ? ' today' : ''}" onclick="selectDay(${i})">
+      <div class="day-card-name">${HU_DAYS_SHORT[i]}</div>
+      <div class="day-card-date">${day.getDate()}</div>
+      <div class="day-card-avail">${slots.length > 0 ? slots.length + ' szabad' : '–'}</div>
+      <div class="avail-bar"><div class="avail-bar-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }
+  daysContainer.innerHTML = daysHtml;
+  renderTimeSlots();
+}
+
+function selectDay(i) {
+  selectedDayIndex = i;
+  document.querySelectorAll('.day-card').forEach((c, j) => c.classList.toggle('active', j === i));
+  renderTimeSlots();
+}
+
+function renderTimeSlots() {
+  const container = document.getElementById('time-periods');
+  const day = new Date(currentWeekStart);
+  day.setDate(day.getDate() + selectedDayIndex);
+  const dateStr = day.toISOString().split('T')[0];
+  const slots = weekSlots[dateStr] || [];
+
+  if (!slots.length) {
+    container.innerHTML = '<div class="no-slots-msg">Ezen a napon nincs szabad időpont.</div>';
+    return;
+  }
+
+  const morning = slots.filter(t => parseInt(t) < 12);
+  const afternoon = slots.filter(t => parseInt(t) >= 12 && parseInt(t) < 15);
+  const late = slots.filter(t => parseInt(t) >= 15);
+  let html = '';
+
+  const sunSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+  const sunsetSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 18a5 5 0 00-10 0"/><line x1="12" y1="9" x2="12" y2="2"/><line x1="4.22" y1="10.22" x2="5.64" y2="11.64"/><line x1="1" y1="18" x2="3" y2="18"/><line x1="21" y1="18" x2="23" y2="18"/><line x1="18.36" y1="11.64" x2="19.78" y2="10.22"/></svg>';
+
+  if (morning.length) html += period('Délelőtt', sunSvg, morning, dateStr);
+  if (afternoon.length) html += period('Délután', sunSvg, afternoon, dateStr);
+  if (late.length) html += period('Késő délután', sunsetSvg, late, dateStr);
+
+  container.innerHTML = html;
+}
+
+function period(label, icon, slots, dateStr) {
+  return `<div class="time-period">
+    <div class="time-period-header">${icon} ${label}</div>
+    <div class="time-slots-grid">${slots.map(t => {
+      const sel = selectedSlot && selectedSlot.date === dateStr && selectedSlot.time === t;
+      return `<button class="slot-btn${sel ? ' selected' : ''}" onclick="selectSlot('${dateStr}','${t}',this)">${t}</button>`;
+    }).join('')}</div>
+  </div>`;
+}
+
+function selectSlot(date, time, btn) {
+  document.querySelectorAll('.slot-btn.selected').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  const d = new Date(date + 'T00:00:00');
+  const endM = parseInt(time.split(':')[1]) + 30;
+  const endH = parseInt(time.split(':')[0]) + Math.floor(endM / 60);
+  const endTime = `${endH.toString().padStart(2,'0')}:${(endM % 60).toString().padStart(2,'0')}`;
+  const dayName = HU_DAYS[d.getDay() === 0 ? 6 : d.getDay() - 1];
+  const label = `${d.getFullYear()}. ${HU_MONTHS[d.getMonth()]} ${d.getDate()}. (${dayName}) — ${time}–${endTime}`;
+
+  selectedSlot = { date, time, label, endTime };
+  document.getElementById('selected-summary').classList.add('visible');
+  document.getElementById('summary-text').textContent = label;
+  document.getElementById('btn-confirm').disabled = false;
+}
+
+// ============================================================
+// SUBMIT
+// ============================================================
+function submitBooking() {
+  if (!selectedSlot) return;
+  const btn = document.getElementById('btn-confirm');
+  btn.classList.add('loading');
+
+  setTimeout(() => {
+    btn.classList.remove('loading');
+
+    const formData = {
+      name: document.getElementById('field-name').value,
+      email: document.getElementById('field-email').value,
+      phone: document.getElementById('field-phone').value,
+      company: document.getElementById('field-company').value,
+      size: document.getElementById('field-size').value,
+      industry: document.getElementById('field-industry').value,
+      date: selectedSlot.date, time: selectedSlot.time
+    };
+    console.log('Booking:', formData);
+
+    // Hide form, show confirmation
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    document.querySelector('.card-header').style.display = 'none';
+
+    const conf = document.getElementById('confirmation');
+    conf.classList.add('active');
+
+    const d = new Date(selectedSlot.date + 'T00:00:00');
+    const dayName = HU_DAYS[d.getDay() === 0 ? 6 : d.getDay() - 1];
+    document.getElementById('confirm-date').textContent = `${d.getFullYear()}. ${HU_MONTHS[d.getMonth()]} ${d.getDate()}., ${dayName}`;
+    document.getElementById('confirm-time').textContent = `${selectedSlot.time} – ${selectedSlot.endTime} (CET)`;
+    document.getElementById('confirm-email').textContent = formData.email;
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    launchConfetti();
+  }, 1200);
+}
+
+// ============================================================
+// CONFETTI
+// ============================================================
+function launchConfetti() {
+  const colors = ['#C3F73A', '#d4ff5a', '#ffffff', '#8399A2'];
+  for (let i = 0; i < 50; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetto';
+    const s = 4 + Math.random() * 6;
+    c.style.cssText = `width:${s}px;height:${s}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};left:${30+Math.random()*40}vw;top:-10px;`;
+    document.body.appendChild(c);
+    const tx = (Math.random() - 0.5) * 200, ty = window.innerHeight + 20;
+    c.animate([
+      { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+      { transform: `translate(${tx}px,${ty}px) rotate(${Math.random()*720}deg)`, opacity: 0 }
+    ], { duration: 2000 + Math.random() * 1000, easing: 'cubic-bezier(0.22,0.61,0.36,1)', fill: 'forwards' });
+    setTimeout(() => c.remove(), 3500);
+  }
+}
+
+// ============================================================
+// ACTIVITY FEED
+// ============================================================
+const activities = [
+  { i: 'KP', n: 'Kovács P.', t: '2 órája', c: 'Budapest' },
+  { i: 'NL', n: 'Nagy L.', t: '4 órája', c: 'Debrecen' },
+  { i: 'TA', n: 'Tóth A.', t: 'ma reggel', c: 'Szeged' },
+  { i: 'BM', n: 'Balogh M.', t: 'tegnap', c: 'Pécs' },
+  { i: 'SJ', n: 'Szabó J.', t: 'tegnap', c: 'Győr' },
+];
+let aIdx = 0;
+function nextActivity() {
+  const toast = document.getElementById('activity-toast');
+  toast.classList.remove('visible');
+  setTimeout(() => {
+    const a = activities[aIdx % activities.length];
+    document.getElementById('activity-avatar').textContent = a.i;
+    document.getElementById('activity-text').innerHTML = `<strong>${a.n}</strong> foglalt ${a.t} <span style="opacity:.4">|</span> ${a.c}`;
+    toast.classList.add('visible');
+    aIdx++;
+  }, 500);
+  setTimeout(() => document.getElementById('activity-toast').classList.remove('visible'), 5000);
+}
+setTimeout(nextActivity, 4000);
+setInterval(nextActivity, 9000);
+
+// ============================================================
+// MAGNETIC BUTTONS
+// ============================================================
+document.querySelectorAll('.btn-next').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const r = btn.getBoundingClientRect();
+    btn.style.transform = `translate(${(e.clientX-r.left-r.width/2)*0.1}px,${(e.clientY-r.top-r.height/2)*0.1}px)`;
+    btn.style.transition = 'transform 0.15s ease-out';
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transform = '';
+    btn.style.transition = 'transform 0.4s cubic-bezier(0.22,1,0.36,1)';
+  });
+});
+
+// ============================================================
+// INIT
+// ============================================================
+updateCalc();
+</script>
+</body>
+</html>

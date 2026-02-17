@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4YES - Testimonials Section</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+body { font-family: 'Outfit', sans-serif; background: #0F1923; color: #fff; overflow-x: hidden; }
+
+:root {
+  --bg-primary: #0F1923;
+  --bg-alt: #141F2B;
+  --accent: #C3F73A;
+  --accent-hover: #d4ff5a;
+  --accent-muted: rgba(195,247,58,0.08);
+  --accent-border: rgba(195,247,58,0.2);
+  --text-primary: #FFFFFF;
+  --text-secondary: #8399A2;
+  --text-muted: rgba(131,153,162,0.5);
+  --border-subtle: rgba(131,153,162,0.12);
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 100px;
+}
+
+/* ===== TESTIMONIALS SECTION ===== */
+.testimonials-section {
+  background: var(--bg-primary);
+  padding: 100px 0 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ambient glow orbs */
+.testimonials-section::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  top: -200px;
+  left: -150px;
+  background: radial-gradient(circle, rgba(195,247,58,0.04) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.testimonials-section::after {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  bottom: -150px;
+  right: -100px;
+  background: radial-gradient(circle, rgba(195,247,58,0.03) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* ── Header ── */
+.test-header {
+  text-align: center;
+  padding: 0 48px;
+  margin-bottom: 56px;
+  position: relative;
+  z-index: 1;
+}
+
+.dk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px 8px 16px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  margin-bottom: 24px;
+}
+.dk-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.dk-badge-text { font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* ── Hero Quote ── */
+.hero-quote-wrap {
+  max-width: 960px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.hero-quote-mark {
+  font-size: 160px;
+  font-weight: 900;
+  line-height: 0.6;
+  color: var(--accent);
+  opacity: 0.12;
+  position: absolute;
+  top: -20px;
+  left: -24px;
+  font-family: Georgia, 'Times New Roman', serif;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero-quote-text {
+  font-size: 36px;
+  font-weight: 300;
+  line-height: 1.45;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  position: relative;
+}
+.hero-quote-text em {
+  font-style: normal;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.hero-quote-author {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+}
+.hero-quote-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(195,247,58,0.1);
+  border: 2px solid rgba(195,247,58,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.hero-quote-info { text-align: left; }
+.hero-quote-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+}
+.hero-quote-role {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+.hero-quote-stars {
+  display: flex;
+  gap: 3px;
+  margin-left: 8px;
+}
+.hero-quote-stars span {
+  color: var(--accent);
+  font-size: 14px;
+}
+
+/* ── Stats Strip ── */
+.stats-strip {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(131,153,162,0.08);
+}
+.stat-item { text-align: center; }
+.stat-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 4px;
+  letter-spacing: -0.03em;
+}
+.stat-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Marquee Rows ── */
+.marquee-section {
+  margin-top: 64px;
+  position: relative;
+}
+
+/* Edge fade masks */
+.marquee-section::before,
+.marquee-section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 120px;
+  z-index: 2;
+  pointer-events: none;
+}
+.marquee-section::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--bg-primary) 0%, transparent 100%);
+}
+.marquee-section::after {
+  right: 0;
+  background: linear-gradient(-90deg, var(--bg-primary) 0%, transparent 100%);
+}
+
+.marquee-row {
+  display: flex;
+  gap: 20px;
+  padding: 10px 0;
+  width: max-content;
+}
+
+.marquee-row--1 { animation: scrollLeft 45s linear infinite; }
+.marquee-row--2 { animation: scrollRight 50s linear infinite; }
+
+.marquee-row:hover { animation-play-state: paused; }
+
+@keyframes scrollLeft {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes scrollRight {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+/* ── Testimonial Cards (Marquee) ── */
+.tcard {
+  flex-shrink: 0;
+  width: 380px;
+  padding: 28px;
+  border-radius: var(--radius-xl);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(131,153,162,0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+.tcard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-xl);
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(195,247,58,0.06) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+.tcard:hover::before { opacity: 1; }
+.tcard:hover {
+  border-color: rgba(195,247,58,0.2);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.3), 0 0 0 1px rgba(195,247,58,0.08);
+}
+
+/* Accent card variant */
+.tcard--accent {
+  background: rgba(195,247,58,0.04);
+  border-color: rgba(195,247,58,0.15);
+}
+.tcard--accent .tcard-metric {
+  font-size: 48px;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 8px;
+  letter-spacing: -0.04em;
+}
+.tcard--accent .tcard-metric-label {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.tcard-stars {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 16px;
+}
+.tcard-stars span {
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.tcard-text {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.tcard-divider {
+  width: 28px;
+  height: 2px;
+  background: rgba(195,247,58,0.3);
+  border-radius: 2px;
+  margin-bottom: 16px;
+}
+
+.tcard-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.tcard-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(131,153,162,0.1);
+  border: 1px solid rgba(131,153,162,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.tcard-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1px;
+}
+.tcard-role {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+/* Compact card */
+.tcard--compact {
+  width: 300px;
+  padding: 24px;
+}
+.tcard--compact .tcard-text {
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* Wide metric card */
+.tcard--wide {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 32px 24px;
+}
+
+/* ── Bottom CTA ── */
+.test-bottom {
+  text-align: center;
+  margin-top: 56px;
+  padding: 0 48px;
+  position: relative;
+  z-index: 1;
+}
+.test-bottom-text {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+.test-bottom-text strong {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.test-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: var(--bg-primary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.test-cta:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(195,247,58,0.25);
+}
+.test-cta svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.3s;
+}
+.test-cta:hover svg { transform: translateX(3px); }
+
+/* ── Glow line at bottom ── */
+.glow-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(195,247,58,0.15) 30%, rgba(195,247,58,0.3) 50%, rgba(195,247,58,0.15) 70%, transparent 100%);
+  margin-top: 80px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .hero-quote-text { font-size: 30px; }
+  .hero-quote-mark { font-size: 120px; }
+  .stats-strip { gap: 32px; }
+  .stat-value { font-size: 28px; }
+}
+
+@media (max-width: 768px) {
+  .testimonials-section { padding: 64px 0 56px; }
+  .test-header { padding: 0 24px; margin-bottom: 40px; }
+  .hero-quote-wrap { padding: 0 24px; }
+  .hero-quote-text { font-size: 24px; }
+  .hero-quote-mark { font-size: 80px; top: -10px; left: -8px; }
+  .stats-strip { flex-wrap: wrap; gap: 24px; padding: 0 24px; }
+  .stat-value { font-size: 24px; }
+  .tcard { width: 320px; padding: 24px; }
+  .tcard--compact { width: 260px; }
+  .tcard--wide { width: 240px; }
+  .test-bottom { padding: 0 24px; }
+}
+
+@media (max-width: 480px) {
+  .hero-quote-text { font-size: 20px; }
+  .hero-quote-mark { font-size: 60px; }
+  .hero-quote-author { flex-direction: column; gap: 12px; }
+  .hero-quote-info { text-align: center; }
+  .stats-strip { flex-direction: column; gap: 20px; }
+}
+
+/* ── Reveal animation ── */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<section class="testimonials-section" id="results">
+
+  <!-- ── Header + Hero Quote ── -->
+  <div class="test-header reveal">
+    <div class="dk-badge">
+      <div class="dk-badge-dot"></div>
+      <span class="dk-badge-text">Eredmények</span>
+    </div>
+
+    <div class="hero-quote-wrap">
+      <div class="hero-quote-mark">&ldquo;</div>
+      <p class="hero-quote-text">
+        3 hónap alatt az ügyfélszolgálati válaszidőnk <em>4 óráról 3 percre</em> csökkent. Az AI ügynök a megkeresések <em>78%-át</em> egyedül kezeli.
+      </p>
+      <div class="hero-quote-author">
+        <div class="hero-quote-avatar">KT</div>
+        <div class="hero-quote-info">
+          <div class="hero-quote-name">K. Tamás</div>
+          <div class="hero-quote-role">Ügyvezető, E-commerce cég</div>
+        </div>
+        <div class="hero-quote-stars">
+          <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span>
+        </div>
+      </div>
+
+      <div class="stats-strip">
+        <div class="stat-item">
+          <div class="stat-value">78%</div>
+          <div class="stat-label">Automatizált megkeresés</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">3 perc</div>
+          <div class="stat-label">Átl. válaszidő</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">3 hét</div>
+          <div class="stat-label">Megtérülési idő</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">10+</div>
+          <div class="stat-label">Sikeres projekt</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Marquee Row 1 (scrolls left) ── -->
+  <div class="marquee-section">
+    <div class="marquee-row marquee-row--1">
+      <!-- Set 1 -->
+      <div class="tcard">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;A lead feldolgozás teljesen automatikus lett. Ami eddig 2 ember teljes munkaideje volt, azt most AI csinálja — pontosabban.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">MA</div>
+          <div>
+            <div class="tcard-name">M. Andrea</div>
+            <div class="tcard-role">Marketing vezető, SaaS startup</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--accent tcard--wide">
+        <div class="tcard-metric">4 óra → 3p</div>
+        <div class="tcard-metric-label">Ügyfélszolgálati válaszidő csökkenés</div>
+      </div>
+
+      <div class="tcard tcard--compact">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;Szkeptikus voltam, de a felmérés után egyértelműek voltak a számok. Az első workflow 3 hét alatt megtérült.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">BG</div>
+          <div>
+            <div class="tcard-name">B. Gergő</div>
+            <div class="tcard-role">Operációs igazgató, Logisztikai cég</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;A havi riportolás 2 napról 15 percre csökkent. Az AI dashboard valós időben mutat mindent, amit eddig kézzel gyűjtöttünk.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">NE</div>
+          <div>
+            <div class="tcard-name">N. Eszter</div>
+            <div class="tcard-role">Pénzügyi vezető, Tanácsadó cég</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--accent tcard--wide">
+        <div class="tcard-metric">40M Ft</div>
+        <div class="tcard-metric-label">Éves megtakarítás automatizált számlázással</div>
+      </div>
+
+      <div class="tcard tcard--compact">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;Az onboarding folyamat teljesen automatikus lett. Új ügyfelek 5 perc alatt aktívak.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">SZ</div>
+          <div>
+            <div class="tcard-name">Sz. László</div>
+            <div class="tcard-role">CEO, Fintech startup</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Duplicate set for seamless loop -->
+      <div class="tcard">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;A lead feldolgozás teljesen automatikus lett. Ami eddig 2 ember teljes munkaideje volt, azt most AI csinálja — pontosabban.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">MA</div>
+          <div>
+            <div class="tcard-name">M. Andrea</div>
+            <div class="tcard-role">Marketing vezető, SaaS startup</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--accent tcard--wide">
+        <div class="tcard-metric">4 óra → 3p</div>
+        <div class="tcard-metric-label">Ügyfélszolgálati válaszidő csökkenés</div>
+      </div>
+
+      <div class="tcard tcard--compact">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;Szkeptikus voltam, de a felmérés után egyértelműek voltak a számok. Az első workflow 3 hét alatt megtérült.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">BG</div>
+          <div>
+            <div class="tcard-name">B. Gergő</div>
+            <div class="tcard-role">Operációs igazgató, Logisztikai cég</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;A havi riportolás 2 napról 15 percre csökkent. Az AI dashboard valós időben mutat mindent, amit eddig kézzel gyűjtöttünk.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">NE</div>
+          <div>
+            <div class="tcard-name">N. Eszter</div>
+            <div class="tcard-role">Pénzügyi vezető, Tanácsadó cég</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--accent tcard--wide">
+        <div class="tcard-metric">40M Ft</div>
+        <div class="tcard-metric-label">Éves megtakarítás automatizált számlázással</div>
+      </div>
+
+      <div class="tcard tcard--compact">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;Az onboarding folyamat teljesen automatikus lett. Új ügyfelek 5 perc alatt aktívak.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">SZ</div>
+          <div>
+            <div class="tcard-name">Sz. László</div>
+            <div class="tcard-role">CEO, Fintech startup</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Marquee Row 2 (scrolls right) ── -->
+    <div class="marquee-row marquee-row--2">
+      <!-- Set 1 -->
+      <div class="tcard tcard--compact">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;A 4YES csapata 2 hét alatt működő prototípust adott. Ilyen gyors delivery-vel még nem találkoztam.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">VJ</div>
+          <div>
+            <div class="tcard-name">V. János</div>
+            <div class="tcard-role">CTO, Recruitment agency</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;Az ajánlatkészítés automatizálásával havi 60 óra munkaidőt takarítunk meg. A csapat végre stratégiai feladatokra tud koncentrálni.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">TK</div>
+          <div>
+            <div class="tcard-name">T. Katalin</div>
+            <div class="tcard-role">Sales igazgató, IT szolgáltató</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--accent tcard--wide">
+        <div class="tcard-metric">2 FTE</div>
+        <div class="tcard-metric-label">Megtakarított munkaerő lead feldolgozásban</div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;Nem hittük, hogy az AI ennyi hibát ki tud szűrni. A minőségellenőrzés 95%-a most automatikus, és pontosabb mint valaha.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">FM</div>
+          <div>
+            <div class="tcard-name">F. Márton</div>
+            <div class="tcard-role">Gyárigazgató, Gyártó cég</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--compact">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;A chatbot a webshop konverzióját 340%-kal növelte. Éjjel-nappal elérhetők vagyunk, emberi beavatkozás nélkül.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">HA</div>
+          <div>
+            <div class="tcard-name">H. Anna</div>
+            <div class="tcard-role">E-commerce vezető, Divatmárka</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--accent tcard--wide">
+        <div class="tcard-metric">340%</div>
+        <div class="tcard-metric-label">Webshop konverzió növekedés chatbottal</div>
+      </div>
+
+      <!-- Duplicate set -->
+      <div class="tcard tcard--compact">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;A 4YES csapata 2 hét alatt működő prototípust adott. Ilyen gyors delivery-vel még nem találkoztam.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">VJ</div>
+          <div>
+            <div class="tcard-name">V. János</div>
+            <div class="tcard-role">CTO, Recruitment agency</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;Az ajánlatkészítés automatizálásával havi 60 óra munkaidőt takarítunk meg. A csapat végre stratégiai feladatokra tud koncentrálni.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">TK</div>
+          <div>
+            <div class="tcard-name">T. Katalin</div>
+            <div class="tcard-role">Sales igazgató, IT szolgáltató</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--accent tcard--wide">
+        <div class="tcard-metric">2 FTE</div>
+        <div class="tcard-metric-label">Megtakarított munkaerő lead feldolgozásban</div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;Nem hittük, hogy az AI ennyi hibát ki tud szűrni. A minőségellenőrzés 95%-a most automatikus, és pontosabb mint valaha.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">FM</div>
+          <div>
+            <div class="tcard-name">F. Márton</div>
+            <div class="tcard-role">Gyárigazgató, Gyártó cég</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--compact">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;A chatbot a webshop konverzióját 340%-kal növelte. Éjjel-nappal elérhetők vagyunk, emberi beavatkozás nélkül.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">HA</div>
+          <div>
+            <div class="tcard-name">H. Anna</div>
+            <div class="tcard-role">E-commerce vezető, Divatmárka</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--accent tcard--wide">
+        <div class="tcard-metric">340%</div>
+        <div class="tcard-metric-label">Webshop konverzió növekedés chatbottal</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Bottom CTA ── -->
+  <div class="test-bottom reveal">
+    <p class="test-bottom-text">Csatlakozz <strong>10+ elégedett céghez</strong>, akik már AI-val dolgoznak</p>
+    <a href="#" class="test-cta">
+      Kérd az ingyenes AI felmérést
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+
+  <div class="glow-line"></div>
+</section>
+
+<script>
+// Scroll reveal
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// Card glow follow mouse
+document.querySelectorAll('.tcard').forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    card.style.setProperty('--mouse-x', x + '%');
+    card.style.setProperty('--mouse-y', y + '%');
+  });
+});
+</script>
+
+</body>
+</html>

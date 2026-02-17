@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4YES — Homepage V2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; scroll-behavior: smooth; }
+body { font-family: 'Outfit', sans-serif; background: #0A1118; color: #fff; overflow-x: hidden; }
+
+/* ===== DESIGN TOKENS ===== */
+:root {
+  /* Dark palette */
+  --bg-primary: #0F1923;
+  --bg-alt: #141F2B;
+  --bg-surface: rgba(255,255,255,0.04);
+  --bg-surface-hover: rgba(255,255,255,0.08);
+  --bg-card: #141F2B;
+  --accent: #C3F73A;
+  --accent-hover: #d4ff5a;
+  --accent-muted: rgba(195,247,58,0.08);
+  --accent-border: rgba(195,247,58,0.2);
+  --accent-glow: rgba(195,247,58,0.15);
+  --text-primary: #FFFFFF;
+  --text-secondary: #8399A2;
+  --text-muted: rgba(131,153,162,0.5);
+  --text-dark: #0F1923;
+  --border-subtle: rgba(131,153,162,0.12);
+  --border-accent: rgba(195,247,58,0.25);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 100px;
+
+  /* Light palette */
+  --bg-warm: #EEECEA;
+  --bg-warm-alt: #F5F4F2;
+  --bg-white: #FFFFFF;
+  --lt-text-heading: #0F1923;
+  --lt-text-body: #555F6A;
+  --lt-text-caption: #8E969E;
+  --lt-border-card: rgba(0,0,0,0.04);
+  --lt-shadow-card: 0 1px 2px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.03);
+  --lt-shadow-card-hover: 0 4px 12px rgba(0,0,0,0.05), 0 12px 32px rgba(0,0,0,0.08);
+}
+
+/* ===================================================
+   NAVBAR — Floating Minimal
+   =================================================== */
+.navbar-wrapper {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: center;
+  padding: 20px 24px;
+  pointer-events: none;
+}
+.navbar {
+  pointer-events: all;
+  display: flex; align-items: center; gap: 32px;
+  padding: 12px 16px 12px 24px;
+  border-radius: 100px;
+  background: rgba(15, 25, 35, 0.55);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(131,153,162,0.08);
+  position: relative;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: navSlideDown 0.8s ease-out 0.1s backwards;
+}
+.navbar:hover {
+  background: rgba(15, 25, 35, 0.7);
+  border-color: rgba(131,153,162,0.14);
+}
+.nav-logo {
+  display: flex; align-items: center; text-decoration: none; flex-shrink: 0;
+}
+.nav-logo img { height: 24px; width: auto; opacity: 0.9; transition: opacity 0.2s; }
+.nav-logo:hover img { opacity: 1; }
+.nav-links { display: flex; align-items: center; gap: 6px; }
+.nav-links a {
+  position: relative;
+  font-size: 13px; font-weight: 500; color: rgba(131,153,162,0.7);
+  text-decoration: none; padding: 6px 14px; border-radius: 100px;
+  transition: color 0.3s; white-space: nowrap;
+}
+.nav-links a:hover { color: #fff; }
+.nav-links a::after {
+  content: ''; position: absolute; bottom: 2px; left: 50%; width: 0; height: 1px;
+  background: var(--accent); border-radius: 1px;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1); transform: translateX(-50%);
+}
+.nav-links a:hover::after { width: 16px; }
+.nav-cta {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 20px; border-radius: var(--radius-pill);
+  background: var(--accent); color: var(--text-dark);
+  font-size: 13px; font-weight: 700; text-decoration: none;
+  transition: all 0.3s; border: none; cursor: pointer;
+  flex-shrink: 0; position: relative; overflow: hidden;
+}
+.nav-cta:hover { background: var(--accent-hover); box-shadow: 0 0 24px rgba(195,247,58,0.2); }
+.nav-cta::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.2) 50%, transparent 60%);
+  background-size: 250% 100%; animation: shimmer 4s ease-in-out infinite;
+}
+.nav-cta svg, .nav-cta span { position: relative; z-index: 1; }
+
+/* ===================================================
+   HERO SECTION
+   =================================================== */
+.hero {
+  position: relative; min-height: 100vh;
+  display: flex; align-items: center;
+  padding: 120px 48px 60px; background: var(--bg-primary); overflow: hidden;
+}
+.hero-orb { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(120px); opacity: 0.4; }
+.hero-orb--green { width: 600px; height: 600px; top: -100px; left: -150px; background: radial-gradient(circle, rgba(195,247,58,0.25) 0%, transparent 70%); animation: orbFloat1 25s ease-in-out infinite; }
+.hero-orb--blue { width: 500px; height: 500px; bottom: -100px; right: -100px; background: radial-gradient(circle, rgba(30,80,140,0.2) 0%, transparent 70%); animation: orbFloat2 30s ease-in-out infinite; }
+.hero-orb--accent { width: 300px; height: 300px; top: 30%; right: 20%; background: radial-gradient(circle, rgba(195,247,58,0.08) 0%, transparent 70%); animation: orbFloat3 20s ease-in-out infinite; }
+.hero-grid { position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(rgba(131,153,162,0.08) 1px, transparent 1px); background-size: 32px 32px; mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 100%); -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 100%); }
+.hero-glow-line { position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(195,247,58,0.3) 30%, rgba(195,247,58,0.5) 50%, rgba(195,247,58,0.3) 70%, transparent); }
+
+.hero-inner { position: relative; z-index: 2; max-width: 1280px; margin: 0 auto; width: 100%; display: flex; align-items: center; gap: 64px; }
+.hero-content { flex: 1; max-width: 600px; }
+
+.hero-badge { display: inline-flex; align-items: center; gap: 10px; padding: 8px 20px 8px 16px; border-radius: var(--radius-pill); background: var(--accent-muted); border: 1px solid var(--accent-border); margin-bottom: 32px; opacity: 0; animation: fadeUp 0.6s ease-out 0.2s forwards; }
+.hero-badge-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 2s ease-in-out infinite; }
+.hero-badge-text { font-size: 13px; font-weight: 600; color: var(--accent); letter-spacing: 0.02em; }
+
+.hero-headline { font-size: clamp(40px, 4.2vw, 60px); font-weight: 800; line-height: 1.08; letter-spacing: -0.035em; color: #fff; margin-bottom: 24px; opacity: 0; animation: fadeUp 0.7s ease-out 0.35s forwards; }
+.hero-headline .accent { color: var(--accent); text-shadow: 0 0 60px rgba(195,247,58,0.25); }
+
+.hero-subtitle { font-size: 18px; font-weight: 300; line-height: 1.7; color: var(--text-secondary); max-width: 480px; margin-bottom: 36px; opacity: 0; animation: fadeUp 0.7s ease-out 0.5s forwards; }
+
+.hero-ctas { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 40px; opacity: 0; animation: fadeUp 0.7s ease-out 0.65s forwards; }
+.btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 16px 32px; border-radius: var(--radius-pill); background: var(--accent); color: var(--text-dark); font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 0 0 rgba(195,247,58,0); }
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(195,247,58,0.25); }
+.btn-ghost { display: inline-flex; align-items: center; gap: 8px; padding: 16px 28px; border-radius: var(--radius-pill); background: transparent; color: #fff; font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600; text-decoration: none; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.3s; }
+.btn-ghost:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04); transform: translateY(-2px); }
+
+.hero-testimonial { display: flex; gap: 16px; padding: 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); max-width: 480px; opacity: 0; animation: fadeUp 0.7s ease-out 0.8s forwards; }
+.hero-testimonial-quote-icon { flex-shrink: 0; width: 28px; height: 28px; color: var(--accent); font-size: 32px; line-height: 1; font-weight: 900; font-family: Georgia, serif; }
+.hero-testimonial-content { flex: 1; }
+.hero-testimonial-text { font-size: 14px; font-weight: 400; line-height: 1.6; color: var(--text-secondary); margin-bottom: 10px; font-style: italic; }
+.hero-testimonial-author { display: flex; align-items: center; gap: 8px; }
+.hero-testimonial-name { font-size: 13px; font-weight: 600; color: #fff; }
+.hero-testimonial-role { font-size: 12px; color: var(--text-muted); }
+.hero-testimonial-stars { display: flex; gap: 2px; margin-left: auto; }
+.hero-testimonial-stars span { color: var(--accent); font-size: 12px; }
+
+/* ===== RIGHT COLUMN — Team ===== */
+.hero-team { flex: 0 0 520px; position: relative; opacity: 0; animation: fadeInRight 0.8s ease-out 0.5s forwards; }
+.team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.team-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 14px; transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1); position: relative; overflow: hidden; min-height: 160px; }
+.team-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 50%); pointer-events: none; }
+.team-card:hover { transform: translateY(-4px); border-color: rgba(131,153,162,0.25); box-shadow: 0 16px 48px rgba(0,0,0,0.3); }
+.team-card:nth-child(1) { animation: cardIn 0.6s ease-out 0.7s backwards; }
+.team-card:nth-child(2) { animation: cardIn 0.6s ease-out 0.85s backwards; }
+.team-card:nth-child(3) { animation: cardIn 0.6s ease-out 1.0s backwards; }
+.team-card:nth-child(4) { animation: cardIn 0.6s ease-out 1.15s backwards; }
+
+.team-card-header { display: flex; align-items: flex-start; justify-content: space-between; }
+.team-avatar { position: relative; flex-shrink: 0; width: 52px; height: 52px; border-radius: 50%; overflow: hidden; background: #1E2D3D; }
+.team-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: center top; filter: grayscale(100%) brightness(1.1) contrast(1.1); scale: 1.35; translate: 0 15%; }
+.team-avatar-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: var(--text-secondary); background: linear-gradient(135deg, #1A2838, #253545); }
+.team-status { position: absolute; bottom: 0px; right: 0px; width: 12px; height: 12px; border-radius: 50%; background: #22C55E; border: 2.5px solid var(--bg-card); }
+.team-linkedin { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid rgba(131,153,162,0.1); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; flex-shrink: 0; }
+.team-linkedin:hover { background: rgba(10, 102, 194, 0.15); border-color: rgba(10, 102, 194, 0.3); color: #0A66C2; }
+.team-linkedin svg { width: 14px; height: 14px; }
+
+.team-info { flex: 1; min-width: 0; }
+.team-name { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.01em; margin-bottom: 3px; }
+.team-role { font-size: 11px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+.team-expertise { font-size: 13px; font-weight: 400; line-height: 1.45; color: var(--text-muted); }
+
+/* AI Agent Card */
+.team-card--ai { border-color: var(--accent-border); background: linear-gradient(135deg, rgba(195,247,58,0.04) 0%, var(--bg-card) 100%); }
+.team-card--ai:hover { border-color: rgba(195,247,58,0.4); box-shadow: 0 16px 48px rgba(0,0,0,0.3), 0 0 32px rgba(195,247,58,0.08); }
+.team-card--ai .team-avatar { background: linear-gradient(135deg, rgba(195,247,58,0.15), rgba(195,247,58,0.05)); }
+.team-card--ai .team-avatar-placeholder { background: linear-gradient(135deg, rgba(195,247,58,0.12), rgba(195,247,58,0.04)); }
+.team-card--ai .team-avatar-placeholder svg { width: 26px; height: 26px; }
+.team-card--ai .team-status { background: var(--accent); animation: pulse 2s ease-in-out infinite; }
+.team-card--ai .team-role { color: var(--accent); }
+.ai-role-rotator { position: relative; height: 19px; overflow: hidden; }
+.ai-role-rotator .ai-role { position: absolute; left: 0; top: 0; width: 100%; font-size: 13px; font-weight: 400; color: var(--text-muted); opacity: 0; transform: translateY(8px); animation: roleRotate 12.5s ease-in-out infinite; white-space: nowrap; }
+.ai-role-rotator .ai-role:nth-child(1) { animation-delay: 0s; }
+.ai-role-rotator .ai-role:nth-child(2) { animation-delay: 2.5s; }
+.ai-role-rotator .ai-role:nth-child(3) { animation-delay: 5s; }
+.ai-role-rotator .ai-role:nth-child(4) { animation-delay: 7.5s; }
+.ai-role-rotator .ai-role:nth-child(5) { animation-delay: 10s; }
+.ai-tag { display: inline-flex; align-items: center; gap: 4px; margin-top: auto; padding: 3px 8px; border-radius: 6px; background: rgba(195,247,58,0.08); font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; }
+.ai-tag-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+/* Team footer */
+.team-footer { margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.team-trust-item { text-align: center; padding: 12px 8px; border-radius: var(--radius-md); background: rgba(255,255,255,0.02); border: 1px solid rgba(131,153,162,0.06); }
+.team-trust-value { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -0.02em; line-height: 1.2; }
+.team-trust-value .accent-val { color: var(--accent); }
+.team-trust-label { font-size: 11px; font-weight: 500; color: var(--text-muted); margin-top: 2px; }
+
+/* ===================================================
+   TRUST BAR
+   =================================================== */
+.trust-bar { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 40px; padding: 28px 48px; background: var(--bg-alt); border-top: 1px solid rgba(131,153,162,0.08); border-bottom: 1px solid rgba(131,153,162,0.08); }
+.trust-item { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; color: var(--text-secondary); }
+.trust-icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 16px; }
+.trust-item-separator { width: 4px; height: 4px; border-radius: 50%; background: rgba(131,153,162,0.3); }
+
+/* ===================================================
+   PAIN POINTS SECTION (Light)
+   =================================================== */
+.pain-section { background: var(--bg-warm); padding: 72px 48px 80px; position: relative; }
+.pain-container { max-width: 1140px; margin: 0 auto; }
+
+.pain-header { text-align: center; margin-bottom: 48px; }
+.pain-badge { display: inline-flex; align-items: center; gap: 7px; padding: 7px 18px; border-radius: 100px; background: rgba(15,25,35,0.55); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.85); margin-bottom: 20px; }
+.pain-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.pain-heading { font-size: 40px; font-weight: 800; color: var(--lt-text-heading); line-height: 1.2; letter-spacing: -0.03em; }
+.pain-heading em { font-style: normal; position: relative; display: inline; }
+.pain-heading em::after { content: ''; position: absolute; left: -2px; right: -2px; bottom: 4px; height: 12px; background: rgba(195,247,58,0.25); border-radius: 3px; z-index: -1; }
+
+.pain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 48px; }
+.pain-card { background: var(--bg-white); border-radius: 16px; padding: 28px 26px 26px; border: 1px solid var(--lt-border-card); box-shadow: var(--lt-shadow-card); transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+.pain-card:hover { box-shadow: var(--lt-shadow-card-hover); transform: translateY(-4px); }
+
+.pain-icon { width: 44px; height: 44px; border-radius: 11px; display: flex; align-items: center; justify-content: center; margin-bottom: 22px; background: var(--accent); }
+.pain-icon svg { width: 20px; height: 20px; color: var(--lt-text-heading); stroke: var(--lt-text-heading); }
+.pain-card-title { font-size: 18px; font-weight: 700; color: var(--lt-text-heading); line-height: 1.35; margin-bottom: 14px; }
+.pain-quote { position: relative; padding-left: 14px; margin-bottom: 20px; font-size: 13px; font-style: italic; color: var(--lt-text-caption); line-height: 1.6; }
+.pain-quote::before { content: ''; position: absolute; left: 0; top: 2px; bottom: 2px; width: 2px; border-radius: 2px; background: linear-gradient(180deg, var(--accent), rgba(195,247,58,0.15)); }
+
+.pain-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.pain-item { display: flex; align-items: flex-start; gap: 9px; font-size: 13.5px; color: var(--lt-text-body); line-height: 1.5; }
+.pain-item strong { color: var(--lt-text-heading); font-weight: 600; }
+.pain-x-icon { flex-shrink: 0; width: 18px; height: 18px; border-radius: 4px; background: #FEF0F0; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+.pain-x-icon svg { width: 9px; height: 9px; }
+
+.pain-bottom { text-align: center; }
+.pain-bottom-line { font-size: 20px; font-weight: 500; color: var(--lt-text-body); line-height: 1.5; margin-bottom: 28px; letter-spacing: -0.01em; }
+.pain-bottom-line strong { color: var(--lt-text-heading); font-weight: 700; }
+.pain-cta { display: inline-flex; align-items: center; gap: 9px; padding: 14px 32px; border-radius: 100px; background: var(--lt-text-heading); color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+.pain-cta:hover { background: #1A2838; box-shadow: 0 8px 32px rgba(15,25,35,0.25); transform: translateY(-2px); }
+.pain-cta:hover svg { transform: translateX(3px); }
+.pain-cta svg { transition: transform 0.3s; }
+
+/* ===================================================
+   SERVICES SECTION (Light Alt)
+   =================================================== */
+.services-section { background: var(--bg-warm-alt); padding: 80px 48px; }
+.services-container { max-width: 1140px; margin: 0 auto; }
+.services-header { text-align: center; margin-bottom: 48px; }
+.services-heading { font-size: 40px; font-weight: 800; color: var(--lt-text-heading); line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 12px; }
+.services-subtitle { font-size: 16px; font-weight: 400; color: var(--lt-text-body); max-width: 540px; margin: 0 auto; line-height: 1.6; }
+/* Reuse pain-badge style for light section badges */
+.lt-badge { display: inline-flex; align-items: center; gap: 7px; padding: 7px 18px; border-radius: 100px; background: rgba(15,25,35,0.55); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.85); margin-bottom: 20px; }
+.lt-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+/* Bento Grid Layout */
+.bento-grid { display: grid; grid-template-columns: 1.35fr 1fr; grid-template-rows: 1fr 1fr; gap: 20px; }
+
+/* ── Big Card (02 Workflow) ── */
+.bento-big {
+  grid-row: 1 / 3; background: var(--bg-primary); border-radius: 20px;
+  padding: 36px 32px; display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.bento-big::before { content: ''; position: absolute; width: 350px; height: 350px; bottom: -100px; right: -80px; background: radial-gradient(circle, rgba(195,247,58,0.06) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
+.bento-big:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.bento-overline { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.bento-big .bento-overline { color: var(--text-secondary); }
+.bento-big .bento-overline .svc-tag { color: var(--accent); font-family: 'Courier New', monospace; }
+.bento-title-big { font-size: 28px; font-weight: 800; color: #fff; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 10px; }
+.bento-subtitle { font-size: 14px; font-weight: 400; color: var(--text-secondary); line-height: 1.65; margin-bottom: 24px; max-width: 400px; }
+
+/* Workflow Visual */
+.wf-visual { display: flex; align-items: center; padding: 20px 16px 36px; background: rgba(255,255,255,0.025); border: 1px solid rgba(131,153,162,0.08); border-radius: 14px; margin-bottom: 28px; }
+.wf-node { display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 0 0 auto; position: relative; }
+.wf-node-icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(131,153,162,0.08); border: 1px solid rgba(131,153,162,0.1); display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+.wf-node-icon svg { width: 20px; height: 20px; color: var(--text-secondary); stroke: var(--text-secondary); }
+.wf-node--ai .wf-node-icon { background: rgba(195,247,58,0.1); border-color: rgba(195,247,58,0.25); box-shadow: 0 0 24px rgba(195,247,58,0.08); }
+.wf-node--ai .wf-node-icon svg { color: var(--accent); stroke: var(--accent); }
+.wf-node-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+.wf-node-tag { position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); background: rgba(195,247,58,0.1); border: 1px solid rgba(195,247,58,0.2); padding: 2px 8px; border-radius: var(--radius-pill); white-space: nowrap; }
+.wf-connector { flex: 1; height: 2px; background: rgba(131,153,162,0.1); position: relative; margin: 0 8px; margin-bottom: 28px; min-width: 20px; }
+.wf-connector::after { content: ''; position: absolute; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px rgba(195,247,58,0.5); top: -2.5px; left: 0; animation: flowRight 2.4s linear infinite; }
+
+/* Big card deliverables row */
+.bento-deliverables { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+.bento-deliverable { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: var(--radius-pill); background: rgba(255,255,255,0.04); border: 1px solid rgba(131,153,162,0.12); font-size: 12px; font-weight: 500; color: var(--text-secondary); transition: all 0.3s; }
+.bento-deliverable svg { width: 13px; height: 13px; stroke: var(--accent); flex-shrink: 0; }
+.bento-deliverable:hover { border-color: rgba(195,247,58,0.25); background: rgba(195,247,58,0.04); color: #fff; }
+
+/* Big card CTA */
+.bento-cta { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; border-radius: var(--radius-pill); background: var(--accent); color: var(--text-dark); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; transition: all 0.3s; align-self: flex-start; margin-top: auto; }
+.bento-cta:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(195,247,58,0.25); }
+.bento-cta svg { width: 14px; height: 14px; transition: transform 0.3s; }
+.bento-cta:hover svg { transform: translateX(3px); }
+
+/* ── Small Cards (01 & 03) ── */
+.bento-small { background: var(--bg-white); border-radius: 20px; padding: 28px 26px; border: 1px solid var(--lt-border-card); box-shadow: var(--lt-shadow-card); display: flex; flex-direction: column; transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+.bento-small:hover { box-shadow: var(--lt-shadow-card-hover); transform: translateY(-4px); }
+.bento-small .bento-overline { color: var(--lt-text-body); }
+.bento-small .bento-overline .svc-tag { color: #4A7A1B; font-family: 'Courier New', monospace; font-weight: 800; }
+.bento-title-sm { font-size: 20px; font-weight: 700; color: var(--lt-text-heading); line-height: 1.25; margin-bottom: 6px; }
+.bento-desc-sm { font-size: 13px; font-weight: 400; color: var(--lt-text-body); line-height: 1.55; margin-bottom: 16px; }
+
+/* Card 01 — Mini stat blocks */
+.mini-stats { display: flex; gap: 10px; margin-bottom: 16px; flex: 1; align-items: flex-start; }
+.mini-stat { flex: 1; padding: 12px 8px; background: var(--bg-warm-alt); border-radius: 10px; text-align: center; }
+.mini-stat-value { font-size: 18px; font-weight: 800; color: var(--lt-text-heading); line-height: 1.2; margin-bottom: 2px; }
+.mini-stat-value .accent-val { color: var(--accent); }
+.mini-stat-label { font-size: 10px; font-weight: 600; color: var(--lt-text-caption); text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* Card 03 — Activity Feed */
+.activity-feed { flex: 1; display: flex; flex-direction: column; border-radius: 10px; background: var(--bg-warm-alt); overflow: hidden; margin-bottom: 16px; }
+.activity-header { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid rgba(0,0,0,0.04); }
+.activity-pulse { width: 6px; height: 6px; border-radius: 50%; background: #22C55E; animation: pulse 2s ease-in-out infinite; }
+.activity-header-text { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--lt-text-caption); }
+.activity-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; font-size: 12px; border-bottom: 1px solid rgba(0,0,0,0.03); }
+.activity-item:last-child { border-bottom: none; }
+.activity-item-left { display: flex; align-items: center; gap: 8px; color: var(--lt-text-body); font-weight: 500; }
+.activity-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+.activity-time { font-size: 11px; font-weight: 500; color: var(--lt-text-caption); }
+
+/* Small card link */
+.bento-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--lt-text-heading); text-decoration: none; transition: all 0.3s; margin-top: auto; }
+.bento-link:hover { color: #2D6B22; gap: 10px; }
+.bento-link svg { width: 13px; height: 13px; transition: transform 0.3s; }
+.bento-link:hover svg { transform: translateX(3px); }
+
+/* ===================================================
+   PROCESS SECTION — Shared
+   =================================================== */
+.process-section { background: var(--bg-primary); padding: 80px 48px; position: relative; overflow: hidden; }
+.process-section::before { content: ''; position: absolute; width: 500px; height: 500px; top: -150px; right: -100px; background: radial-gradient(circle, rgba(195,247,58,0.05) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
+.process-container { max-width: 1140px; margin: 0 auto; position: relative; z-index: 1; }
+.process-header { text-align: center; margin-bottom: 56px; }
+.dk-badge { display: inline-flex; align-items: center; gap: 10px; padding: 8px 20px 8px 16px; border-radius: var(--radius-pill); background: var(--accent-muted); border: 1px solid var(--accent-border); margin-bottom: 20px; }
+.dk-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.dk-badge-text { font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; }
+.process-heading { font-size: 40px; font-weight: 800; color: #fff; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 12px; }
+.process-subtitle { font-size: 16px; font-weight: 400; color: var(--text-secondary); max-width: 420px; margin: 0 auto; line-height: 1.6; }
+/* ── Numbered Columns + Progress Bar ── */
+.cols-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; position: relative; }
+.col-step { padding: 0 24px; position: relative; text-align: center; }
+.col-step::after { content: ''; position: absolute; top: 0; right: 0; width: 1px; height: 100%; background: linear-gradient(to bottom, transparent, rgba(131,153,162,0.1) 20%, rgba(131,153,162,0.1) 80%, transparent); }
+.col-step:last-child::after { display: none; }
+.col-number { font-family: 'Outfit', sans-serif; font-size: 80px; font-weight: 900; color: rgba(195,247,58,0.05); line-height: 1; margin-bottom: 20px; letter-spacing: -0.06em; }
+.col-icon { width: 48px; height: 48px; border-radius: 14px; background: rgba(195,247,58,0.08); border: 1px solid rgba(195,247,58,0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; transition: all 0.4s; }
+.col-icon svg { width: 22px; height: 22px; stroke: var(--accent); }
+.col-step:hover .col-icon { background: rgba(195,247,58,0.14); border-color: rgba(195,247,58,0.35); box-shadow: 0 0 24px rgba(195,247,58,0.1); transform: translateY(-4px); }
+.col-step:hover .col-number { color: rgba(195,247,58,0.1); }
+.col-title { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 8px; line-height: 1.3; }
+.col-desc { font-size: 13px; font-weight: 400; color: var(--text-secondary); line-height: 1.65; max-width: 220px; margin: 0 auto; }
+.col-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin-top: 14px; }
+.col-chip { font-size: 10px; font-weight: 600; color: var(--text-muted); background: rgba(131,153,162,0.06); border: 1px solid rgba(131,153,162,0.1); padding: 3px 10px; border-radius: var(--radius-pill); white-space: nowrap; letter-spacing: 0.02em; }
+/* Highlighted first step */
+.col-step--highlight { background: rgba(195,247,58,0.03); border-radius: 16px; padding-top: 20px; padding-bottom: 28px; margin: -20px 0; position: relative; }
+.col-step--highlight::before { content: ''; position: absolute; inset: 0; border-radius: 16px; border: 1px solid rgba(195,247,58,0.12); pointer-events: none; }
+.col-step--highlight .col-number { color: rgba(195,247,58,0.1); }
+.col-step--highlight .col-icon { background: rgba(195,247,58,0.12); border-color: rgba(195,247,58,0.3); }
+.col-highlight-badge { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); background: rgba(195,247,58,0.1); border: 1px solid rgba(195,247,58,0.2); padding: 3px 12px; border-radius: var(--radius-pill); margin-bottom: 8px; }
+.col-cta { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; padding: 10px 22px; border-radius: var(--radius-pill); background: var(--accent); color: var(--text-dark); font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; transition: all 0.3s; }
+.col-cta:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(195,247,58,0.25); }
+.col-cta svg { width: 13px; height: 13px; transition: transform 0.3s; }
+.col-cta:hover svg { transform: translateX(3px); }
+/* Progress bar */
+.progress-track { margin-top: 48px; height: 3px; background: rgba(131,153,162,0.08); border-radius: 4px; position: relative; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), rgba(195,247,58,0.4)); border-radius: 4px; transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1); }
+.progress-track.in-view .progress-fill { width: 100%; }
+.progress-dots { display: grid; grid-template-columns: repeat(4, 1fr); position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); pointer-events: none; }
+.progress-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--bg-primary); border: 2px solid rgba(131,153,162,0.2); transition: all 0.4s; z-index: 1; justify-self: center; }
+.progress-track.in-view .progress-dot { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 12px rgba(195,247,58,0.3); }
+.progress-track.in-view .progress-dot:nth-child(1) { transition-delay: 0.2s; }
+.progress-track.in-view .progress-dot:nth-child(2) { transition-delay: 0.5s; }
+.progress-track.in-view .progress-dot:nth-child(3) { transition-delay: 0.9s; }
+.progress-track.in-view .progress-dot:nth-child(4) { transition-delay: 1.3s; }
+/* Labels under progress */
+.progress-labels { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 12px; }
+.progress-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-align: center; text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* ===================================================
+   TESTIMONIALS SECTION (Light — Marquee)
+   =================================================== */
+.testimonials-section { background: var(--bg-warm); padding: 80px 0; position: relative; overflow: hidden; }
+
+.test-header { text-align: center; padding: 0 48px; margin-bottom: 48px; position: relative; z-index: 1; }
+.test-heading { font-size: 40px; font-weight: 800; color: var(--lt-text-heading); line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 12px; }
+.test-subtitle { font-size: 16px; font-weight: 400; color: var(--lt-text-body); line-height: 1.6; }
+
+/* Marquee */
+.marquee-section { position: relative; }
+.marquee-section::before, .marquee-section::after { content: ''; position: absolute; top: 0; bottom: 0; width: 120px; z-index: 2; pointer-events: none; }
+.marquee-section::before { left: 0; background: linear-gradient(90deg, var(--bg-warm) 0%, transparent 100%); }
+.marquee-section::after { right: 0; background: linear-gradient(-90deg, var(--bg-warm) 0%, transparent 100%); }
+.marquee-row { display: flex; gap: 20px; padding: 10px 0; width: max-content; }
+.marquee-row--1 { animation: scrollLeft 45s linear infinite; }
+.marquee-row--2 { animation: scrollRight 50s linear infinite; }
+.marquee-row:hover { animation-play-state: paused; }
+@keyframes scrollLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+@keyframes scrollRight { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
+
+/* Marquee Cards (Light) */
+.tcard { flex-shrink: 0; width: 380px; padding: 28px; border-radius: var(--radius-xl); background: var(--bg-white); border: 1px solid var(--lt-border-card); box-shadow: var(--lt-shadow-card); transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1); cursor: default; position: relative; overflow: hidden; }
+.tcard::before { content: ''; position: absolute; inset: 0; border-radius: var(--radius-xl); background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(195,247,58,0.08) 0%, transparent 60%); opacity: 0; transition: opacity 0.4s; pointer-events: none; }
+.tcard:hover::before { opacity: 1; }
+.tcard:hover { border-color: rgba(195,247,58,0.3); transform: translateY(-4px); box-shadow: var(--lt-shadow-card-hover); }
+.tcard--accent { background: var(--lt-text-heading); border-color: transparent; }
+.tcard--accent .tcard-metric { font-size: 48px; font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: 8px; letter-spacing: -0.04em; }
+.tcard--accent .tcard-metric-label { font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.6); line-height: 1.5; }
+.tcard--accent:hover { border-color: rgba(195,247,58,0.3); box-shadow: 0 16px 48px rgba(0,0,0,0.15); }
+.tcard-stars { display: flex; gap: 3px; margin-bottom: 16px; }
+.tcard-stars span { color: var(--accent); font-size: 14px; }
+.tcard-text { font-size: 15px; font-weight: 400; line-height: 1.65; color: var(--lt-text-body); margin-bottom: 20px; font-style: italic; }
+.tcard-divider { width: 28px; height: 2px; background: rgba(195,247,58,0.4); border-radius: 2px; margin-bottom: 16px; }
+.tcard-author { display: flex; align-items: center; gap: 12px; }
+.tcard-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-warm); border: 1px solid rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--lt-text-caption); flex-shrink: 0; }
+.tcard-name { font-size: 14px; font-weight: 700; color: var(--lt-text-heading); margin-bottom: 1px; }
+.tcard-role { font-size: 12px; font-weight: 400; color: var(--lt-text-caption); }
+.tcard--compact { width: 300px; padding: 24px; }
+.tcard--compact .tcard-text { font-size: 14px; margin-bottom: 16px; }
+.tcard--wide { width: 280px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 32px 24px; }
+
+/* Testimonials Bottom CTA */
+.test-bottom { text-align: center; margin-top: 48px; padding: 0 48px; position: relative; z-index: 1; }
+.test-bottom-text { font-size: 20px; font-weight: 500; color: var(--lt-text-body); line-height: 1.5; margin-bottom: 28px; letter-spacing: -0.01em; }
+.test-bottom-text strong { color: var(--lt-text-heading); font-weight: 700; }
+.test-cta { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: var(--radius-pill); background: var(--accent); color: var(--bg-primary); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; transition: all 0.3s; }
+.test-cta:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(195,247,58,0.25); }
+.test-cta svg { width: 14px; height: 14px; transition: transform 0.3s; }
+.test-cta:hover svg { transform: translateX(3px); }
+
+/* ===================================================
+   COMPARISON SECTION (Light — Metric Dashboard)
+   =================================================== */
+.comparison-section { background: var(--bg-warm-alt); padding: 80px 48px; position: relative; overflow: hidden; }
+
+.comp-header { text-align: center; max-width: 680px; margin: 0 auto 56px; position: relative; z-index: 1; }
+.comp-heading { font-size: 40px; font-weight: 800; color: var(--lt-text-heading); line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 12px; }
+.comp-subtitle { font-size: 16px; font-weight: 400; color: var(--lt-text-body); line-height: 1.6; }
+
+.comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1060px; margin: 0 auto; position: relative; z-index: 1; }
+.comp-col { border-radius: var(--radius-xl); padding: 32px 28px 28px; position: relative; }
+.comp-col--without { background: var(--bg-white); border: 1px solid var(--lt-border-card); box-shadow: var(--lt-shadow-card); }
+.comp-col--with { background: var(--bg-primary); box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+
+.comp-col-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid; }
+.comp-col--without .comp-col-header { border-bottom-color: rgba(0,0,0,0.06); }
+.comp-col--with .comp-col-header { border-bottom-color: rgba(195,247,58,0.12); }
+.comp-col-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.comp-col--without .comp-col-icon { background: rgba(255,92,92,0.08); }
+.comp-col--with .comp-col-icon { background: rgba(195,247,58,0.1); }
+.comp-col-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; }
+.comp-col--without .comp-col-label { color: #D04545; }
+.comp-col--with .comp-col-label { color: var(--accent); }
+.comp-col-tag { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 4px; margin-left: auto; }
+.comp-col--without .comp-col-tag { background: rgba(208,69,69,0.06); color: #D04545; }
+.comp-col--with .comp-col-tag { background: rgba(195,247,58,0.1); color: var(--accent); }
+
+.comp-rows { display: flex; flex-direction: column; gap: 0; }
+.comp-row { display: flex; align-items: center; gap: 14px; padding: 16px 0; border-bottom: 1px solid; }
+.comp-col--without .comp-row { border-bottom-color: rgba(0,0,0,0.04); }
+.comp-col--with .comp-row { border-bottom-color: rgba(255,255,255,0.06); }
+.comp-row:last-child { border-bottom: none; }
+.comp-row-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.comp-col--without .comp-row-icon { background: rgba(208,69,69,0.06); }
+.comp-col--with .comp-row-icon { background: rgba(195,247,58,0.08); }
+.comp-row-content { width: 180px; flex-shrink: 0; }
+.comp-row-label { font-size: 12px; font-weight: 500; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
+.comp-col--without .comp-row-label { color: var(--lt-text-caption); }
+.comp-col--with .comp-row-label { color: rgba(255,255,255,0.35); }
+.comp-row-value { font-size: 20px; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; }
+.comp-col--without .comp-row-value { color: var(--lt-text-heading); opacity: 0.6; }
+.comp-col--with .comp-row-value { color: #fff; }
+.comp-row-bar { flex: 1; height: 6px; border-radius: 3px; overflow: hidden; min-width: 40px; }
+.comp-col--without .comp-row-bar { background: rgba(208,69,69,0.06); }
+.comp-col--with .comp-row-bar { background: rgba(195,247,58,0.1); }
+.comp-row-bar-fill { height: 100%; border-radius: 3px; width: 0; transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1); }
+.comp-col--without .comp-row-bar-fill { background: #D04545; opacity: 0.4; }
+.comp-col--with .comp-row-bar-fill { background: var(--accent); }
+.comp-row-delta { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; background: rgba(195,247,58,0.12); color: var(--accent); white-space: nowrap; flex-shrink: 0; }
+
+.comp-vs { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 44px; height: 44px; border-radius: 50%; background: var(--bg-warm-alt); border: 2px solid rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; z-index: 2; font-size: 12px; font-weight: 800; color: var(--lt-text-caption); letter-spacing: 0.05em; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+
+.comp-bottom-stats { display: flex; justify-content: center; gap: 56px; margin-top: 56px; padding-top: 36px; border-top: 1px solid rgba(0,0,0,0.06); position: relative; z-index: 1; }
+.comp-stat { text-align: center; }
+.comp-stat-value { font-size: 48px; font-weight: 900; color: var(--lt-text-heading); line-height: 1; margin-bottom: 6px; letter-spacing: -0.04em; }
+.comp-stat-label { font-size: 13px; font-weight: 400; color: var(--lt-text-caption); line-height: 1.4; }
+
+.comp-bottom { text-align: center; margin-top: 40px; position: relative; z-index: 1; }
+.comp-bottom-text { font-size: 20px; font-weight: 500; color: var(--lt-text-body); line-height: 1.5; margin-bottom: 28px; letter-spacing: -0.01em; }
+.comp-bottom-text strong { color: var(--lt-text-heading); font-weight: 700; }
+.comp-cta { display: inline-flex; align-items: center; gap: 8px; padding: 16px 36px; border-radius: var(--radius-pill); background: var(--accent); color: var(--bg-primary); font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; transition: all 0.3s; }
+.comp-cta:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(195,247,58,0.25); }
+.comp-cta svg { width: 15px; height: 15px; transition: transform 0.3s; }
+.comp-cta:hover svg { transform: translateX(3px); }
+
+/* Comparison animations */
+.comp-col { opacity: 0; transform: translateY(24px); transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+.comp-col--without.revealed { opacity: 1; transform: translateY(0); }
+.comp-col--with.revealed { opacity: 1; transform: translateY(0); transition-delay: 0.15s; }
+.comp-row { opacity: 0; transform: translateX(-12px); transition: opacity 0.5s ease-out, transform 0.5s ease-out; }
+.comp-col--with .comp-row { transform: translateX(12px); }
+.comp-row.row-visible { opacity: 1; transform: translateX(0); }
+.comp-stat-value { opacity: 0; transform: scale(0.8); transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+.comp-stat-value.stat-visible { opacity: 1; transform: scale(1); }
+
+/* ===================================================
+   FAQ SECTION (Light)
+   =================================================== */
+.faq-section { background: var(--bg-warm); padding: 80px 48px; }
+.faq-container { max-width: 760px; margin: 0 auto; }
+.faq-header { text-align: center; margin-bottom: 48px; }
+.faq-heading { font-size: 40px; font-weight: 800; color: var(--lt-text-heading); line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 12px; }
+.faq-card { background: var(--bg-white); border-radius: 16px; border: 1px solid var(--lt-border-card); box-shadow: var(--lt-shadow-card); overflow: hidden; }
+.faq-item { border-bottom: 1px solid rgba(0,0,0,0.05); }
+.faq-item:last-child { border-bottom: none; }
+.faq-question { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; background: none; border: none; cursor: pointer; text-align: left; font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600; color: var(--lt-text-heading); line-height: 1.4; transition: color 0.2s; }
+.faq-question:hover { color: #1A2838; }
+.faq-chevron { flex-shrink: 0; width: 20px; height: 20px; color: var(--lt-text-caption); transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+.faq-item.faq-open .faq-chevron { transform: rotate(180deg); color: var(--lt-text-heading); }
+.faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+.faq-answer-inner { padding: 0 24px 20px; font-size: 14px; font-weight: 400; line-height: 1.7; color: var(--lt-text-body); }
+
+/* ===================================================
+   FINAL CTA SECTION (Dark with accent glow)
+   =================================================== */
+.cta-section { background: var(--bg-primary); padding: 100px 48px; position: relative; overflow: hidden; }
+.cta-section::before { content: ''; position: absolute; width: 600px; height: 600px; top: 50%; left: 50%; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(195,247,58,0.06) 0%, transparent 60%); border-radius: 50%; pointer-events: none; }
+.cta-container { max-width: 680px; margin: 0 auto; text-align: center; position: relative; z-index: 1; }
+.cta-heading { font-size: 40px; font-weight: 800; color: #fff; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 16px; }
+.cta-heading .accent { color: var(--accent); }
+.cta-desc { font-size: 17px; font-weight: 300; line-height: 1.7; color: var(--text-secondary); margin-bottom: 36px; max-width: 520px; margin-left: auto; margin-right: auto; }
+.cta-button { display: inline-flex; align-items: center; gap: 10px; padding: 18px 40px; border-radius: var(--radius-pill); background: var(--accent); color: var(--text-dark); font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; transition: all 0.3s; }
+.cta-button:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 8px 40px rgba(195,247,58,0.3); }
+.cta-trust-row { display: flex; align-items: center; justify-content: center; gap: 32px; margin-top: 40px; flex-wrap: wrap; }
+.cta-trust-item { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+.cta-trust-item svg { width: 16px; height: 16px; color: var(--accent); stroke: var(--accent); }
+
+/* ===================================================
+   FOOTER
+   =================================================== */
+.footer { background: #0A1118; position: relative; overflow: hidden; }
+.footer-glow { height: 1px; background: linear-gradient(90deg, transparent 0%, rgba(195,247,58,0.12) 25%, rgba(195,247,58,0.25) 50%, rgba(195,247,58,0.12) 75%, transparent 100%); }
+
+/* Footer CTA bar */
+.footer-cta-bar { padding: 40px 48px; border-bottom: 1px solid var(--border-subtle); }
+.footer-cta-inner { max-width: 1140px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 32px; }
+.footer-cta-text { font-size: 22px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.02em; }
+.footer-cta-text span { color: var(--accent); }
+.footer-cta-btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: var(--radius-pill); background: var(--accent); color: var(--bg-primary); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; transition: all 0.3s; white-space: nowrap; flex-shrink: 0; }
+.footer-cta-btn:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(195,247,58,0.2); }
+.footer-cta-btn svg { width: 14px; height: 14px; transition: transform 0.3s; }
+.footer-cta-btn:hover svg { transform: translateX(3px); }
+
+/* Footer main grid */
+.footer-main { padding: 56px 48px; border-bottom: 1px solid var(--border-subtle); }
+.footer-grid { max-width: 1140px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1.2fr; gap: 48px; }
+.footer-brand-logo { height: 24px; width: auto; opacity: 0.9; margin-bottom: 16px; display: block; }
+.footer-brand-desc { font-size: 14px; font-weight: 400; line-height: 1.65; color: var(--text-secondary); max-width: 300px; margin-bottom: 24px; }
+.footer-socials { display: flex; gap: 10px; }
+.footer-social-link { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(131,153,162,0.1); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); text-decoration: none; transition: all 0.3s; }
+.footer-social-link:hover { background: rgba(195,247,58,0.08); border-color: rgba(195,247,58,0.2); color: var(--accent); }
+.footer-social-link svg { width: 16px; height: 16px; }
+.footer-col-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-secondary); margin-bottom: 20px; }
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.footer-links a { font-size: 14px; font-weight: 400; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: #fff; }
+.footer-contact-item { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
+.footer-contact-item:last-child { margin-bottom: 0; }
+.footer-contact-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.footer-contact-icon svg { width: 14px; height: 14px; stroke: var(--text-secondary); }
+
+/* AI Credit section */
+.footer-ai-credit { padding: 40px 48px; border-bottom: 1px solid var(--border-subtle); position: relative; }
+.footer-ai-credit::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(195,247,58,0.02) 0%, transparent 50%, rgba(195,247,58,0.01) 100%); pointer-events: none; }
+.footer-ai-inner { max-width: 1140px; margin: 0 auto; display: flex; align-items: center; gap: 28px; position: relative; }
+.footer-ai-avatar { width: 52px; height: 52px; border-radius: 14px; background: rgba(195,247,58,0.06); border: 1px solid rgba(195,247,58,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; }
+.footer-ai-avatar svg { width: 24px; height: 24px; color: var(--accent); }
+.footer-ai-avatar::after { content: ''; position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid #0A1118; animation: pulse-ai 2s infinite; }
+@keyframes pulse-ai { 0%, 100% { box-shadow: 0 0 0 0 rgba(195,247,58,0.4); } 50% { box-shadow: 0 0 0 6px rgba(195,247,58,0); } }
+.footer-ai-content { flex: 1; }
+.footer-ai-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.footer-ai-label-tag { font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: rgba(195,247,58,0.1); color: var(--accent); letter-spacing: 0.06em; }
+.footer-ai-headline { font-size: 18px; font-weight: 600; color: var(--text-primary); line-height: 1.4; letter-spacing: -0.01em; }
+.footer-ai-headline em { font-style: normal; color: var(--accent); }
+.footer-ai-sub { font-size: 13px; font-weight: 400; color: var(--text-muted); margin-top: 4px; }
+.footer-ai-stats { display: flex; gap: 24px; flex-shrink: 0; }
+.footer-ai-stat { text-align: center; padding: 12px 16px; border-radius: 10px; background: rgba(255,255,255,0.02); border: 1px solid rgba(131,153,162,0.06); min-width: 80px; }
+.footer-ai-stat-value { font-size: 20px; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 4px; letter-spacing: -0.03em; }
+.footer-ai-stat-label { font-size: 10px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
+
+/* Footer bottom bar */
+.footer-bottom { padding: 20px 48px; max-width: 1236px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+.footer-copyright { font-size: 12px; color: var(--text-muted); }
+.footer-legal { display: flex; gap: 24px; }
+.footer-legal a { font-size: 12px; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+.footer-legal a:hover { color: var(--text-secondary); }
+
+/* ===================================================
+   SCROLL REVEAL
+   =================================================== */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal.delay-1 { transition-delay: 0.1s; }
+.reveal.delay-2 { transition-delay: 0.2s; }
+.reveal.delay-3 { transition-delay: 0.25s; }
+
+/* ===================================================
+   ANIMATIONS
+   =================================================== */
+@keyframes navSlideDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes shimmer { 0% { background-position: 250% center; } 100% { background-position: -250% center; } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes cardIn { from { opacity: 0; transform: translateY(20px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(195,247,58,0.4); } 50% { box-shadow: 0 0 0 6px rgba(195,247,58,0); } }
+@keyframes orbFloat1 { 0%, 100% { transform: translate(0, 0); } 33% { transform: translate(30px, -20px); } 66% { transform: translate(-20px, 15px); } }
+@keyframes orbFloat2 { 0%, 100% { transform: translate(0, 0); } 33% { transform: translate(-25px, 20px); } 66% { transform: translate(15px, -15px); } }
+@keyframes orbFloat3 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(20px, -10px) scale(1.1); } }
+@keyframes roleRotate { 0%, 4% { opacity: 0; transform: translateY(8px); } 6%, 16% { opacity: 1; transform: translateY(0); } 18%, 20% { opacity: 0; transform: translateY(-8px); } 100% { opacity: 0; transform: translateY(-8px); } }
+@keyframes flowRight { 0% { left: -5%; opacity: 0; } 8% { opacity: 1; } 88% { opacity: 1; } 100% { left: 100%; opacity: 0; } }
+
+/* ===================================================
+   RESPONSIVE
+   =================================================== */
+@media (min-width: 769px) {
+  /* desktop only — no changes needed for new layouts */
+}
+@media (max-width: 1024px) {
+  .hero { padding: 120px 32px 48px; }
+  .hero-inner { gap: 40px; }
+  .hero-team { flex: 0 0 420px; }
+  .hero-headline { font-size: clamp(36px, 4vw, 48px); }
+  .pain-section { padding: 56px 32px 64px; }
+  .pain-heading { font-size: 34px; }
+  .pain-grid { gap: 16px; }
+  .pain-card { padding: 24px 22px; }
+  .services-section, .faq-section { padding: 64px 32px; }
+  .comparison-section { padding: 72px 32px; }
+  .comp-heading { font-size: 36px; }
+  .comp-grid { gap: 20px; }
+  .comp-col { padding: 28px 24px 24px; }
+  .comp-row-value { font-size: 20px; }
+  .comp-bottom-stats { gap: 40px; }
+  .comp-stat-value { font-size: 40px; }
+  .testimonials-section { padding: 64px 0; }
+  .process-section, .cta-section { padding: 64px 32px; }
+  .services-heading, .process-heading, .test-heading, .comparison-heading, .faq-heading, .cta-heading { font-size: 34px; }
+  .bento-grid { gap: 16px; }
+  .bento-big { padding: 32px 28px; }
+  .bento-small { padding: 24px 22px; }
+  .bento-title-big { font-size: 24px; }
+  .cols-grid { gap: 0; }
+  .col-number { font-size: 60px; }
+  .footer-cta-bar { padding: 32px 32px; }
+  .footer-cta-text { font-size: 20px; }
+  .footer-main { padding: 48px 32px; }
+  .footer-grid { gap: 36px; }
+  .footer-ai-credit { padding: 32px 32px; }
+  .footer-ai-stats { gap: 16px; }
+  .footer-bottom { padding: 20px 32px; }
+}
+@media (max-width: 768px) {
+  .navbar-wrapper { padding: 12px 16px; }
+  .navbar { padding: 10px 10px 10px 20px; gap: 16px; }
+  .nav-links { display: none; }
+  .hero { padding: 100px 24px 40px; min-height: auto; }
+  .hero-inner { flex-direction: column; gap: 48px; }
+  .hero-content { max-width: 100%; text-align: center; }
+  .hero-subtitle { max-width: 100%; }
+  .hero-ctas { justify-content: center; }
+  .hero-testimonial { max-width: 100%; text-align: left; }
+  .hero-team { flex: none; width: 100%; max-width: 480px; margin: 0 auto; }
+  .trust-bar { flex-wrap: wrap; gap: 20px; padding: 24px; }
+  .trust-item-separator { display: none; }
+  .hero-headline { font-size: 36px; }
+  .pain-section { padding: 48px 24px 56px; }
+  .pain-grid { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto 40px; }
+  .pain-heading { font-size: 30px; }
+  .pain-header { margin-bottom: 36px; }
+  .pain-bottom-line { font-size: 18px; }
+  .services-section, .faq-section { padding: 48px 24px 56px; }
+  .comparison-section { padding: 56px 24px; }
+  .comp-header { margin-bottom: 48px; }
+  .comp-heading { font-size: 30px; }
+  .comp-subtitle { font-size: 16px; }
+  .comp-grid { grid-template-columns: 1fr; max-width: 520px; margin: 0 auto; }
+  .comp-vs { display: none; }
+  .comp-col { padding: 24px 20px 20px; }
+  .comp-row-content { width: 160px; }
+  .comp-bottom-stats { flex-wrap: wrap; gap: 32px; }
+  .comp-stat-value { font-size: 36px; }
+  .testimonials-section { padding: 48px 0 56px; }
+  .test-header { padding: 0 24px; margin-bottom: 36px; }
+  .tcard { width: 320px; padding: 24px; }
+  .tcard--compact { width: 260px; }
+  .tcard--wide { width: 240px; }
+  .test-bottom { padding: 0 24px; }
+  .process-section, .cta-section { padding: 48px 24px 56px; }
+  .services-heading, .process-heading, .test-heading, .comparison-heading, .faq-heading, .cta-heading { font-size: 30px; }
+  .bento-grid { grid-template-columns: 1fr; max-width: 540px; margin: 0 auto; }
+  .bento-big { grid-row: auto; }
+  .bento-title-big { font-size: 24px; }
+  .bento-stats { gap: 16px; flex-wrap: wrap; }
+  .wf-visual { padding: 16px 12px; }
+  .wf-node-label { font-size: 9px; }
+  /* Columns: 2x2 grid */
+  .cols-grid { grid-template-columns: 1fr 1fr; gap: 32px 0; }
+  .col-number { font-size: 52px; }
+  .col-step:nth-child(2)::after { display: none; }
+  .col-step--highlight { margin: -20px 0; padding-bottom: 28px; }
+  .footer-cta-bar { padding: 28px 24px; }
+  .footer-cta-inner { flex-direction: column; text-align: center; gap: 20px; }
+  .footer-cta-text { font-size: 18px; }
+  .footer-main { padding: 40px 24px; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px 24px; }
+  .footer-brand-desc { max-width: 100%; }
+  .footer-ai-credit { padding: 28px 24px; }
+  .footer-ai-inner { flex-direction: column; text-align: center; }
+  .footer-ai-label { justify-content: center; }
+  .footer-ai-stats { justify-content: center; }
+  .footer-bottom { padding: 16px 24px; flex-direction: column; gap: 12px; text-align: center; }
+  .cta-trust-row { gap: 20px; }
+}
+@media (max-width: 480px) {
+  .hero { padding: 90px 16px 32px; }
+  .hero-headline { font-size: 32px; }
+  .hero-ctas { flex-direction: column; width: 100%; }
+  .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
+  .team-grid { gap: 12px; }
+  .team-card { padding: 16px; min-height: 140px; }
+  .team-footer { grid-template-columns: 1fr; }
+  .trust-bar { flex-direction: column; gap: 12px; }
+  .pain-section { padding: 40px 16px 48px; }
+  .pain-heading { font-size: 26px; }
+  .pain-card { padding: 22px 20px; }
+  .bento-grid { gap: 14px; }
+  .bento-big { padding: 26px 20px; }
+  .bento-title-big { font-size: 22px; }
+  .bento-subtitle { font-size: 13px; }
+  .bento-small { padding: 22px 20px; }
+  .bento-stats { gap: 12px; }
+  .bento-stat-value { font-size: 18px; }
+  .wf-visual { gap: 6px; padding: 16px 12px; }
+  .wf-node { font-size: 11px; padding: 10px 10px; }
+  .services-section, .comparison-section, .faq-section { padding: 40px 16px 48px; }
+  .testimonials-section { padding: 40px 0 48px; }
+  .test-header { padding: 0 16px; }
+  .test-heading { font-size: 26px; }
+  .process-section, .cta-section { padding: 40px 16px 48px; }
+  .services-heading, .process-heading, .test-heading, .comparison-heading, .faq-heading, .cta-heading { font-size: 26px; }
+  .cols-grid { grid-template-columns: 1fr; max-width: 340px; margin: 0 auto; }
+  .col-step::after { display: none; }
+  .col-number { font-size: 44px; }
+  .col-step--highlight { margin: 0 -8px; padding: 20px 16px 24px; }
+  .comparison-section { padding: 40px 16px; }
+  .comp-heading { font-size: 26px; }
+  .comp-col { padding: 20px 16px; }
+  .comp-row { gap: 12px; padding: 14px 0; }
+  .comp-row-content { width: auto; flex: 1; }
+  .comp-row-value { font-size: 18px; }
+  .comp-row-bar { display: none; }
+  .comp-bottom-stats { flex-direction: column; gap: 24px; }
+  .comp-stat-value { font-size: 32px; }
+  .comp-bottom-text { font-size: 18px; }
+  .faq-question { font-size: 14px; padding: 16px 20px; }
+  .faq-answer-inner { padding: 0 20px 16px; font-size: 13px; }
+  .cta-button { width: 100%; justify-content: center; }
+  .cta-trust-row { flex-direction: column; gap: 12px; }
+  .footer-cta-bar { padding: 24px 16px; }
+  .footer-cta-text { font-size: 16px; }
+  .footer-cta-btn { width: 100%; justify-content: center; }
+  .footer-main { padding: 32px 16px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+  .footer-ai-credit { padding: 24px 16px; }
+  .footer-ai-stats { flex-direction: column; gap: 12px; }
+  .footer-bottom { padding: 16px 16px; }
+  .footer-legal { flex-wrap: wrap; justify-content: center; gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<div class="navbar-wrapper">
+  <nav class="navbar" id="navbar">
+    <a href="#" class="nav-logo">
+      <img src="https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/698fc7061807226f8ff432cf_4YES%20-%20Full%20White.png" alt="4YES" />
+    </a>
+    <div class="nav-links">
+      <a href="#">AI Felmérés</a>
+      <a href="#">Workflow fejlesztés</a>
+      <a href="#">AI Munkaerő</a>
+    </div>
+    <a href="#" class="nav-cta">
+      <span>Ingyenes konzultáció</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </nav>
+</div>
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero">
+  <div class="hero-orb hero-orb--green"></div>
+  <div class="hero-orb hero-orb--blue"></div>
+  <div class="hero-orb hero-orb--accent"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow-line"></div>
+
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        <span class="hero-badge-text">AI automatizációs ügynökség</span>
+      </div>
+      <h1 class="hero-headline">A céged következő<br>munkatársa<br><span class="accent">nem ember lesz</span></h1>
+      <p class="hero-subtitle">Felépítjük az AI munkaerődet, ami 0-24 dolgozik — szabadság, betegség és fluktuáció nélkül.</p>
+      <div class="hero-ctas">
+        <a href="#" class="btn-primary">Kérd az ingyenes AI felmérést <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        <a href="#process" class="btn-ghost">Hogyan működik?</a>
+      </div>
+      <div class="hero-testimonial">
+        <div class="hero-testimonial-quote-icon">&ldquo;</div>
+        <div class="hero-testimonial-content">
+          <p class="hero-testimonial-text">3 hónap alatt az ügyfélszolgálati válaszidőnk 4 óráról 3 percre csökkent. Az AI ügynök a megkeresések 78%-át egyedül kezeli.</p>
+          <div class="hero-testimonial-author">
+            <span class="hero-testimonial-name">K. Tamás</span>
+            <span class="hero-testimonial-role">· Ügyvezető</span>
+            <div class="hero-testimonial-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-team">
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-card-header">
+            <div class="team-avatar"><img src="https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/698fc5c89c557ab96101a288_ISTVA%CC%81N%20-%20V3.png" alt="Kolbert István" /></div>
+            <a href="https://www.linkedin.com/in/istvankolbert/" target="_blank" rel="noopener" class="team-linkedin"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+          </div>
+          <div class="team-info"><div class="team-name">Kolbert István</div><div class="team-role">Digitális Stratéga</div><div class="team-expertise">AI megoldások beillesztése az üzleti stratégiába</div></div>
+        </div>
+        <div class="team-card team-card--ai">
+          <div class="team-card-header">
+            <div class="team-avatar">
+              <div class="team-avatar-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--accent);"><path d="M12 2a4 4 0 0 1 4 4v1h1a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-6a3 3 0 0 1 3-3h1V6a4 4 0 0 1 4-4z" stroke-linecap="round"/><circle cx="9" cy="13" r="1.5" fill="currentColor" stroke="none"/><circle cx="15" cy="13" r="1.5" fill="currentColor" stroke="none"/><path d="M9 17h6" stroke-linecap="round"/><path d="M12 2V0M4 10H2M22 10h-2" stroke-linecap="round" opacity="0.5"/></svg>
+              </div>
+              <div class="team-status"></div>
+            </div>
+            <div class="ai-tag"><div class="ai-tag-dot"></div> 0-24 AKTÍV</div>
+          </div>
+          <div class="team-info"><div class="team-name">AI Ügynök</div><div class="team-role">Éppen dolgozik:</div><div class="ai-role-rotator"><span class="ai-role">Ügyfélszolgálat kezelése</span><span class="ai-role">Lead-ek minősítése</span><span class="ai-role">Dokumentumok feldolgozása</span><span class="ai-role">Marketing tartalom készítése</span><span class="ai-role">Adatok elemzése, riportolás</span></div></div>
+        </div>
+        <div class="team-card">
+          <div class="team-card-header">
+            <div class="team-avatar"><img src="https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/698fc5c85857b0b5f303c824_ZG%20-%20V3.png" alt="Zöldhegyi Gábor" /></div>
+            <a href="https://www.linkedin.com/in/zoldhegyi-gabor/" target="_blank" rel="noopener" class="team-linkedin"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+          </div>
+          <div class="team-info"><div class="team-name">Zöldhegyi Gábor</div><div class="team-role">Folyamat Designer</div><div class="team-expertise">Üzleti folyamatok megértése és AI-val fejlesztése</div></div>
+        </div>
+        <div class="team-card">
+          <div class="team-card-header">
+            <div class="team-avatar"><img src="https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/698fc5c8d9fdd36514fc8914_EMESE%20-%20V3.png" alt="Horváth Emese" /></div>
+            <a href="https://www.linkedin.com/in/emese-horvath/" target="_blank" rel="noopener" class="team-linkedin"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+          </div>
+          <div class="team-info"><div class="team-name">Horváth Emese</div><div class="team-role">Szervezetfejlesztő</div><div class="team-expertise">Megérti, amire az embereknek valóban szükségük van</div></div>
+        </div>
+      </div>
+      <div class="team-footer">
+        <div class="team-trust-item"><div class="team-trust-value">15<span class="accent-val">+</span></div><div class="team-trust-label">év tapasztalat</div></div>
+        <div class="team-trust-item"><div class="team-trust-value">10<span class="accent-val">+</span></div><div class="team-trust-label">sikeres AI projekt</div></div>
+        <div class="team-trust-item"><div class="team-trust-value">100<span class="accent-val">%</span></div><div class="team-trust-label">magyar csapat</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TRUST BAR ===== -->
+<div class="trust-bar">
+  <div class="trust-item"><div class="trust-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span>Nincs elköteleződés</span></div>
+  <div class="trust-item-separator"></div>
+  <div class="trust-item"><div class="trust-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><span>30 perc, online</span></div>
+  <div class="trust-item-separator"></div>
+  <div class="trust-item"><div class="trust-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg></div><span>Konkrét tervet kapsz</span></div>
+  <div class="trust-item-separator"></div>
+  <div class="trust-item"><div class="trust-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span>Magyar szakértői csapat</span></div>
+</div>
+
+<!-- ===== PAIN POINTS SECTION ===== -->
+<section class="pain-section">
+  <div class="pain-container reveal">
+    <div class="pain-header">
+      <div class="pain-badge"><div class="pain-badge-dot"></div>Ismerős?</div>
+      <h2 class="pain-heading">Azoknak építettük, akik<br><em>belefáradtak a kézi munkába</em></h2>
+    </div>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div>
+        <h3 class="pain-card-title">E-kereskedők &<br>Webshop tulajdonosok</h3>
+        <p class="pain-quote">&ldquo;Nőnek a rendelések, de az ügyfélszolgálatot még kézzel csináljuk. Nem bírjuk a tempót.&rdquo;</p>
+        <ul class="pain-list">
+          <li class="pain-item"><div class="pain-x-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#E04545" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><span><strong>Ügyfélszolgálat túlterhelve,</strong> órákat vár a válasz</span></li>
+          <li class="pain-item"><div class="pain-x-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#E04545" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><span><strong>Rendeléskezelés</strong> manuális, hibák csúsznak be</span></li>
+          <li class="pain-item"><div class="pain-x-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#E04545" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><span><strong>Marketing tartalom</strong> senkinek nincs rá ideje</span></li>
+        </ul>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg></div>
+        <h3 class="pain-card-title">Szolgáltató cégek &<br>Irodák</h3>
+        <p class="pain-quote">&ldquo;Az adminisztráció felszívja az időnket. A konkurencia már chatbottal fogadja az ügyfeleket.&rdquo;</p>
+        <ul class="pain-list">
+          <li class="pain-item"><div class="pain-x-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#E04545" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><span><strong>Naponta órák</strong> mennek el ismétlődő adminra</span></li>
+          <li class="pain-item"><div class="pain-x-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#E04545" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><span><strong>Nehéz munkaerőt</strong> találni a növekedéshez</span></li>
+          <li class="pain-item"><div class="pain-x-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#E04545" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><span><strong>Ügyfelek elvesztése</strong> a lassú reakcióidő miatt</span></li>
+        </ul>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <h3 class="pain-card-title">Ügynökségek &<br>Tanácsadók</h3>
+        <p class="pain-quote">&ldquo;Minden projektet kézzel tolunk. Több ügyfelet szeretnénk, de a kapacitásunk véges.&rdquo;</p>
+        <ul class="pain-list">
+          <li class="pain-item"><div class="pain-x-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#E04545" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><span><strong>Kapacitás</strong> a szűk keresztmetszet, nem a kereslet</span></li>
+          <li class="pain-item"><div class="pain-x-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#E04545" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><span><strong>Repetitív feladatok</strong> eszik a kreatív időt</span></li>
+          <li class="pain-item"><div class="pain-x-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#E04545" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><span><strong>AI-t próbáltatok,</strong> nem jött össze a rendszer</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pain-bottom">
+      <p class="pain-bottom-line">Ami közös: <strong>Az idődtől függő feladatok sosem készülnek el időben.</strong></p>
+      <a href="#" class="pain-cta">Nézd meg, hogyan oldjuk meg <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SERVICES SECTION ===== -->
+<section class="services-section" id="services">
+  <div class="services-container reveal">
+    <div class="services-header">
+      <div class="lt-badge"><div class="lt-badge-dot"></div>Szolgáltatások</div>
+      <h2 class="services-heading">Három lépés a teljes<br>AI automatizációig</h2>
+      <p class="services-subtitle">Nem kell mindent egyszerre. Kezdd ott, ahol a cégednek most a legnagyobb szüksége van rá.</p>
+    </div>
+    <div class="bento-grid">
+      <!-- ── BIG CARD: 01 AI Felmérés (spans 2 rows) ── -->
+      <div class="bento-big">
+        <div class="bento-overline"><span class="svc-tag">01</span> &middot; KEZDD ITT — INGYENES</div>
+        <h3 class="bento-title-big">AI Felmérés<br>és Workshop</h3>
+        <p class="bento-subtitle">Egy ingyenes 30 perces konzultációval indul. Ha van potenciál, jön az audit és egy 3 órás személyes workshop — a végén kattintható prototípust, funkcionális specifikációt és ajánlatot kapsz kézhez.</p>
+
+        <div class="wf-visual">
+          <div class="wf-node">
+            <div class="wf-node-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l-4 4l6 6l4-16l-18 7l4 2l2 6l3-4"/></svg></div>
+            <span class="wf-node-label">30 perc konzultáció</span>
+            <span class="wf-node-tag">Ingyenes</span>
+          </div>
+          <div class="wf-connector"></div>
+          <div class="wf-node">
+            <div class="wf-node-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+            <span class="wf-node-label">Folyamat audit</span>
+          </div>
+          <div class="wf-connector"></div>
+          <div class="wf-node wf-node--ai">
+            <div class="wf-node-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+            <span class="wf-node-label">3 órás workshop</span>
+          </div>
+          <div class="wf-connector"></div>
+          <div class="wf-node">
+            <div class="wf-node-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+            <span class="wf-node-label">Prototípus + ajánlat</span>
+          </div>
+        </div>
+
+        <div class="bento-deliverables">
+          <div class="bento-deliverable"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Kattintható prototípus</div>
+          <div class="bento-deliverable"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Funkcionális specifikáció</div>
+          <div class="bento-deliverable"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>ROI kalkuláció</div>
+          <div class="bento-deliverable"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>Részletes ajánlat</div>
+        </div>
+
+        <a href="#" class="bento-cta">Foglald le az ingyenes 30 perces konzultációt <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+
+      <!-- ── SMALL CARD: 02 Workflow ── -->
+      <div class="bento-small">
+        <div class="bento-overline"><span class="svc-tag">02</span> &middot; FEJLESZTÉS</div>
+        <h3 class="bento-title-sm">AI Workflow fejlesztés</h3>
+        <p class="bento-desc-sm">A te folyamataidra épített egyedi automatizáció. Megépítjük, integráljuk, betanítjuk.</p>
+        <div class="mini-stats">
+          <div class="mini-stat"><div class="mini-stat-value">95%+</div><div class="mini-stat-label">pontosság</div></div>
+          <div class="mini-stat"><div class="mini-stat-value">60-90</div><div class="mini-stat-label">nap alatt kész</div></div>
+          <div class="mini-stat"><div class="mini-stat-value">3-6</div><div class="mini-stat-label">hó megtérülés</div></div>
+        </div>
+        <a href="#" class="bento-link">Részletek <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+
+      <!-- ── SMALL CARD: 03 AI Munkaerő ── -->
+      <div class="bento-small">
+        <div class="bento-overline"><span class="svc-tag">03</span> &middot; AI MUNKAERŐ</div>
+        <h3 class="bento-title-sm">AI Munkaerő kölcsönzés</h3>
+        <p class="bento-desc-sm">Digitális munkatársak, akik 0-24 dolgoznak, havi fix díjért.</p>
+        <div class="activity-feed">
+          <div class="activity-header"><div class="activity-pulse"></div><span class="activity-header-text">Élő aktivitás</span></div>
+          <div class="activity-item"><div class="activity-item-left"><div class="activity-dot"></div>Ticket megválaszolva</div><span class="activity-time">2s</span></div>
+          <div class="activity-item"><div class="activity-item-left"><div class="activity-dot"></div>Lead minősítve</div><span class="activity-time">1m</span></div>
+          <div class="activity-item"><div class="activity-item-left"><div class="activity-dot"></div>Riport generálva</div><span class="activity-time">3m</span></div>
+        </div>
+        <a href="#" class="bento-link">Részletek <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROCESS SECTION (Dark) ===== -->
+<section class="process-section" id="process">
+  <div class="process-container reveal">
+    <div class="process-header">
+      <div class="dk-badge"><div class="dk-badge-dot"></div><span class="dk-badge-text">Folyamat</span></div>
+      <h2 class="process-heading">Hogyan működik?</h2>
+      <p class="process-subtitle">Te az üzletedre koncentrálsz, mi az AI-ra.</p>
+    </div>
+    <div class="cols-grid">
+      <div class="col-step col-step--highlight">
+        <div class="col-highlight-badge">Ingyenes</div>
+        <div class="col-number">01</div>
+        <div class="col-icon col-icon--accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <h3 class="col-title">Konzultáció</h3>
+        <p class="col-desc">Megértjük a céged működését és céljait. 30 perc, online, teljesen ingyenes.</p>
+        <a href="#" class="col-cta">Időpontot foglalok <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+      <div class="col-step">
+        <div class="col-number">02</div>
+        <div class="col-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <h3 class="col-title">Felmérés & Audit</h3>
+        <p class="col-desc">Feltérképezzük az automatizálható folyamatokat, ROI számítással.</p>
+        <div class="col-chips">
+          <span class="col-chip">Folyamat térkép</span>
+          <span class="col-chip">ROI kalkuláció</span>
+          <span class="col-chip">Priorizálás</span>
+        </div>
+      </div>
+      <div class="col-step">
+        <div class="col-number">03</div>
+        <div class="col-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg></div>
+        <h3 class="col-title">Fejlesztés & Bevezetés</h3>
+        <p class="col-desc">Megépítjük az AI rendszereket, integráljuk, betanítjuk a csapatot.</p>
+        <div class="col-chips">
+          <span class="col-chip">Egyedi AI rendszer</span>
+          <span class="col-chip">Integráció</span>
+          <span class="col-chip">Csapat betanítás</span>
+        </div>
+      </div>
+      <div class="col-step">
+        <div class="col-number">04</div>
+        <div class="col-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+        <h3 class="col-title">Üzemeltetés & Skálázás</h3>
+        <p class="col-desc">Monitorozzuk, optimalizáljuk. Havi riport az eredményekről.</p>
+        <div class="col-chips">
+          <span class="col-chip">Havi riport</span>
+          <span class="col-chip">Optimalizálás</span>
+          <span class="col-chip">Support</span>
+        </div>
+      </div>
+    </div>
+    <div class="progress-track" id="progressTrack">
+      <div class="progress-fill"></div>
+      <div class="progress-dots">
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+      </div>
+    </div>
+    <div class="progress-labels">
+      <div class="progress-label">Hét 1</div>
+      <div class="progress-label">Hét 2-3</div>
+      <div class="progress-label">Hónap 2-4</div>
+      <div class="progress-label">Folyamatos</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIALS SECTION (Marquee) ===== -->
+<section class="testimonials-section" id="results">
+
+  <!-- Header -->
+  <div class="test-header reveal">
+    <div class="lt-badge"><div class="lt-badge-dot"></div>Eredmények</div>
+    <h2 class="test-heading">Amit ügyfeleink mondanak</h2>
+    <p class="test-subtitle">10+ sikeres projekt, mérhetően jobb eredmények</p>
+  </div>
+
+  <!-- Marquee Row 1 (scrolls left) -->
+  <div class="marquee-section">
+    <div class="marquee-row marquee-row--1">
+      <!-- Set 1 -->
+      <div class="tcard">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;A lead feldolgozás teljesen automatikus lett. Ami eddig 2 ember teljes munkaideje volt, azt most AI csinálja — pontosabban.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">MA</div>
+          <div><div class="tcard-name">M. Andrea</div><div class="tcard-role">Marketing vezető, SaaS startup</div></div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--accent tcard--wide">
+        <div class="tcard-metric">4 óra → 3p</div>
+        <div class="tcard-metric-label">Ügyfélszolgálati válaszidő csökkenés</div>
+      </div>
+
+      <div class="tcard tcard--compact">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;Szkeptikus voltam, de a felmérés után egyértelműek voltak a számok. Az első workflow 3 hét alatt megtérült.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">BG</div>
+          <div><div class="tcard-name">B. Gergő</div><div class="tcard-role">Operációs igazgató, Logisztikai cég</div></div>
+        </div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;A havi riportolás 2 napról 15 percre csökkent. Az AI dashboard valós időben mutat mindent, amit eddig kézzel gyűjtöttünk.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">NE</div>
+          <div><div class="tcard-name">N. Eszter</div><div class="tcard-role">Pénzügyi vezető, Tanácsadó cég</div></div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--accent tcard--wide">
+        <div class="tcard-metric">40M Ft</div>
+        <div class="tcard-metric-label">Éves megtakarítás automatizált számlázással</div>
+      </div>
+
+      <div class="tcard tcard--compact">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;Az onboarding folyamat teljesen automatikus lett. Új ügyfelek 5 perc alatt aktívak.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">SZ</div>
+          <div><div class="tcard-name">Sz. László</div><div class="tcard-role">CEO, Fintech startup</div></div>
+        </div>
+      </div>
+
+      <!-- Duplicate set for seamless loop -->
+      <div class="tcard">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;A lead feldolgozás teljesen automatikus lett. Ami eddig 2 ember teljes munkaideje volt, azt most AI csinálja — pontosabban.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">MA</div>
+          <div><div class="tcard-name">M. Andrea</div><div class="tcard-role">Marketing vezető, SaaS startup</div></div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--accent tcard--wide">
+        <div class="tcard-metric">4 óra → 3p</div>
+        <div class="tcard-metric-label">Ügyfélszolgálati válaszidő csökkenés</div>
+      </div>
+
+      <div class="tcard tcard--compact">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;Szkeptikus voltam, de a felmérés után egyértelműek voltak a számok. Az első workflow 3 hét alatt megtérült.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">BG</div>
+          <div><div class="tcard-name">B. Gergő</div><div class="tcard-role">Operációs igazgató, Logisztikai cég</div></div>
+        </div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;A havi riportolás 2 napról 15 percre csökkent. Az AI dashboard valós időben mutat mindent, amit eddig kézzel gyűjtöttünk.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">NE</div>
+          <div><div class="tcard-name">N. Eszter</div><div class="tcard-role">Pénzügyi vezető, Tanácsadó cég</div></div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--accent tcard--wide">
+        <div class="tcard-metric">40M Ft</div>
+        <div class="tcard-metric-label">Éves megtakarítás automatizált számlázással</div>
+      </div>
+
+      <div class="tcard tcard--compact">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;Az onboarding folyamat teljesen automatikus lett. Új ügyfelek 5 perc alatt aktívak.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">SZ</div>
+          <div><div class="tcard-name">Sz. László</div><div class="tcard-role">CEO, Fintech startup</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Marquee Row 2 (scrolls right) -->
+    <div class="marquee-row marquee-row--2">
+      <!-- Set 1 -->
+      <div class="tcard tcard--compact">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;A 4YES csapata 2 hét alatt működő prototípust adott. Ilyen gyors delivery-vel még nem találkoztam.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">VJ</div>
+          <div><div class="tcard-name">V. János</div><div class="tcard-role">CTO, Recruitment agency</div></div>
+        </div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;Az ajánlatkészítés automatizálásával havi 60 óra munkaidőt takarítunk meg. A csapat végre stratégiai feladatokra tud koncentrálni.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">TK</div>
+          <div><div class="tcard-name">T. Katalin</div><div class="tcard-role">Sales igazgató, IT szolgáltató</div></div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--accent tcard--wide">
+        <div class="tcard-metric">2 FTE</div>
+        <div class="tcard-metric-label">Megtakarított munkaerő lead feldolgozásban</div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;Nem hittük, hogy az AI ennyi hibát ki tud szűrni. A minőségellenőrzés 95%-a most automatikus, és pontosabb mint valaha.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">FM</div>
+          <div><div class="tcard-name">F. Márton</div><div class="tcard-role">Gyárigazgató, Gyártó cég</div></div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--compact">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;A chatbot a webshop konverzióját 340%-kal növelte. Éjjel-nappal elérhetők vagyunk, emberi beavatkozás nélkül.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">HA</div>
+          <div><div class="tcard-name">H. Anna</div><div class="tcard-role">E-commerce vezető, Divatmárka</div></div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--accent tcard--wide">
+        <div class="tcard-metric">340%</div>
+        <div class="tcard-metric-label">Webshop konverzió növekedés chatbottal</div>
+      </div>
+
+      <!-- Duplicate set -->
+      <div class="tcard tcard--compact">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;A 4YES csapata 2 hét alatt működő prototípust adott. Ilyen gyors delivery-vel még nem találkoztam.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">VJ</div>
+          <div><div class="tcard-name">V. János</div><div class="tcard-role">CTO, Recruitment agency</div></div>
+        </div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;Az ajánlatkészítés automatizálásával havi 60 óra munkaidőt takarítunk meg. A csapat végre stratégiai feladatokra tud koncentrálni.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">TK</div>
+          <div><div class="tcard-name">T. Katalin</div><div class="tcard-role">Sales igazgató, IT szolgáltató</div></div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--accent tcard--wide">
+        <div class="tcard-metric">2 FTE</div>
+        <div class="tcard-metric-label">Megtakarított munkaerő lead feldolgozásban</div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;Nem hittük, hogy az AI ennyi hibát ki tud szűrni. A minőségellenőrzés 95%-a most automatikus, és pontosabb mint valaha.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">FM</div>
+          <div><div class="tcard-name">F. Márton</div><div class="tcard-role">Gyárigazgató, Gyártó cég</div></div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--compact">
+        <div class="tcard-stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+        <p class="tcard-text">&ldquo;A chatbot a webshop konverzióját 340%-kal növelte. Éjjel-nappal elérhetők vagyunk, emberi beavatkozás nélkül.&rdquo;</p>
+        <div class="tcard-divider"></div>
+        <div class="tcard-author">
+          <div class="tcard-avatar">HA</div>
+          <div><div class="tcard-name">H. Anna</div><div class="tcard-role">E-commerce vezető, Divatmárka</div></div>
+        </div>
+      </div>
+
+      <div class="tcard tcard--accent tcard--wide">
+        <div class="tcard-metric">340%</div>
+        <div class="tcard-metric-label">Webshop konverzió növekedés chatbottal</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom CTA -->
+  <div class="test-bottom reveal">
+    <p class="test-bottom-text">Csatlakozz <strong>10+ elégedett céghez</strong>, akik már AI-val dolgoznak</p>
+    <a href="#" class="test-cta">
+      Kérd az ingyenes AI felmérést
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+
+
+</section>
+
+<!-- ===== COMPARISON SECTION ===== -->
+<section class="comparison-section" id="comparison">
+
+  <!-- Header -->
+  <div class="comp-header reveal">
+    <div class="lt-badge"><div class="lt-badge-dot"></div>Miért AI?</div>
+    <h2 class="comp-heading">AI nélkül vs. AI-val</h2>
+    <p class="comp-subtitle">Ugyanaz a cég, teljesen más eredmény.</p>
+  </div>
+
+  <!-- Two-Column Grid -->
+  <div class="comp-grid">
+
+    <!-- VS Badge -->
+    <div class="comp-vs">VS</div>
+
+    <!-- WITHOUT AI -->
+    <div class="comp-col comp-col--without">
+      <div class="comp-col-header">
+        <div class="comp-col-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D04545" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+        </div>
+        <span class="comp-col-label">AI nélkül</span>
+        <span class="comp-col-tag">Jelenlegi állapot</span>
+      </div>
+
+      <div class="comp-rows">
+        <div class="comp-row" data-bar="85">
+          <div class="comp-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D04545" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+          <div class="comp-row-content"><div class="comp-row-label">Válaszidő</div><div class="comp-row-value">4-24 óra</div></div>
+          <div class="comp-row-bar"><div class="comp-row-bar-fill"></div></div>
+        </div>
+        <div class="comp-row" data-bar="70">
+          <div class="comp-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D04545" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg></div>
+          <div class="comp-row-content"><div class="comp-row-label">Adatfeldolgozás</div><div class="comp-row-value">Manuális, hibákkal</div></div>
+          <div class="comp-row-bar"><div class="comp-row-bar-fill"></div></div>
+        </div>
+        <div class="comp-row" data-bar="90">
+          <div class="comp-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D04545" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/></svg></div>
+          <div class="comp-row-content"><div class="comp-row-label">Munkaerő skálázás</div><div class="comp-row-value">Hetekig tart</div></div>
+          <div class="comp-row-bar"><div class="comp-row-bar-fill"></div></div>
+        </div>
+        <div class="comp-row" data-bar="50">
+          <div class="comp-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D04545" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+          <div class="comp-row-content"><div class="comp-row-label">Elérhetőség</div><div class="comp-row-value">Hétköznap, 8-17</div></div>
+          <div class="comp-row-bar"><div class="comp-row-bar-fill"></div></div>
+        </div>
+        <div class="comp-row" data-bar="95">
+          <div class="comp-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D04545" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="comp-row-content"><div class="comp-row-label">Skálázási költség</div><div class="comp-row-value">+1 FTE = +800e Ft/hó</div></div>
+          <div class="comp-row-bar"><div class="comp-row-bar-fill"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WITH AI -->
+    <div class="comp-col comp-col--with">
+      <div class="comp-col-header">
+        <div class="comp-col-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C3F73A" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <span class="comp-col-label">4YES AI-val</span>
+        <span class="comp-col-tag">Automatizálva</span>
+      </div>
+
+      <div class="comp-rows">
+        <div class="comp-row" data-bar="5">
+          <div class="comp-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C3F73A" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+          <div class="comp-row-content"><div class="comp-row-label">Válaszidő</div><div class="comp-row-value">< 30 másodperc</div></div>
+          <div class="comp-row-bar"><div class="comp-row-bar-fill"></div></div>
+          <div class="comp-row-delta">↓ 98%</div>
+        </div>
+        <div class="comp-row" data-bar="15">
+          <div class="comp-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C3F73A" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/></svg></div>
+          <div class="comp-row-content"><div class="comp-row-label">Adatfeldolgozás</div><div class="comp-row-value">Automatikus, 99%+</div></div>
+          <div class="comp-row-bar"><div class="comp-row-bar-fill"></div></div>
+          <div class="comp-row-delta">↓ 97% hiba</div>
+        </div>
+        <div class="comp-row" data-bar="10">
+          <div class="comp-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C3F73A" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg></div>
+          <div class="comp-row-content"><div class="comp-row-label">Munkaerő skálázás</div><div class="comp-row-value">1 hét alatt kész</div></div>
+          <div class="comp-row-bar"><div class="comp-row-bar-fill"></div></div>
+          <div class="comp-row-delta">↓ 85% idő</div>
+        </div>
+        <div class="comp-row" data-bar="100">
+          <div class="comp-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C3F73A" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+          <div class="comp-row-content"><div class="comp-row-label">Elérhetőség</div><div class="comp-row-value">0-24, 365 nap</div></div>
+          <div class="comp-row-bar"><div class="comp-row-bar-fill"></div></div>
+          <div class="comp-row-delta">Non-stop</div>
+        </div>
+        <div class="comp-row" data-bar="15">
+          <div class="comp-row-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C3F73A" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="comp-row-content"><div class="comp-row-label">Skálázási költség</div><div class="comp-row-value">Töredék áron</div></div>
+          <div class="comp-row-bar"><div class="comp-row-bar-fill"></div></div>
+          <div class="comp-row-delta">↓ 80%</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Stats -->
+  <div class="comp-bottom-stats reveal">
+    <div class="comp-stat">
+      <div class="comp-stat-value" data-target="98" data-suffix="%">0%</div>
+      <div class="comp-stat-label">Gyorsabb válaszidő</div>
+    </div>
+    <div class="comp-stat">
+      <div class="comp-stat-value" data-target="40" data-suffix="%">0%</div>
+      <div class="comp-stat-label">Hatékonyságnövelés</div>
+    </div>
+    <div class="comp-stat">
+      <div class="comp-stat-value" data-target="3" data-suffix="x">0x</div>
+      <div class="comp-stat-label">Gyorsabb megtérülés</div>
+    </div>
+    <div class="comp-stat">
+      <div class="comp-stat-value" data-target="24" data-suffix="/7">0/7</div>
+      <div class="comp-stat-label">Szünet nélkül</div>
+    </div>
+  </div>
+
+  <!-- Bottom CTA -->
+  <div class="comp-bottom reveal">
+    <p class="comp-bottom-text">A konkurenciád már automatizál. <strong>Te mikor kezded?</strong></p>
+    <a href="#" class="comp-cta">
+      Kérd az ingyenes AI felmérést
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+
+</section>
+
+<!-- ===== FAQ SECTION ===== -->
+<section class="faq-section" id="faq">
+  <div class="faq-container reveal">
+    <div class="faq-header">
+      <div class="lt-badge"><div class="lt-badge-dot"></div>GYIK</div>
+      <h2 class="faq-heading">Gyakran ismételt kérdések</h2>
+    </div>
+    <div class="faq-card">
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>Mennyibe kerül az AI bevezetés?</span>
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">Ingyenes konzultáció után egyedi ajánlatot készítünk. Workflow fejlesztés 300.000 Ft-tól, AI munkaerő kölcsönzés 150.000 Ft/hó-tól. Minden projekt előtt ROI kalkulációt adunk.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>Mennyi idő, amíg éles lesz?</span>
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">Egyszerűbb workflow-k 2-4 hét. Komplex automatizáció 60-90 nap. A felmérés után pontos ütemtervet kapsz.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>Mi történik, ha az AI hibázik?</span>
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">Minden rendszert emberi felügyelettel tervezünk. Kritikus döntéseknél ember hagy jóvá. Folyamatos monitorozással 95%+ pontosság.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>Kell technikai tudás?</span>
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">Nem. Úgy tervezzük, hogy bárki tudja használni. Teljes betanítást tartunk a bevezetés részeként.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>Milyen rendszerekkel integrálódik?</span>
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">CRM (HubSpot, Salesforce, Pipedrive), ERP, Google Workspace, Microsoft 365, Slack, Shopify, WooCommerce, Shoprenter — és több száz további.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>Mi különböztet meg másoktól?</span>
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">Nem előadásokat tartunk — megépítjük és üzemeltetjük. Nem hype-ot adunk, hanem működő automatizációt mérhető eredménnyel.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FINAL CTA SECTION ===== -->
+<section class="cta-section">
+  <div class="cta-container reveal">
+    <h2 class="cta-heading">A konkurenciád már automatizál.<br><span class="accent">Te mikor kezded?</span></h2>
+    <p class="cta-desc">30 perces, ingyenes konzultáció — megmutatjuk, hol spórolhatsz időt és pénzt AI-val.</p>
+    <a href="#" class="cta-button">Foglalj ingyenes konzultációt <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <div class="cta-trust-row">
+      <div class="cta-trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Nincs elköteleződés</span>
+      </div>
+      <div class="cta-trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <span>30 perc, online</span>
+      </div>
+      <div class="cta-trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+        <span>Konkrét tervet kapsz</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+
+  <!-- Glow line top -->
+  <div class="footer-glow"></div>
+
+  <!-- Main Grid -->
+  <div class="footer-main">
+    <div class="footer-grid">
+      <!-- Brand -->
+      <div>
+        <img src="https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/698fc7061807226f8ff432cf_4YES%20-%20Full%20White.png" alt="4YES" class="footer-brand-logo" />
+        <p class="footer-brand-desc">AI automatizációs ügynökség magyar cégeknek. Nemzetközi technológia, helyi szakértelemmel.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social-link" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="#" class="footer-social-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+          </a>
+          <a href="#" class="footer-social-link" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+        </div>
+      </div>
+      <!-- Services -->
+      <div>
+        <div class="footer-col-title">Szolgáltatások</div>
+        <ul class="footer-links">
+          <li><a href="#">AI Felmérés</a></li>
+          <li><a href="#">Workflow fejlesztés</a></li>
+          <li><a href="#">AI Munkaerő</a></li>
+          <li><a href="#">Konzultáció</a></li>
+        </ul>
+      </div>
+      <!-- Contact -->
+      <div>
+        <div class="footer-col-title">Kapcsolat</div>
+        <div class="footer-contact-item">
+          <div class="footer-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+          <span>hello@4yes.hu</span>
+        </div>
+        <div class="footer-contact-item">
+          <div class="footer-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+          <span>+36 1 234 5678</span>
+        </div>
+        <div class="footer-contact-item">
+          <div class="footer-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <span>Budapest, Magyarország</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Credit Section -->
+  <div class="footer-ai-credit">
+    <div class="footer-ai-inner">
+      <div class="footer-ai-avatar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="10" rx="2"/>
+          <circle cx="9" cy="16" r="1.5" fill="currentColor" stroke="none"/>
+          <circle cx="15" cy="16" r="1.5" fill="currentColor" stroke="none"/>
+          <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+          <path d="M12 2v1"/>
+          <path d="M7 4l1 1"/>
+          <path d="M17 4l-1 1"/>
+        </svg>
+      </div>
+      <div class="footer-ai-content">
+        <div class="footer-ai-label">
+          Designed & Developed by AI
+          <span class="footer-ai-label-tag">AI-POWERED</span>
+        </div>
+        <div class="footer-ai-headline">Tartalom és irány: <em>4YES szakértők</em>. Design és fejlesztés: <em>4YES AI ügynökök</em>.</div>
+        <div class="footer-ai-sub">Emberi kreativitás + autonóm AI fejlesztés — pontosan úgy, ahogy az ügyfelek projektjeit is készítjük.</div>
+      </div>
+      <div class="footer-ai-stats">
+        <div class="footer-ai-stat">
+          <div class="footer-ai-stat-value">0</div>
+          <div class="footer-ai-stat-label">Emberi fejlesztő</div>
+        </div>
+        <div class="footer-ai-stat">
+          <div class="footer-ai-stat-value">100%</div>
+          <div class="footer-ai-stat-label">AI-generált</div>
+        </div>
+        <div class="footer-ai-stat">
+          <div class="footer-ai-stat-value">72h</div>
+          <div class="footer-ai-stat-label">Build idő</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="footer-bottom">
+    <span class="footer-copyright">&copy; 2026 4yes.hu — Minden jog fenntartva</span>
+    <div class="footer-legal">
+      <a href="#">Adatvédelem</a>
+      <a href="#">ÁSZF</a>
+      <a href="#">Impresszum</a>
+    </div>
+  </div>
+
+</footer>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+// FAQ Accordion
+document.querySelectorAll('.faq-question').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.parentElement;
+    const answer = item.querySelector('.faq-answer');
+    const isOpen = item.classList.contains('faq-open');
+
+    // Close all items
+    document.querySelectorAll('.faq-item').forEach(i => {
+      i.classList.remove('faq-open');
+      i.querySelector('.faq-answer').style.maxHeight = '0';
+    });
+
+    // Open clicked item (if it wasn't already open)
+    if (!isOpen) {
+      item.classList.add('faq-open');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
+  });
+});
+
+// Scroll Reveal
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// Marquee card glow follow mouse
+document.querySelectorAll('.tcard').forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    card.style.setProperty('--mouse-x', x + '%');
+    card.style.setProperty('--mouse-y', y + '%');
+  });
+});
+
+// Comparison column reveal + row stagger + bar animation
+const colObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('revealed');
+      const rows = entry.target.querySelectorAll('.comp-row');
+      rows.forEach((row, i) => {
+        setTimeout(() => {
+          row.classList.add('row-visible');
+          const bar = row.querySelector('.comp-row-bar-fill');
+          if (bar) bar.style.width = row.getAttribute('data-bar') + '%';
+        }, 120 * i);
+      });
+    }
+  });
+}, { threshold: 0.2 });
+document.querySelectorAll('.comp-col').forEach(el => colObserver.observe(el));
+
+// Stat counter animation
+const statObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('stat-visible');
+      const target = parseInt(entry.target.getAttribute('data-target'));
+      const suffix = entry.target.getAttribute('data-suffix') || '';
+      const duration = 1500;
+      const startTime = Date.now();
+      function animateStat() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(target * eased);
+        entry.target.textContent = current + suffix;
+        if (progress < 1) requestAnimationFrame(animateStat);
+      }
+      animateStat();
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.comp-stat-value').forEach(el => statObserver.observe(el));
+
+// Progress bar scroll trigger (Version D)
+const progressTrack = document.getElementById('progressTrack');
+if (progressTrack) {
+  const progressObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('in-view'); }
+    });
+  }, { threshold: 0.5 });
+  progressObserver.observe(progressTrack);
+}
+</script>
+
+</body>
+</html>

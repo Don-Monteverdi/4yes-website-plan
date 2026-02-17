@@ -1,0 +1,2 @@
+var currentStep=1,selectedDayIndex=0,selectedSlot=null,colleagueCount=0,MAX_COLLEAGUES=3,currentWeekStart,weekSlots={};
+(function(){var d=new Date(),day=d.getDay(),diff=d.getDate()-day+(day===0?-6:1);d.setDate(diff);d.setHours(0,0,0,0);currentWeekStart=d;})();

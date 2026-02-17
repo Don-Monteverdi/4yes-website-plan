@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4YES — FAQ Section Redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+body { font-family: 'Outfit', sans-serif; background: #EEECEA; color: #0F1923; }
+
+/* ===== DESIGN TOKENS ===== */
+:root {
+  --bg-warm: #EEECEA;
+  --bg-warm-alt: #F5F4F2;
+  --bg-white: #FFFFFF;
+  --accent: #C3F73A;
+  --accent-hover: #d4ff5a;
+  --accent-muted: rgba(195,247,58,0.10);
+  --lt-text-heading: #0F1923;
+  --lt-text-body: #555F6A;
+  --lt-text-caption: #8E969E;
+  --lt-border-card: rgba(0,0,0,0.04);
+  --lt-shadow-card: 0 1px 2px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.03);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 100px;
+}
+
+/* ===== LIGHT BADGE ===== */
+.lt-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px 6px 10px; border-radius: var(--radius-pill);
+  background: rgba(15,25,35,0.55); color: #fff;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; line-height: 1;
+}
+.lt-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px rgba(195,247,58,0.4);
+}
+
+/* ===== FAQ SECTION ===== */
+.faq-section {
+  background: var(--bg-warm);
+  padding: 80px 48px;
+}
+.faq-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.faq-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.faq-heading {
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--lt-text-heading);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-top: 16px;
+}
+.faq-subheading {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--lt-text-body);
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+/* ===== TABS ===== */
+.faq-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 24px;
+}
+.faq-tab {
+  padding: 9px 18px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(0,0,0,0.08);
+  background: transparent;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--lt-text-body);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  white-space: nowrap;
+}
+.faq-tab:hover {
+  border-color: rgba(0,0,0,0.15);
+  color: var(--lt-text-heading);
+  background: rgba(255,255,255,0.5);
+}
+.faq-tab.active {
+  background: var(--lt-text-heading);
+  color: #fff;
+  border-color: var(--lt-text-heading);
+  font-weight: 600;
+}
+
+/* ===== TWO-COLUMN LAYOUT ===== */
+.faq-layout {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+.faq-main {
+  flex: 1;
+  min-width: 0;
+}
+.faq-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 100px;
+}
+
+/* ===== ACCORDION CARD ===== */
+.faq-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--lt-border-card);
+  box-shadow: var(--lt-shadow-card);
+  overflow: hidden;
+}
+.faq-item {
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.faq-item:last-child {
+  border-bottom: none;
+}
+.faq-item[data-hidden="true"] {
+  display: none;
+}
+.faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--lt-text-heading);
+  line-height: 1.4;
+  transition: color 0.2s;
+}
+.faq-question:hover {
+  color: #1A2838;
+}
+.faq-chevron {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--lt-text-caption);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faq-item.faq-open .faq-chevron {
+  transform: rotate(180deg);
+  color: var(--lt-text-heading);
+}
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faq-answer-inner {
+  padding: 0 22px 18px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--lt-text-body);
+}
+
+/* ===== EXPERT CTA CARD ===== */
+.faq-cta-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--lt-border-card);
+  box-shadow: var(--lt-shadow-card);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.faq-cta-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--accent-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.faq-cta-icon svg {
+  width: 22px;
+  height: 22px;
+  color: var(--lt-text-heading);
+}
+.faq-cta-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--lt-text-heading);
+  line-height: 1.3;
+}
+.faq-cta-desc {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--lt-text-body);
+  line-height: 1.6;
+}
+.faq-cta-avatars {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.faq-cta-expert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.faq-cta-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid rgba(195,247,58,0.3);
+  background: var(--bg-warm-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--lt-text-heading);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 4px rgba(195,247,58,0.08);
+}
+.faq-cta-expert-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.faq-cta-expert-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--lt-text-heading);
+  line-height: 1.2;
+}
+.faq-cta-expert-role {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--lt-text-caption);
+  line-height: 1.3;
+}
+.faq-cta-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px 20px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: var(--lt-text-heading);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faq-cta-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(195,247,58,0.25);
+}
+.faq-cta-btn svg {
+  width: 16px;
+  height: 16px;
+}
+.faq-cta-divider {
+  height: 1px;
+  background: rgba(0,0,0,0.06);
+  margin: 2px 0;
+}
+.faq-cta-email {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--lt-text-caption);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.faq-cta-email:hover {
+  color: var(--lt-text-heading);
+}
+.faq-cta-email svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 991px) {
+  .faq-section { padding: 64px 32px; }
+  .faq-heading { font-size: 34px; }
+  .faq-sidebar { width: 260px; }
+}
+
+@media (max-width: 767px) {
+  .faq-section { padding: 48px 24px 56px; }
+  .faq-heading { font-size: 30px; }
+  .faq-layout {
+    flex-direction: column;
+    gap: 24px;
+  }
+  .faq-sidebar {
+    width: 100%;
+    position: static;
+  }
+  .faq-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .faq-tabs::-webkit-scrollbar { display: none; }
+}
+
+@media (max-width: 479px) {
+  .faq-section { padding: 40px 16px 48px; }
+  .faq-heading { font-size: 26px; }
+  .faq-question { font-size: 14px; padding: 16px 18px; }
+  .faq-answer-inner { padding: 0 18px 16px; font-size: 13px; }
+  .faq-tab { padding: 8px 14px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== FAQ SECTION (REDESIGNED) ===== -->
+<section class="faq-section" id="faq">
+  <div class="faq-container">
+    <!-- Header -->
+    <div class="faq-header">
+      <div class="lt-badge"><div class="lt-badge-dot"></div>GYIK</div>
+      <h2 class="faq-heading">Gyakran ismételt kérdések</h2>
+      <p class="faq-subheading">Ami a legtöbb ügyfelünket érdekli az AI automatizációról</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="faq-tabs">
+      <button class="faq-tab active" data-tab="altalanos">Általános</button>
+      <button class="faq-tab" data-tab="arazas">Árazás & idő</button>
+      <button class="faq-tab" data-tab="technikai">Technikai</button>
+    </div>
+
+    <!-- Two-column layout -->
+    <div class="faq-layout">
+
+      <!-- LEFT: Accordion -->
+      <div class="faq-main">
+        <div class="faq-card">
+
+          <!-- Általános -->
+          <div class="faq-item" data-category="altalanos">
+            <button class="faq-question">
+              <span>Kell technikai tudás a használathoz?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-answer"><div class="faq-answer-inner">Nem. Úgy tervezzük a rendszereket, hogy bárki tudja használni — technikai háttér nélkül is. Teljes betanítást tartunk a bevezetés részeként.</div></div>
+          </div>
+
+          <div class="faq-item" data-category="altalanos">
+            <button class="faq-question">
+              <span>Mi különböztet meg más szolgáltatóktól?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-answer"><div class="faq-answer-inner">Nem előadásokat tartunk — megépítjük és üzemeltetjük. Nem hype-ot adunk, hanem működő automatizációt mérhető eredménnyel. Minden projektnél ROI kalkulációval indítunk.</div></div>
+          </div>
+
+          <div class="faq-item" data-category="altalanos">
+            <button class="faq-question">
+              <span>Hogyan kezdjünk hozzá?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-answer"><div class="faq-answer-inner">Foglalj egy ingyenes 30 perces konzultációt. Felmérjük a jelenlegi munkafolyamataidat, megmutatjuk hol automatizálhatsz, és konkrét megtérülési tervet kapsz — kötelezettség nélkül.</div></div>
+          </div>
+
+          <!-- Árazás & idő -->
+          <div class="faq-item" data-category="arazas">
+            <button class="faq-question">
+              <span>Mennyibe kerül az AI bevezetés?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-answer"><div class="faq-answer-inner">Ingyenes konzultáció után egyedi ajánlatot készítünk. Workflow fejlesztés 300.000 Ft-tól, AI munkaerő kölcsönzés 150.000 Ft/hó-tól. Minden projekt előtt ROI kalkulációt adunk.</div></div>
+          </div>
+
+          <div class="faq-item" data-category="arazas">
+            <button class="faq-question">
+              <span>Mennyi idő, amíg éles lesz a rendszer?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-answer"><div class="faq-answer-inner">Egyszerűbb workflow-k 2-4 hét. Komplex automatizáció 60-90 nap. A felmérés után pontos ütemtervet kapsz mérföldkövekkel.</div></div>
+          </div>
+
+          <div class="faq-item" data-category="arazas">
+            <button class="faq-question">
+              <span>Van garancia a megtérülésre?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-answer"><div class="faq-answer-inner">Igen. Minden projekt előtt részletes ROI elemzést készítünk, és csak akkor indítunk, ha a megtérülés egyértelműen kimutatható. Ha nem hozzuk az ígért eredményt, dolgozunk tovább amíg eléred.</div></div>
+          </div>
+
+          <!-- Technikai -->
+          <div class="faq-item" data-category="technikai">
+            <button class="faq-question">
+              <span>Mi történik, ha az AI hibázik?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-answer"><div class="faq-answer-inner">Minden rendszert emberi felügyelettel tervezünk. Kritikus döntéseknél ember hagy jóvá. Folyamatos monitorozással 95%+ pontosságot garantálunk.</div></div>
+          </div>
+
+          <div class="faq-item" data-category="technikai">
+            <button class="faq-question">
+              <span>Milyen rendszerekkel integrálódik?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-answer"><div class="faq-answer-inner">CRM (HubSpot, Salesforce, Pipedrive), ERP, Google Workspace, Microsoft 365, Slack, Shopify, WooCommerce, Shoprenter — és több száz további eszközzel.</div></div>
+          </div>
+
+          <div class="faq-item" data-category="technikai">
+            <button class="faq-question">
+              <span>Biztonságban vannak az adataink?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-answer"><div class="faq-answer-inner">Igen. GDPR-kompatibilis megoldásokat használunk, titkosított adatátvitellel. Érzékeny adatokat lokálisan is tudjuk feldolgozni, és minden rendszerhez részletes biztonsági dokumentációt adunk.</div></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT: Expert CTA Sidebar -->
+      <div class="faq-sidebar">
+        <div class="faq-cta-card">
+          <div class="faq-cta-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="faq-cta-title">Nem találod a választ?</div>
+          <div class="faq-cta-desc">Foglalj egy 30 perces ingyenes konzultációt Emesével, és személyesen megválaszol minden kérdést.</div>
+
+          <div class="faq-cta-expert">
+            <div class="faq-cta-avatar">E</div>
+            <div class="faq-cta-expert-info">
+              <span class="faq-cta-expert-name">Emese</span>
+              <span class="faq-cta-expert-role">Szervezetfejlesztési szakember</span>
+            </div>
+          </div>
+
+          <a href="/booking" class="faq-cta-btn">
+            Időpontot foglalok
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+
+          <div class="faq-cta-divider"></div>
+
+          <a href="mailto:hello@4yes.hu" class="faq-cta-email">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            hello@4yes.hu
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+// Tab filtering
+function filterByTab(category) {
+  document.querySelectorAll('.faq-item.faq-open').forEach(item => {
+    item.classList.remove('faq-open');
+    item.querySelector('.faq-answer').style.maxHeight = '0';
+  });
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.style.display = item.dataset.category === category ? '' : 'none';
+  });
+}
+
+document.querySelectorAll('.faq-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.faq-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    filterByTab(tab.dataset.tab);
+  });
+});
+
+// Show first tab on load
+filterByTab('altalanos');
+
+// Accordion
+document.querySelectorAll('.faq-question').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.parentElement;
+    const answer = item.querySelector('.faq-answer');
+    const isOpen = item.classList.contains('faq-open');
+
+    // Close all others
+    document.querySelectorAll('.faq-item.faq-open').forEach(i => {
+      if (i !== item) {
+        i.classList.remove('faq-open');
+        i.querySelector('.faq-answer').style.maxHeight = '0';
+      }
+    });
+
+    // Toggle current
+    if (isOpen) {
+      item.classList.remove('faq-open');
+      answer.style.maxHeight = '0';
+    } else {
+      item.classList.add('faq-open');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
+  });
+});
+</script>
+
+</body>
+</html>

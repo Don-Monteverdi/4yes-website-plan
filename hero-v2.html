@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4YES — Hero V2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body { font-family: 'Outfit', sans-serif; background: #0A1118; color: #fff; overflow-x: hidden; }
+
+/* ===== DESIGN TOKENS ===== */
+:root {
+  --bg-primary: #0F1923;
+  --bg-alt: #141F2B;
+  --bg-surface: rgba(255,255,255,0.04);
+  --bg-surface-hover: rgba(255,255,255,0.08);
+  --bg-card: #141F2B;
+  --accent: #C3F73A;
+  --accent-hover: #d4ff5a;
+  --accent-muted: rgba(195,247,58,0.08);
+  --accent-border: rgba(195,247,58,0.2);
+  --accent-glow: rgba(195,247,58,0.15);
+  --text-primary: #FFFFFF;
+  --text-secondary: #8399A2;
+  --text-muted: rgba(131,153,162,0.5);
+  --text-dark: #0F1923;
+  --border-subtle: rgba(131,153,162,0.12);
+  --border-accent: rgba(195,247,58,0.25);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 100px;
+}
+
+/* ===== NAVBAR — Floating Minimal ===== */
+.navbar-wrapper {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: center;
+  padding: 20px 24px;
+  pointer-events: none;
+}
+.navbar {
+  pointer-events: all;
+  display: flex; align-items: center; gap: 32px;
+  padding: 12px 16px 12px 24px;
+  border-radius: 100px;
+  background: rgba(15, 25, 35, 0.55);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(131,153,162,0.08);
+  position: relative;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: navSlideDown 0.8s ease-out 0.1s backwards;
+}
+.navbar:hover {
+  background: rgba(15, 25, 35, 0.7);
+  border-color: rgba(131,153,162,0.14);
+}
+
+.nav-logo {
+  display: flex; align-items: center; text-decoration: none;
+  flex-shrink: 0;
+}
+.nav-logo img {
+  height: 24px; width: auto;
+  opacity: 0.9; transition: opacity 0.2s;
+}
+.nav-logo:hover img { opacity: 1; }
+
+.nav-links {
+  display: flex; align-items: center; gap: 6px;
+}
+.nav-links a {
+  position: relative;
+  font-size: 13px; font-weight: 500; color: rgba(131,153,162,0.7);
+  text-decoration: none; padding: 6px 14px;
+  border-radius: 100px;
+  transition: color 0.3s;
+  white-space: nowrap;
+}
+.nav-links a:hover { color: #fff; }
+/* Minimal underline on hover */
+.nav-links a::after {
+  content: ''; position: absolute; bottom: 2px; left: 50%; width: 0; height: 1px;
+  background: var(--accent); border-radius: 1px;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateX(-50%);
+}
+.nav-links a:hover::after { width: 16px; }
+
+/* CTA */
+.nav-cta {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 20px; border-radius: var(--radius-pill);
+  background: var(--accent); color: var(--text-dark);
+  font-size: 13px; font-weight: 700; text-decoration: none;
+  transition: all 0.3s; border: none; cursor: pointer;
+  flex-shrink: 0; position: relative; overflow: hidden;
+}
+.nav-cta:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 0 24px rgba(195,247,58,0.2);
+}
+/* Subtle shimmer */
+.nav-cta::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.2) 50%, transparent 60%);
+  background-size: 250% 100%;
+  animation: shimmer 4s ease-in-out infinite;
+}
+.nav-cta svg { position: relative; z-index: 1; }
+.nav-cta span { position: relative; z-index: 1; }
+
+@keyframes navSlideDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0% { background-position: 250% center; }
+  100% { background-position: -250% center; }
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+  position: relative; min-height: 100vh;
+  display: flex; align-items: center;
+  padding: 120px 48px 60px;
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+/* Background effects */
+.hero-orb {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  filter: blur(120px); opacity: 0.4;
+}
+.hero-orb--green {
+  width: 600px; height: 600px; top: -100px; left: -150px;
+  background: radial-gradient(circle, rgba(195,247,58,0.25) 0%, transparent 70%);
+  animation: orbFloat1 25s ease-in-out infinite;
+}
+.hero-orb--blue {
+  width: 500px; height: 500px; bottom: -100px; right: -100px;
+  background: radial-gradient(circle, rgba(30,80,140,0.2) 0%, transparent 70%);
+  animation: orbFloat2 30s ease-in-out infinite;
+}
+.hero-orb--accent {
+  width: 300px; height: 300px; top: 30%; right: 20%;
+  background: radial-gradient(circle, rgba(195,247,58,0.08) 0%, transparent 70%);
+  animation: orbFloat3 20s ease-in-out infinite;
+}
+
+/* Dot grid pattern */
+.hero-grid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: radial-gradient(rgba(131,153,162,0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 100%);
+}
+
+/* Glow line */
+.hero-glow-line {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(195,247,58,0.3) 30%, rgba(195,247,58,0.5) 50%, rgba(195,247,58,0.3) 70%, transparent);
+}
+
+.hero-inner {
+  position: relative; z-index: 2;
+  max-width: 1280px; margin: 0 auto; width: 100%;
+  display: flex; align-items: center; gap: 64px;
+}
+
+/* Left column */
+.hero-content { flex: 1; max-width: 600px; }
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 8px 20px 8px 16px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  margin-bottom: 32px;
+  opacity: 0; animation: fadeUp 0.6s ease-out 0.2s forwards;
+}
+.hero-badge-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s ease-in-out infinite;
+}
+.hero-badge-text {
+  font-size: 13px; font-weight: 600; color: var(--accent);
+  letter-spacing: 0.02em;
+}
+
+.hero-headline {
+  font-size: clamp(40px, 4.2vw, 60px);
+  font-weight: 800; line-height: 1.08;
+  letter-spacing: -0.035em; color: #fff;
+  margin-bottom: 24px;
+  opacity: 0; animation: fadeUp 0.7s ease-out 0.35s forwards;
+}
+.hero-headline .accent {
+  color: var(--accent);
+  text-shadow: 0 0 60px rgba(195,247,58,0.25);
+}
+
+.hero-subtitle {
+  font-size: 18px; font-weight: 300; line-height: 1.7;
+  color: var(--text-secondary); max-width: 480px;
+  margin-bottom: 36px;
+  opacity: 0; animation: fadeUp 0.7s ease-out 0.5s forwards;
+}
+
+.hero-ctas {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  margin-bottom: 40px;
+  opacity: 0; animation: fadeUp 0.7s ease-out 0.65s forwards;
+}
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 16px 32px; border-radius: var(--radius-pill);
+  background: var(--accent); color: var(--text-dark);
+  font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700;
+  text-decoration: none; border: none; cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 0 0 0 rgba(195,247,58,0);
+}
+.btn-primary:hover {
+  background: var(--accent-hover); transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(195,247,58,0.25);
+}
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 16px 28px; border-radius: var(--radius-pill);
+  background: transparent; color: #fff;
+  font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600;
+  text-decoration: none; border: 1px solid var(--border-subtle);
+  cursor: pointer; transition: all 0.3s;
+}
+.btn-ghost:hover {
+  border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04);
+  transform: translateY(-2px);
+}
+
+/* Mini testimonial */
+.hero-testimonial {
+  display: flex; gap: 16px; padding: 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  max-width: 480px;
+  opacity: 0; animation: fadeUp 0.7s ease-out 0.8s forwards;
+}
+.hero-testimonial-quote-icon {
+  flex-shrink: 0; width: 28px; height: 28px;
+  color: var(--accent); font-size: 32px; line-height: 1;
+  font-weight: 900; font-family: Georgia, serif;
+}
+.hero-testimonial-content { flex: 1; }
+.hero-testimonial-text {
+  font-size: 14px; font-weight: 400; line-height: 1.6;
+  color: var(--text-secondary); margin-bottom: 10px;
+  font-style: italic;
+}
+.hero-testimonial-author {
+  display: flex; align-items: center; gap: 8px;
+}
+.hero-testimonial-name { font-size: 13px; font-weight: 600; color: #fff; }
+.hero-testimonial-role { font-size: 12px; color: var(--text-muted); }
+.hero-testimonial-stars { display: flex; gap: 2px; margin-left: auto; }
+.hero-testimonial-stars span { color: var(--accent); font-size: 12px; }
+
+/* ===== RIGHT COLUMN — Team showcase ===== */
+.hero-team {
+  flex: 0 0 520px; position: relative;
+  opacity: 0; animation: fadeInRight 0.8s ease-out 0.5s forwards;
+}
+.team-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+
+.team-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative; overflow: hidden;
+  min-height: 160px;
+}
+.team-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 50%);
+  pointer-events: none;
+}
+.team-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(131,153,162,0.25);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+}
+
+/* Stagger cards */
+.team-card:nth-child(1) { animation: cardIn 0.6s ease-out 0.7s backwards; }
+.team-card:nth-child(2) { animation: cardIn 0.6s ease-out 0.85s backwards; }
+.team-card:nth-child(3) { animation: cardIn 0.6s ease-out 1.0s backwards; }
+.team-card:nth-child(4) { animation: cardIn 0.6s ease-out 1.15s backwards; }
+
+/* Card top row: avatar + linkedin */
+.team-card-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+
+.team-avatar {
+  position: relative; flex-shrink: 0;
+  width: 52px; height: 52px; border-radius: 50%;
+  overflow: hidden; background: #1E2D3D;
+}
+.team-avatar img {
+  width: 100%; height: 100%; object-fit: cover; object-position: center top;
+  filter: grayscale(100%) brightness(1.1) contrast(1.1);
+  scale: 1.35;
+  translate: 0 15%;
+}
+.team-avatar-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700; color: var(--text-secondary);
+  background: linear-gradient(135deg, #1A2838, #253545);
+}
+.team-status {
+  position: absolute; bottom: 0px; right: 0px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: #22C55E;
+  border: 2.5px solid var(--bg-card);
+}
+
+/* LinkedIn button */
+.team-linkedin {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 6px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(131,153,162,0.1);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.team-linkedin:hover {
+  background: rgba(10, 102, 194, 0.15);
+  border-color: rgba(10, 102, 194, 0.3);
+  color: #0A66C2;
+}
+.team-linkedin svg { width: 14px; height: 14px; }
+
+.team-info { flex: 1; min-width: 0; }
+.team-name {
+  font-size: 16px; font-weight: 700; color: #fff;
+  letter-spacing: -0.01em; margin-bottom: 3px;
+}
+.team-role {
+  font-size: 11px; font-weight: 700; color: var(--text-secondary);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.team-expertise {
+  font-size: 13px; font-weight: 400; line-height: 1.45;
+  color: var(--text-muted);
+}
+
+/* ===== AI AGENT CARD — SPECIAL ===== */
+.team-card--ai {
+  border-color: var(--accent-border);
+  background: linear-gradient(135deg, rgba(195,247,58,0.04) 0%, var(--bg-card) 100%);
+}
+.team-card--ai:hover {
+  border-color: rgba(195,247,58,0.4);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.3), 0 0 32px rgba(195,247,58,0.08);
+}
+.team-card--ai .team-avatar {
+  background: linear-gradient(135deg, rgba(195,247,58,0.15), rgba(195,247,58,0.05));
+}
+.team-card--ai .team-avatar-placeholder {
+  background: linear-gradient(135deg, rgba(195,247,58,0.12), rgba(195,247,58,0.04));
+}
+.team-card--ai .team-avatar-placeholder svg { width: 26px; height: 26px; }
+.team-card--ai .team-status {
+  background: var(--accent);
+  animation: pulse 2s ease-in-out infinite;
+}
+.team-card--ai .team-role { color: var(--accent); }
+
+/* Rotating role text */
+.ai-role-rotator {
+  position: relative; height: 19px; overflow: hidden;
+}
+.ai-role-rotator .ai-role {
+  position: absolute; left: 0; top: 0; width: 100%;
+  font-size: 13px; font-weight: 400; color: var(--text-muted);
+  opacity: 0; transform: translateY(8px);
+  animation: roleRotate 12.5s ease-in-out infinite;
+  white-space: nowrap;
+}
+.ai-role-rotator .ai-role:nth-child(1) { animation-delay: 0s; }
+.ai-role-rotator .ai-role:nth-child(2) { animation-delay: 2.5s; }
+.ai-role-rotator .ai-role:nth-child(3) { animation-delay: 5s; }
+.ai-role-rotator .ai-role:nth-child(4) { animation-delay: 7.5s; }
+.ai-role-rotator .ai-role:nth-child(5) { animation-delay: 10s; }
+
+@keyframes roleRotate {
+  0%, 4% { opacity: 0; transform: translateY(8px); }
+  6%, 16% { opacity: 1; transform: translateY(0); }
+  18%, 20% { opacity: 0; transform: translateY(-8px); }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+
+/* AI agent tag */
+.ai-tag {
+  display: inline-flex; align-items: center; gap: 4px; margin-top: auto;
+  padding: 3px 8px; border-radius: 6px;
+  background: rgba(195,247,58,0.08);
+  font-size: 10px; font-weight: 700; color: var(--accent);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.ai-tag-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ===== TEAM FOOTER — Trust building ===== */
+.team-footer {
+  margin-top: 16px;
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
+}
+.team-trust-item {
+  text-align: center; padding: 12px 8px;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(131,153,162,0.06);
+}
+.team-trust-value {
+  font-size: 20px; font-weight: 800; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.2;
+}
+.team-trust-value .accent-val { color: var(--accent); }
+.team-trust-label {
+  font-size: 11px; font-weight: 500; color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ===== TRUST BAR ===== */
+.trust-bar {
+  position: relative; z-index: 2;
+  display: flex; align-items: center; justify-content: center; gap: 40px;
+  padding: 28px 48px;
+  background: var(--bg-alt);
+  border-top: 1px solid rgba(131,153,162,0.08);
+  border-bottom: 1px solid rgba(131,153,162,0.08);
+}
+.trust-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; font-weight: 500; color: var(--text-secondary);
+}
+.trust-icon {
+  width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+  color: var(--accent); font-size: 16px;
+}
+.trust-item-separator {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: rgba(131,153,162,0.3);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(195,247,58,0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(195,247,58,0); }
+}
+@keyframes orbFloat1 {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(30px, -20px); }
+  66% { transform: translate(-20px, 15px); }
+}
+@keyframes orbFloat2 {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(-25px, 20px); }
+  66% { transform: translate(15px, -15px); }
+}
+@keyframes orbFloat3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -10px) scale(1.1); }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .hero { padding: 120px 32px 48px; }
+  .hero-inner { gap: 40px; }
+  .hero-team { flex: 0 0 420px; }
+  .hero-headline { font-size: clamp(36px, 4vw, 48px); }
+}
+@media (max-width: 768px) {
+  .navbar-wrapper { padding: 12px 16px; }
+  .navbar { padding: 10px 10px 10px 20px; gap: 16px; }
+  .nav-links { display: none; }
+  .hero { padding: 100px 24px 40px; min-height: auto; }
+  .hero-inner { flex-direction: column; gap: 48px; }
+  .hero-content { max-width: 100%; text-align: center; }
+  .hero-subtitle { max-width: 100%; }
+  .hero-ctas { justify-content: center; }
+  .hero-testimonial { max-width: 100%; text-align: left; }
+  .hero-team { flex: none; width: 100%; max-width: 480px; margin: 0 auto; }
+  .trust-bar { flex-wrap: wrap; gap: 20px; padding: 24px; }
+  .trust-item-separator { display: none; }
+  .hero-headline { font-size: 36px; }
+}
+@media (max-width: 480px) {
+  .hero { padding: 90px 16px 32px; }
+  .hero-headline { font-size: 32px; }
+  .hero-ctas { flex-direction: column; width: 100%; }
+  .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
+  .team-grid { gap: 12px; }
+  .team-card { padding: 16px; min-height: 140px; }
+  .team-footer { grid-template-columns: 1fr; }
+  .trust-bar { flex-direction: column; gap: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar-wrapper">
+  <nav class="navbar" id="navbar">
+    <a href="#" class="nav-logo">
+      <img src="https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/698fc7061807226f8ff432cf_4YES%20-%20Full%20White.png" alt="4YES" />
+    </a>
+
+    <div class="nav-links">
+      <a href="#">AI Felmérés</a>
+      <a href="#">Workflow fejlesztés</a>
+      <a href="#">AI Munkaerő</a>
+    </div>
+
+    <a href="#" class="nav-cta">
+      <span>Ingyenes konzultáció</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </nav>
+</div>
+
+<!-- HERO SECTION -->
+<section class="hero">
+  <!-- Background effects -->
+  <div class="hero-orb hero-orb--green"></div>
+  <div class="hero-orb hero-orb--blue"></div>
+  <div class="hero-orb hero-orb--accent"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow-line"></div>
+
+  <div class="hero-inner">
+    <!-- LEFT COLUMN -->
+    <div class="hero-content">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        <span class="hero-badge-text">AI automatizációs ügynökség</span>
+      </div>
+
+      <h1 class="hero-headline">
+        A céged következő<br>munkatársa<br>
+        <span class="accent">nem ember lesz</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Felépítjük az AI munkaerődet, ami 0-24 dolgozik — szabadság, betegség és fluktuáció nélkül.
+      </p>
+
+      <div class="hero-ctas">
+        <a href="#" class="btn-primary">
+          Kérd az ingyenes AI felmérést
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#" class="btn-ghost">Hogyan működik?</a>
+      </div>
+
+      <div class="hero-testimonial">
+        <div class="hero-testimonial-quote-icon">"</div>
+        <div class="hero-testimonial-content">
+          <p class="hero-testimonial-text">3 hónap alatt az ügyfélszolgálati válaszidőnk 4 óráról 3 percre csökkent. Az AI ügynök a megkeresések 78%-át egyedül kezeli.</p>
+          <div class="hero-testimonial-author">
+            <span class="hero-testimonial-name">K. Tamás</span>
+            <span class="hero-testimonial-role">· Ügyvezető</span>
+            <div class="hero-testimonial-stars">
+              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN — TEAM -->
+    <div class="hero-team">
+      <div class="team-grid">
+
+        <!-- Kolbert István -->
+        <div class="team-card">
+          <div class="team-card-header">
+            <div class="team-avatar">
+              <img src="https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/698fc5c89c557ab96101a288_ISTVA%CC%81N%20-%20V3.png" alt="Kolbert István" />
+            </div>
+            <a href="https://www.linkedin.com/in/istvankolbert/" target="_blank" rel="noopener" class="team-linkedin" title="LinkedIn profil">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+          </div>
+          <div class="team-info">
+            <div class="team-name">Kolbert István</div>
+            <div class="team-role">Digitális Stratéga</div>
+            <div class="team-expertise">AI megoldások beillesztése az üzleti stratégiába</div>
+          </div>
+        </div>
+
+        <!-- AI Agent -->
+        <div class="team-card team-card--ai">
+          <div class="team-card-header">
+            <div class="team-avatar">
+              <div class="team-avatar-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--accent);">
+                  <path d="M12 2a4 4 0 0 1 4 4v1h1a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-6a3 3 0 0 1 3-3h1V6a4 4 0 0 1 4-4z" stroke-linecap="round"/>
+                  <circle cx="9" cy="13" r="1.5" fill="currentColor" stroke="none"/>
+                  <circle cx="15" cy="13" r="1.5" fill="currentColor" stroke="none"/>
+                  <path d="M9 17h6" stroke-linecap="round"/>
+                  <path d="M12 2V0M4 10H2M22 10h-2" stroke-linecap="round" opacity="0.5"/>
+                </svg>
+              </div>
+              <div class="team-status"></div>
+            </div>
+            <div class="ai-tag"><div class="ai-tag-dot"></div> 0-24 AKTÍV</div>
+          </div>
+          <div class="team-info">
+            <div class="team-name">AI Ügynök</div>
+            <div class="team-role">Éppen dolgozik:</div>
+            <div class="ai-role-rotator">
+              <span class="ai-role">Ügyfélszolgálat kezelése</span>
+              <span class="ai-role">Lead-ek minősítése</span>
+              <span class="ai-role">Dokumentumok feldolgozása</span>
+              <span class="ai-role">Marketing tartalom készítése</span>
+              <span class="ai-role">Adatok elemzése, riportolás</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Zöldhegyi Gábor -->
+        <div class="team-card">
+          <div class="team-card-header">
+            <div class="team-avatar">
+              <img src="https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/698fc5c85857b0b5f303c824_ZG%20-%20V3.png" alt="Zöldhegyi Gábor" />
+            </div>
+            <a href="https://www.linkedin.com/in/zoldhegyi-gabor/" target="_blank" rel="noopener" class="team-linkedin" title="LinkedIn profil">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+          </div>
+          <div class="team-info">
+            <div class="team-name">Zöldhegyi Gábor</div>
+            <div class="team-role">Folyamat Designer</div>
+            <div class="team-expertise">Üzleti folyamatok megértése és AI-val fejlesztése</div>
+          </div>
+        </div>
+
+        <!-- Horváth Emese -->
+        <div class="team-card">
+          <div class="team-card-header">
+            <div class="team-avatar">
+              <img src="https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/698fc5c8d9fdd36514fc8914_EMESE%20-%20V3.png" alt="Horváth Emese" />
+            </div>
+            <a href="https://www.linkedin.com/in/emese-horvath/" target="_blank" rel="noopener" class="team-linkedin" title="LinkedIn profil">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+          </div>
+          <div class="team-info">
+            <div class="team-name">Horváth Emese</div>
+            <div class="team-role">Szervezetfejlesztő</div>
+            <div class="team-expertise">Megérti, amire az embereknek valóban szükségük van</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Trust-building footer -->
+      <div class="team-footer">
+        <div class="team-trust-item">
+          <div class="team-trust-value">15<span class="accent-val">+</span></div>
+          <div class="team-trust-label">év tapasztalat</div>
+        </div>
+        <div class="team-trust-item">
+          <div class="team-trust-value">10<span class="accent-val">+</span></div>
+          <div class="team-trust-label">sikeres AI projekt</div>
+        </div>
+        <div class="team-trust-item">
+          <div class="team-trust-value">100<span class="accent-val">%</span></div>
+          <div class="team-trust-label">magyar csapat</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item">
+    <div class="trust-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </div>
+    <span>Nincs elköteleződés</span>
+  </div>
+  <div class="trust-item-separator"></div>
+  <div class="trust-item">
+    <div class="trust-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    </div>
+    <span>30 perc, online</span>
+  </div>
+  <div class="trust-item-separator"></div>
+  <div class="trust-item">
+    <div class="trust-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+    </div>
+    <span>Konkrét tervet kapsz</span>
+  </div>
+  <div class="trust-item-separator"></div>
+  <div class="trust-item">
+    <div class="trust-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </div>
+    <span>Magyar szakértői csapat</span>
+  </div>
+</div>
+
+</body>
+</html>
