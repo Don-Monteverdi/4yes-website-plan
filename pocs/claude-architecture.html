@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Architecture — 4YES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --warm:#EEECEA;--white:#FFFFFF;--dark:#0F1923;--accent:#C3F73A;
+  --body:#555F6A;--caption:#8E969E;--radius:16px;
+  --skill:#4A7BCC;--skill-bg:#E8EEF5;
+  --plugin:#7B59C4;--plugin-bg:#EDE8F5;
+  --mcp:#3FAA52;--mcp-bg:#E8F5EA;
+  --workflow:#CC7A4A;--workflow-bg:#F5EDE8;
+  --tool:#2AA5B8;--tool-bg:#E8F2F5;
+  --hook:#CC4A4A;--hook-bg:#F5E8E8;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--warm);color:var(--body);line-height:1.6;min-height:100vh}
+
+/* HERO */
+.hero{text-align:center;padding:56px 24px 40px;max-width:800px;margin:0 auto}
+.hero h1{font-size:clamp(28px,5vw,42px);font-weight:800;color:var(--dark);letter-spacing:-0.5px;margin-bottom:8px}
+.hero p{font-size:18px;color:var(--caption);font-weight:300}
+
+/* SECTIONS */
+.section{max-width:1200px;margin:0 auto;padding:0 24px 48px}
+.section-title{font-size:22px;font-weight:700;color:var(--dark);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';width:4px;height:24px;background:var(--accent);border-radius:2px;flex-shrink:0}
+
+/* FLOW DIAGRAM */
+.flow{display:flex;align-items:center;gap:0;justify-content:center;flex-wrap:wrap;padding:32px 0;margin-bottom:32px}
+.flow-step{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 20px;border-radius:var(--radius);min-width:120px;text-align:center;position:relative}
+.flow-step .flow-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:white}
+.flow-step .flow-label{font-size:13px;font-weight:600;color:var(--dark)}
+.flow-step .flow-sub{font-size:11px;color:var(--caption);font-weight:400;max-width:100px}
+.flow-arrow{font-size:24px;color:var(--caption);padding:0 4px;flex-shrink:0}
+
+/* SWIM LANES */
+.swim-lanes{display:flex;flex-direction:column;gap:8px;margin-bottom:48px}
+.swim-lane{display:flex;align-items:flex-start;gap:16px;padding:16px;border-radius:var(--radius);border:1px solid transparent;transition:border-color 0.2s}
+.swim-lane:hover{border-color:rgba(0,0,0,0.06)}
+.lane-label{min-width:120px;flex-shrink:0;display:flex;flex-direction:column;gap:2px}
+.lane-label .lane-name{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+.lane-label .lane-count{font-size:11px;font-weight:400;color:var(--caption)}
+.lane-pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{padding:5px 12px;border-radius:100px;font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;border:none;white-space:nowrap}
+.pill:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,0.12)}
+
+/* CONTROLS */
+.controls{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;align-items:center}
+.tab-bar{display:flex;gap:4px;flex-wrap:wrap}
+.tab{padding:8px 16px;border-radius:100px;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid transparent;background:var(--white);color:var(--body);transition:all 0.2s}
+.tab:hover{border-color:var(--dark)}
+.tab.active{background:var(--dark);color:var(--white);border-color:var(--dark)}
+.search-box{flex:1;min-width:200px;position:relative}
+.search-box input{width:100%;padding:9px 16px 9px 38px;border-radius:100px;border:1.5px solid #ddd;font-family:inherit;font-size:13px;background:var(--white);color:var(--dark);outline:none;transition:border-color 0.2s}
+.search-box input:focus{border-color:var(--dark)}
+.search-box::before{content:'⌕';position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--caption)}
+.stats{font-size:12px;color:var(--caption);padding:8px 0}
+
+/* CARDS */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+.card{background:var(--white);border-radius:var(--radius);border:1.5px solid #e5e3e0;cursor:pointer;overflow:hidden;transition:all 0.2s}
+.card:hover{border-color:#ccc;box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+.card.expanded{grid-column:1/-1;border-color:var(--dark)}
+.card-header{padding:16px 20px;display:flex;align-items:flex-start;gap:12px}
+.card-badge{padding:3px 10px;border-radius:100px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;white-space:nowrap;flex-shrink:0}
+.card-info{flex:1;min-width:0}
+.card-name{font-size:15px;font-weight:600;color:var(--dark);margin-bottom:2px}
+.card-short{font-size:13px;color:var(--body);line-height:1.4}
+.card-chevron{font-size:14px;color:var(--caption);transition:transform 0.3s;flex-shrink:0;margin-top:4px}
+.card.expanded .card-chevron{transform:rotate(180deg)}
+.card-details{max-height:0;overflow:hidden;transition:max-height 0.4s ease}
+.card.expanded .card-details{max-height:2000px}
+.card-body{padding:0 20px 20px;border-top:1px solid #f0eeec}
+.card-body h4{font-size:13px;font-weight:700;color:var(--dark);margin:16px 0 8px;text-transform:uppercase;letter-spacing:0.3px}
+.card-body ul{list-style:none;padding:0}
+.card-body li{font-size:13px;padding:4px 0;padding-left:16px;position:relative;line-height:1.5}
+.card-body li::before{content:'›';position:absolute;left:0;color:var(--accent);font-weight:700}
+.card-body p{font-size:13px;line-height:1.6;color:var(--body)}
+.card-body .tag-list{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.card-body .tag{padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500;background:#f0eeec;color:var(--body)}
+.card-body .step{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f5f3f1}
+.card-body .step:last-child{border-bottom:none}
+.card-body .step-num{width:22px;height:22px;border-radius:50%;background:var(--dark);color:var(--white);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.card-body .step-text{font-size:13px;line-height:1.5}
+.card-body .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;margin-top:4px}
+.card-body .tool-item{padding:8px 12px;background:#faf9f8;border-radius:10px;font-size:12px;line-height:1.4}
+.card-body .tool-item strong{color:var(--dark);font-weight:600}
+.card-body .conn-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.card-body .conn{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;transition:all 0.15s}
+.card-body .conn:hover{transform:translateY(-1px)}
+
+/* HOW IT WORKS */
+.how-section{background:var(--white);border-radius:var(--radius);padding:32px;margin-bottom:48px;border:1.5px solid #e5e3e0}
+.how-section h3{font-size:18px;font-weight:700;color:var(--dark);margin-bottom:16px}
+.how-steps{display:flex;flex-direction:column;gap:12px}
+.how-step{display:flex;gap:14px;align-items:flex-start}
+.how-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0}
+.how-text{flex:1}
+.how-text strong{color:var(--dark);font-weight:600}
+
+/* FOOTER */
+.footer{text-align:center;padding:32px 24px 48px;font-size:12px;color:var(--caption)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .swim-lane{flex-direction:column;gap:8px}
+  .lane-label{min-width:auto;flex-direction:row;align-items:center;gap:8px}
+  .card-grid{grid-template-columns:1fr}
+  .flow{gap:4px}
+  .flow-step{padding:10px 8px;min-width:80px}
+  .flow-step .flow-sub{display:none}
+  .controls{flex-direction:column}
+  .search-box{min-width:auto;width:100%}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Claude Code Architecture</h1>
+  <p>How your AI assistant works — skills, plugins, servers, workflows, tools & hooks</p>
+</div>
+
+<div class="section">
+  <div id="flow-diagram"></div>
+</div>
+
+<div class="section">
+  <h2 class="section-title">Architecture Map</h2>
+  <div id="swim-lanes" class="swim-lanes"></div>
+</div>
+
+<div class="section">
+  <div class="how-section" id="how-it-works"></div>
+</div>
+
+<div class="section">
+  <h2 class="section-title">Component Reference</h2>
+  <div class="controls">
+    <div class="tab-bar" id="tab-bar"></div>
+    <div class="search-box"><input id="search" type="text" placeholder="Search components..."></div>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div class="card-grid" id="card-grid"></div>
+</div>
+
+<div class="footer" id="footer"></div>
+
+<script>
+/* ═══════════════════════════════════════════
+   LAYER CONFIGURATION
+   ═══════════════════════════════════════════ */
+const LAYERS = {
+  skills:   { label:'Skills',      color:'var(--skill)',   bg:'var(--skill-bg)',   icon:'S' },
+  plugins:  { label:'Plugins',     color:'var(--plugin)',  bg:'var(--plugin-bg)',  icon:'P' },
+  mcp:      { label:'MCP Servers', color:'var(--mcp)',     bg:'var(--mcp-bg)',     icon:'M' },
+  workflows:{ label:'Workflows',   color:'var(--workflow)',bg:'var(--workflow-bg)', icon:'W' },
+  tools:    { label:'Local Tools', color:'var(--tool)',    bg:'var(--tool-bg)',    icon:'T' },
+  hooks:    { label:'Hooks',       color:'var(--hook)',    bg:'var(--hook-bg)',    icon:'H' }
+};
+
+/* ═══════════════════════════════════════════
+   COMPONENT DATA — ALL 60+ COMPONENTS
+   ═══════════════════════════════════════════ */
+const COMPONENTS = [
+
+  // ─── SKILLS: DESIGN & UI (9) ────────────────────
+  {
+    id:'atomic-design-fundamentals', name:'Atomic Design Fundamentals',
+    layer:'skills', category:'Design & UI',
+    short:'Core Atomic Design methodology — organizing UI into quarks, atoms, molecules, organisms, templates, and pages.',
+    details:{
+      triggers:['Organizing UI components into a design hierarchy','Setting up a new component library','Deciding which level a component belongs to'],
+      capabilities:['Defines the 6-level component hierarchy from quarks to pages','Establishes naming conventions and folder structures','Guides when to split or merge component levels','Provides rules for component composition and isolation'],
+      connections:['atomic-design-atoms','atomic-design-molecules','atomic-design-templates','atomic-design-integration']
+    }
+  },
+  {
+    id:'atomic-design-atoms', name:'Atomic Design — Atoms',
+    layer:'skills', category:'Design & UI',
+    short:'Creating atomic-level UI components — buttons, inputs, labels, icons, and other smallest building blocks.',
+    details:{
+      triggers:['Building buttons, inputs, labels, or icons','Creating the smallest UI building blocks','Designing base-level interactive elements'],
+      capabilities:['Defines standards for atomic components (color, size, state)','Covers buttons, inputs, labels, icons, badges, tags','Ensures atoms are self-contained with no external dependencies','Provides accessibility guidelines per atom type'],
+      connections:['atomic-design-fundamentals','atomic-design-molecules','design-principles']
+    }
+  },
+  {
+    id:'atomic-design-molecules', name:'Atomic Design — Molecules',
+    layer:'skills', category:'Design & UI',
+    short:'Composing atoms into functional molecule components like form fields, search bars, and card headers.',
+    details:{
+      triggers:['Composing atoms into small functional groups','Building form fields, search bars, or card headers','Creating reusable component combos'],
+      capabilities:['Guides combining 2-5 atoms into a molecule','Covers form fields, search bars, nav items, card headers, stat groups','Defines prop-passing patterns between atoms','Manages molecule-level state and events'],
+      connections:['atomic-design-atoms','atomic-design-templates','atomic-design-integration']
+    }
+  },
+  {
+    id:'atomic-design-templates', name:'Atomic Design — Templates',
+    layer:'skills', category:'Design & UI',
+    short:'Page layouts without real content — skeletal structures using organisms, molecules, and atoms.',
+    details:{
+      triggers:['Creating page layout skeletons','Designing content-agnostic page templates','Building responsive layout structures'],
+      capabilities:['Defines page-level structural layouts','Separates layout structure from content','Uses placeholder content for visual testing','Guides responsive template design across breakpoints'],
+      connections:['atomic-design-molecules','atomic-design-fundamentals']
+    }
+  },
+  {
+    id:'atomic-design-integration', name:'Atomic Design — Integration',
+    layer:'skills', category:'Design & UI',
+    short:'Framework-specific Atomic Design implementation for React, Vue, Angular, and other frameworks.',
+    details:{
+      triggers:['Integrating Atomic Design with React, Vue, or Angular','Setting up component libraries in specific frameworks','Structuring project files for Atomic Design'],
+      capabilities:['Maps Atomic Design levels to framework component patterns','Covers React (hooks, context), Vue (composition API), Angular (modules)','Provides folder structure templates per framework','Handles state management across component levels'],
+      connections:['atomic-design-fundamentals','atomic-design-atoms','atomic-design-molecules','atomic-design-templates']
+    }
+  },
+  {
+    id:'design-principles', name:'Design Principles',
+    layer:'skills', category:'Design & UI',
+    short:'Swiss International Style principles — clean grid systems, strong typography, and rational design.',
+    details:{
+      triggers:['Designing new UI components','Modifying existing component styles','Need for clean, grid-based typography-first design'],
+      capabilities:['Applies Swiss International Style (Helvetica tradition)','Uses strong grid systems with mathematical ratios','Emphasizes typographic hierarchy as the primary design tool','Clean whitespace, minimal decoration, information-first approach'],
+      connections:['frontend-design','ui-ux-pro-max','color-contrast-checker']
+    }
+  },
+  {
+    id:'frontend-design', name:'Frontend Design',
+    layer:'skills', category:'Design & UI',
+    short:'Production-grade frontend interfaces with distinctive aesthetics — avoids generic AI-generated looks.',
+    details:{
+      triggers:['Building web components, pages, or applications','Creating landing pages, dashboards, HTML/CSS layouts','Styling or beautifying any web UI','Any request for frontend code with design quality'],
+      capabilities:['Creates unique, memorable visual designs for each project','Uses distinctive typography (not Inter/Roboto/Arial)','Applies bold color choices, motion, and spatial composition','Backgrounds with depth: gradients, noise, geometric patterns','Avoids "AI slop" — every design has a clear aesthetic point-of-view','Supports HTML/CSS/JS, React, Vue, and other frameworks'],
+      connections:['design-principles','ui-ux-pro-max','web-design-reviewer','color-contrast-checker']
+    }
+  },
+  {
+    id:'ui-ux-pro-max', name:'UI/UX Pro Max',
+    layer:'skills', category:'Design & UI',
+    short:'Advanced UI/UX intelligence — 50 styles, 21 color palettes, 50 font pairings, 20 chart types, 9 tech stacks.',
+    details:{
+      triggers:['Planning UI/UX for a project','Choosing design styles, palettes, or font pairings','Building dashboards, e-commerce, SaaS, or portfolio UIs','Implementing glassmorphism, brutalism, neumorphism, etc.'],
+      capabilities:['50 named design styles (glassmorphism, claymorphism, brutalism, neumorphism, bento grid, etc.)','21 curated color palettes with usage guidance','50 font pairings (display + body combinations)','20 chart/data visualization types','9 tech stack integrations (React, Next.js, Vue, Svelte, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui)','Covers buttons, modals, navbars, sidebars, cards, tables, forms, charts'],
+      connections:['frontend-design','design-principles','atomic-design-fundamentals']
+    }
+  },
+  {
+    id:'web-design-reviewer', name:'Web Design Reviewer',
+    layer:'skills', category:'Design & UI',
+    short:'Visual inspection of websites to identify and fix design issues — responsive, accessibility, layout, consistency.',
+    details:{
+      triggers:['Reviewing website design quality','Checking UI for layout breakage','Finding responsive design issues','Accessibility visual audit'],
+      capabilities:['Takes screenshots of running sites for visual inspection','Detects responsive design problems across breakpoints','Identifies accessibility issues (contrast, focus, alt text)','Finds visual consistency problems (spacing, alignment, color)','Performs fixes at the source code level after identifying issues'],
+      connections:['frontend-design','color-contrast-checker','Playwright MCP']
+    }
+  },
+
+  // ─── SKILLS: WEBFLOW (3) ────────────────────────
+  {
+    id:'webflow-mcp-expert', name:'Webflow MCP Expert',
+    layer:'skills', category:'Webflow',
+    short:'Full-stack Webflow site engineering via MCP — design systems, SEO auditing, responsive breakpoints, component building.',
+    details:{
+      triggers:['Any mention of Webflow, Webflow Designer, CMS, or MCP tools','Building, auditing, or managing a Webflow website','Working with site_id, pages, collections, publishing, or Designer API','SEO auditing, keyword optimization, or link auditing'],
+      capabilities:['Manages complete Webflow sites via MCP tools','Builds design systems with variables and styles','Performs SEO auditing and keyword optimization','Handles responsive breakpoint style migration','Creates and manages interactive components','Audits links and site structure'],
+      connections:['Webflow MCP','webflow-design-expert','webflow-code-components','All WAT Workflows']
+    }
+  },
+  {
+    id:'webflow-design-expert', name:'Webflow Design Expert',
+    layer:'skills', category:'Webflow',
+    short:'2025 Webflow design patterns — Framer Motion animations, parallax scrolling, modern UI/UX patterns.',
+    details:{
+      triggers:['Designing modern Webflow pages','Adding animations or parallax effects','Implementing 2025 design trends in Webflow'],
+      capabilities:['Implements 2025 Webflow design patterns','Framer Motion animation integration','Parallax scrolling effects','Healthcare-appropriate animations with enterprise performance','Modern UI/UX patterns optimized for Webflow'],
+      connections:['webflow-mcp-expert','Webflow MCP','frontend-design']
+    }
+  },
+  {
+    id:'webflow-code-components', name:'Webflow Code Components',
+    layer:'skills', category:'Webflow',
+    short:'Building React code components for Webflow Designer — Shadow DOM styling, component communication, Webflow CLI.',
+    details:{
+      triggers:['Developing React components for Webflow','Working with Webflow CLI for code components','Troubleshooting Shadow DOM styling in Webflow','Managing component communication in Webflow Designer'],
+      capabilities:['Builds React code components compatible with Webflow Designer','Handles Shadow DOM styling for encapsulated components','Manages component communication and props','Configures Webflow CLI for development workflow','Optimizes components for Webflow rendering pipeline'],
+      connections:['webflow-mcp-expert','Webflow MCP']
+    }
+  },
+
+  // ─── SKILLS: ICONS & GRAPHICS (4) ──────────────
+  {
+    id:'icon-design', name:'Icon Design',
+    layer:'skills', category:'Icons & Graphics',
+    short:'Icon craft — grid systems, optical alignment, stroke consistency, metaphor selection, SVG optimization.',
+    details:{
+      triggers:['Designing custom icons or icon sets','Choosing icon metaphors','Optimizing SVGs for production','Creating icon style guidelines'],
+      capabilities:['Icon grid systems and alignment rules','Optical alignment and visual weight balancing','Stroke consistency across an icon set','Metaphor selection (how to communicate concepts visually)','SVG optimization and export best practices','Icon set coherence and visual language'],
+      connections:['better-icons','svg-icon-pattern','frontend-design']
+    }
+  },
+  {
+    id:'better-icons', name:'Better Icons',
+    layer:'skills', category:'Icons & Graphics',
+    short:'CLI tool for searching 200+ icon libraries (Iconify) and retrieving SVG code directly.',
+    details:{
+      triggers:['Finding icons from any icon library','Searching for specific icon styles or metaphors','Getting SVG code for icons'],
+      capabilities:['Searches 200+ icon libraries via Iconify API','CLI commands: better-icons search <query>, better-icons get <id>','Returns SVG code ready for use','Covers Lucide, Phosphor, Heroicons, Feather, Material, and many more','Also available as MCP server for AI agents'],
+      connections:['icon-design','svg-icon-pattern']
+    }
+  },
+  {
+    id:'svg-icon-pattern', name:'SVG Icon Pattern',
+    layer:'skills', category:'Icons & Graphics',
+    short:'SVG icon standards — using SvgProps type, spreading props on SVG elements, sizing via fontSize in style.',
+    details:{
+      triggers:['Creating SVG icon components','Implementing consistent icon sizing','Setting up icon prop patterns'],
+      capabilities:['Defines SvgProps type from @lib/ui/props','Spreads props on the root SVG element','Sizes icons via fontSize in the style prop at usage site','Ensures consistent icon API across the project'],
+      connections:['icon-design','better-icons','atomic-design-atoms']
+    }
+  },
+  {
+    id:'canvas-design-tools', name:'Canvas Design Tools',
+    layer:'skills', category:'Icons & Graphics',
+    short:'Interactive canvas-based design and layout creation using HTML5 Canvas API.',
+    details:{
+      triggers:['Creating interactive canvas-based layouts','Building visual design tools','Canvas-based rendering and manipulation'],
+      capabilities:['Interactive canvas drawing and manipulation','Layout creation and positioning tools','Real-time visual feedback','Export capabilities for designed layouts'],
+      connections:['frontend-design','icon-design']
+    }
+  },
+
+  // ─── SKILLS: ACCESSIBILITY (1) ─────────────────
+  {
+    id:'color-contrast-checker', name:'Color Contrast Checker',
+    layer:'skills', category:'Accessibility',
+    short:'WCAG color contrast auditing — auto-activating during frontend development to check contrast ratios.',
+    details:{
+      triggers:['Automatically during frontend development','When checking color contrast ratios','WCAG compliance auditing','Choosing accessible color combinations'],
+      capabilities:['Calculates WCAG 2.1 contrast ratios (AA and AAA levels)','Auto-activates during frontend code generation','Suggests accessible alternatives for failing combinations','Checks text, UI components, and decorative elements','Reports normal text (4.5:1) and large text (3:1) thresholds'],
+      connections:['frontend-design','design-principles','ui-ux-pro-max','web-design-reviewer']
+    }
+  },
+
+  // ─── SKILLS: UTILITIES (4) ─────────────────────
+  {
+    id:'peon-ping-config', name:'Peon Ping Config',
+    layer:'skills', category:'Utilities',
+    short:'Configure Peon Ping settings — volume, pack rotation, sound categories, active voice pack.',
+    details:{
+      triggers:['Changing peon-ping settings','Adjusting volume or pack rotation','Toggling sound categories','Configuring the notification system'],
+      capabilities:['Set volume level for sound notifications','Enable/disable round-robin pack rotation','Add or remove packs from rotation list','Toggle individual sound categories on/off','View and modify any peon-ping config value'],
+      connections:['peon-ping-toggle','peon-ping-use','peon-ping-log','Hook Events']
+    }
+  },
+  {
+    id:'peon-ping-log', name:'Peon Ping Log',
+    layer:'skills', category:'Utilities',
+    short:'Log exercise reps for the Peon Trainer — pushups, squats, and other exercises.',
+    details:{
+      triggers:['User says they did pushups or squats','Logging exercise reps','Tracking fitness activity during coding'],
+      capabilities:['Logs pushup and squat reps','Tracks exercise counts over sessions','Usage: /peon-ping-log 25 pushups','Integrates with Peon Ping notification system'],
+      connections:['peon-ping-config','peon-ping-toggle']
+    }
+  },
+  {
+    id:'peon-ping-toggle', name:'Peon Ping Toggle',
+    layer:'skills', category:'Utilities',
+    short:'Mute or unmute Peon Ping sound notifications during a Claude Code session.',
+    details:{
+      triggers:['Muting or unmuting sounds','Pausing or resuming peon notifications','Any request to silence or restore audio feedback'],
+      capabilities:['Toggle sound notifications on/off','Mute all peon sounds during focused work','Unmute to restore audio feedback','Quick toggle without changing other settings'],
+      connections:['peon-ping-config','peon-ping-use','Hook Events']
+    }
+  },
+  {
+    id:'peon-ping-use', name:'Peon Ping Use',
+    layer:'skills', category:'Utilities',
+    short:'Set which voice pack (character voice) plays for the current session — GLaDOS, Peon, Kerrigan, etc.',
+    details:{
+      triggers:['Requesting a specific character voice','Changing the active voice pack','Wanting GLaDOS, Peon, Kerrigan, or other voices'],
+      capabilities:['Set voice pack for current chat session','Automatically enables agentskill rotation mode','Available packs include GLaDOS, Peon, Kerrigan, and others','Voice changes take effect immediately'],
+      connections:['peon-ping-config','peon-ping-toggle','Hook Events']
+    }
+  },
+
+  // ─── PLUGINS (7) ───────────────────────────────
+  {
+    id:'plugin-superpowers', name:'Superpowers',
+    layer:'plugins', category:'Meta Framework',
+    short:'Meta-skill orchestration — 14 sub-skills that enforce disciplined development workflows before any action.',
+    details:{
+      description:'The master plugin that enforces process discipline. Before building anything, brainstorm first. Before claiming done, verify first. Before merging, review first. Superpowers prevents the "just wing it" trap by requiring structured workflows.',
+      subSkills:[
+        {name:'using-superpowers', desc:'Establishes how to find and use skills — loads at session start'},
+        {name:'brainstorming', desc:'MUST use before any creative work — explores intent, requirements, and design before implementation'},
+        {name:'writing-plans', desc:'Designs multi-step implementation plans before touching code'},
+        {name:'executing-plans', desc:'Follows written plans with review checkpoints'},
+        {name:'test-driven-development', desc:'Write tests first, then implement — enforces TDD discipline'},
+        {name:'systematic-debugging', desc:'Structured debugging before proposing fixes — no guessing'},
+        {name:'dispatching-parallel-agents', desc:'Launches independent tasks in parallel for speed'},
+        {name:'subagent-driven-development', desc:'Executes implementation plans using parallel subagents'},
+        {name:'using-git-worktrees', desc:'Creates isolated git worktrees for feature work'},
+        {name:'finishing-a-development-branch', desc:'Guides merge, PR, or cleanup when implementation is complete'},
+        {name:'requesting-code-review', desc:'Submits work for review before declaring it complete'},
+        {name:'receiving-code-review', desc:'Handles feedback with rigor — no blind agreement'},
+        {name:'verification-before-completion', desc:'Runs verification commands before any success claim'},
+        {name:'writing-skills', desc:'Creates and tests new skills before deployment'}
+      ],
+      connections:['All Skills','All Plugins','All Workflows']
+    }
+  },
+  {
+    id:'plugin-frontend-design', name:'Frontend Design Plugin',
+    layer:'plugins', category:'Design',
+    short:'Packages the frontend-design skill as a plugin for automatic invocation during UI building tasks.',
+    details:{
+      description:'Wraps the frontend-design skill into a plugin format so it loads automatically when any frontend building task is detected. Ensures every UI component gets the "distinctive, not generic" treatment.',
+      subSkills:[
+        {name:'frontend-design', desc:'Creates distinctive, production-grade frontend interfaces with high design quality'}
+      ],
+      connections:['frontend-design','design-principles','ui-ux-pro-max']
+    }
+  },
+  {
+    id:'plugin-playground', name:'Playground Builder',
+    layer:'plugins', category:'Interactive Tools',
+    short:'Creates self-contained HTML playgrounds — interactive controls, live preview, and copyable prompt output.',
+    details:{
+      description:'Builds interactive single-file HTML tools where you adjust controls, see a live preview, and copy out a prompt. Six templates cover design decisions, data exploration, concept mapping, document critique, diff review, and code architecture.',
+      subSkills:[
+        {name:'playground', desc:'Main builder — identifies type, loads template, builds the HTML, opens in browser'}
+      ],
+      connections:['frontend-design','All POC files']
+    }
+  },
+  {
+    id:'plugin-ralph-loop', name:'Ralph Loop',
+    layer:'plugins', category:'Development',
+    short:'Iterative development loops — continuous build-test-fix cycles until a feature works correctly.',
+    details:{
+      description:'Runs iterative development loops: build something, test it, fix issues, repeat until it works. Named after Ralph (the "wreck it, fix it" pattern). Useful for complex features that need multiple passes.',
+      subSkills:[
+        {name:'ralph-loop', desc:'Start an iterative development loop in the current session'},
+        {name:'cancel-ralph', desc:'Cancel an active Ralph Loop'},
+        {name:'help', desc:'Explain how Ralph Loop works'}
+      ],
+      connections:['plugin-superpowers','plugin-feature-dev']
+    }
+  },
+  {
+    id:'plugin-feature-dev', name:'Feature Dev',
+    layer:'plugins', category:'Development',
+    short:'Guided feature development — codebase understanding and architecture focus before implementation.',
+    details:{
+      description:'A structured approach to building features: first understand the codebase, then design the architecture, then implement with review checkpoints. Prevents jumping straight into code without understanding the existing patterns.',
+      subSkills:[
+        {name:'feature-dev', desc:'Full guided feature development workflow with codebase analysis'}
+      ],
+      connections:['plugin-superpowers','plugin-ralph-loop']
+    }
+  },
+  {
+    id:'plugin-code-review', name:'Code Review',
+    layer:'plugins', category:'Quality',
+    short:'Pull request code review — structured review against plan, coding standards, and best practices.',
+    details:{
+      description:'Reviews pull requests with a structured checklist: does it match the plan? Follow coding standards? Handle edge cases? Introduce security issues? Provides actionable feedback rather than vague suggestions.',
+      subSkills:[
+        {name:'code-review', desc:'Review a pull request against plan and standards'}
+      ],
+      connections:['plugin-superpowers','plugin-feature-dev']
+    }
+  },
+  {
+    id:'plugin-figma', name:'Figma Integration',
+    layer:'plugins', category:'Design',
+    short:'Translates Figma designs into production code and connects design components to code via Code Connect.',
+    details:{
+      description:'Bridges the gap between Figma designs and code. Can implement a Figma design as production-ready code with 1:1 visual fidelity, or create Code Connect mappings that link design components to their code equivalents.',
+      subSkills:[
+        {name:'implement-design', desc:'Translates Figma designs into production-ready code'},
+        {name:'code-connect-components', desc:'Maps Figma design components to code components'},
+        {name:'create-design-system-rules', desc:'Generates custom design system rules for Figma-to-code workflows'}
+      ],
+      connections:['Figma MCP','frontend-design','webflow-mcp-expert']
+    }
+  },
+
+  // ─── MCP SERVERS (4) ──────────────────────────
+  {
+    id:'mcp-webflow', name:'Webflow MCP',
+    layer:'mcp', category:'Website Builder',
+    short:'Full Webflow Designer and Data API access — pages, elements, styles, CMS, variables, assets, scripts, publishing.',
+    details:{
+      description:'The primary execution layer for all Webflow operations. Provides 40+ tools covering every aspect of Webflow site management. Available in two implementations (claude_ai and direct) for redundancy.',
+      toolGroups:[
+        {group:'Site Management', tools:['get_sites_list','get_site_details','publish_site']},
+        {group:'Page Management', tools:['create_page','switch_page','get_current_page','get_pages_list','update_page_settings','get_page_content']},
+        {group:'Element Building', tools:['element_builder (max 3 levels deep)','get_all_elements','select_element','set_style','set_link','set_image_asset','set_heading_level','add_or_update_attribute','element_snapshot_tool']},
+        {group:'Styling', tools:['create_style','get_styles','update_style (with breakpoint + pseudo support)']},
+        {group:'Variables', tools:['create_variable_collection','get_variables','create_color_variable','create_size_variable','create_font_family_variable']},
+        {group:'CMS', tools:['get_collection_list','create_collection','create_collection_static_field','create_collection_items_live','publish_collection_items']},
+        {group:'Components', tools:['get_all_components','create_component_instance','list_components','update_component_content']},
+        {group:'Assets', tools:['get_all_assets_and_folders','create_folder','update_asset','get_image_preview']},
+        {group:'Scripts', tools:['list_registered_scripts','add_inline_site_script','delete_all_site_scripts']},
+        {group:'Learning', tools:['webflow_guide_tool','de_learn_more_about_styles','ask_webflow_ai']}
+      ],
+      connections:['webflow-mcp-expert','All WAT Workflows','plugin-figma']
+    }
+  },
+  {
+    id:'mcp-figma', name:'Figma MCP',
+    layer:'mcp', category:'Design Tool',
+    short:'Figma Designer integration — screenshots, components, variables, styles, code connect, and real-time editing.',
+    details:{
+      description:'Two server implementations provide comprehensive Figma access. The claude_ai server handles design context, screenshots, and code connect. The figma-console server provides direct Figma plugin API access for creating/editing design elements in real-time.',
+      toolGroups:[
+        {group:'Design Context', tools:['get_design_context','get_metadata','get_screenshot','whoami']},
+        {group:'Code Connect', tools:['get_code_connect_map','add_code_connect_map','get_code_connect_suggestions','send_code_connect_mappings']},
+        {group:'Variables & Styles', tools:['get_variable_defs','get_variables','get_styles','get_token_values','browse_tokens']},
+        {group:'Components', tools:['search_components','get_component','get_component_details','get_component_image','instantiate_component']},
+        {group:'Element Manipulation', tools:['create_child','clone_node','delete_node','move_node','resize_node','rename_node','set_fills','set_strokes','set_text']},
+        {group:'Design System', tools:['get_design_system_summary','audit_design_system','generate_component_doc','check_design_parity']},
+        {group:'Collaboration', tools:['get_comments','post_comment','delete_comment','take_screenshot','capture_screenshot']}
+      ],
+      connections:['plugin-figma','frontend-design','webflow-mcp-expert']
+    }
+  },
+  {
+    id:'mcp-playwright', name:'Playwright MCP',
+    layer:'mcp', category:'Browser Automation',
+    short:'Browser automation — navigate, click, fill forms, take screenshots, evaluate JS, upload files, and test pages.',
+    details:{
+      description:'Controls a real browser for testing and automation. Can navigate to any URL, interact with page elements, take screenshots, evaluate JavaScript, and capture network requests. Essential for visual QA and end-to-end testing.',
+      toolGroups:[
+        {group:'Navigation', tools:['browser_navigate','browser_navigate_back','browser_tabs']},
+        {group:'Interaction', tools:['browser_click','browser_hover','browser_drag','browser_fill_form','browser_select_option','browser_press_key','browser_type','browser_file_upload']},
+        {group:'Inspection', tools:['browser_snapshot','browser_take_screenshot','browser_console_messages','browser_network_requests','browser_evaluate']},
+        {group:'Control', tools:['browser_wait_for','browser_handle_dialog','browser_resize','browser_close','browser_install','browser_run_code']}
+      ],
+      connections:['web-design-reviewer','plugin-code-review']
+    }
+  },
+  {
+    id:'mcp-context7', name:'Context7',
+    layer:'mcp', category:'Documentation',
+    short:'Retrieves up-to-date library documentation and code examples — always current, never stale.',
+    details:{
+      description:'Fetches the latest documentation for any library or framework. Two-step process: first resolve the library ID, then query specific documentation. Ensures Claude always has current API references rather than relying on training data that might be outdated.',
+      toolGroups:[
+        {group:'Documentation', tools:['resolve-library-id — Find the correct library identifier','query-docs — Fetch documentation and code examples for a specific topic']}
+      ],
+      connections:['All Skills','All Plugins']
+    }
+  },
+
+  // ─── WORKFLOWS (9) ────────────────────────────
+  {
+    id:'wf-create-page', name:'Create Page',
+    layer:'workflows', category:'WAT Framework',
+    short:'Create a new Webflow page with proper settings, metadata, and optional initial structure.',
+    details:{
+      objective:'Create a new page in the Webflow site with proper settings and initial structure.',
+      trigger:'User asks to create a new page, landing page, or add a route.',
+      inputs:['page_name — The name/title for the new page','page_purpose — What the page is for','site_id — The Webflow site ID'],
+      steps:['Check existing pages to avoid duplicates (data_pages_tool > get_pages_list)','Create the page (de_page_tool > create_page)','Verify creation (de_page_tool > get_current_page)','Set page metadata — SEO title, meta description, OG settings','Build initial structure if purpose specified (→ build_section workflow)','Snapshot to visually confirm (element_snapshot_tool)'],
+      mcpTools:['data_pages_tool','de_page_tool','element_snapshot_tool'],
+      edgeCases:['If page name exists → ask user to rename or reuse','If no site_id → use data_sites_tool > get_sites_list','If creation fails → check plan page limits']
+    }
+  },
+  {
+    id:'wf-build-section', name:'Build Section',
+    layer:'workflows', category:'WAT Framework',
+    short:'Build a complete section (hero, features, CTA, footer) with elements, styles, and content.',
+    details:{
+      objective:'Build a complete section on the current page using Webflow elements and styles.',
+      trigger:'User asks to add a section, layout, component group, or content block.',
+      inputs:['section_type — hero, features, pricing, CTA, footer, etc.','content — Text, images, or data','site_id — The Webflow site ID'],
+      steps:['Plan the element tree (max 3 levels per element_builder call)','Create styles FIRST (style_tool > create_style) — must exist before applying','Build outer structure — Section > Container > content wrapper','Build inner content — add children by parent element ID','Apply styles (element_tool > set_style)','Set content — text during creation, images via set_image_asset','Snapshot and verify (element_snapshot_tool)'],
+      mcpTools:['style_tool','element_builder','element_tool','element_snapshot_tool','asset_tool'],
+      edgeCases:['Tree exceeds 3 levels → split into multiple element_builder calls','Style already exists → reuse it, don\'t duplicate','Image asset missing → ask user to upload','Elements NOT auto-selected after creation → use select_element']
+    }
+  },
+  {
+    id:'wf-style-elements', name:'Style Elements',
+    layer:'workflows', category:'WAT Framework',
+    short:'Create, update, or apply styles — with breakpoint and pseudo-state support for responsive design.',
+    details:{
+      objective:'Create, update, or apply styles to elements on the current page.',
+      trigger:'User asks to change colors, fonts, spacing, layout, or any visual property.',
+      inputs:['target — Which element(s) to style','style_changes — What to change','site_id — The Webflow site ID'],
+      steps:['Identify the target element (element_tool > get_all_elements)','Check existing styles (style_tool > get_styles)','Create or update the style — ALWAYS use longhand CSS properties','Apply the style (element_tool > set_style)','Handle breakpoints: main → xxl → xl → large → medium → small → tiny','Handle pseudo-states: noPseudo, hover, focus, active, visited, placeholder','Snapshot to verify (element_snapshot_tool)'],
+      mcpTools:['element_tool','style_tool','element_snapshot_tool'],
+      edgeCases:['NEVER use CSS shorthand (margin: 10px is WRONG)','Responsive = create styles for main, medium, small, tiny minimum','Style name conflict → update existing or create combo class']
+    }
+  },
+  {
+    id:'wf-manage-cms', name:'Manage CMS',
+    layer:'workflows', category:'WAT Framework',
+    short:'Create or modify CMS collections, fields, and items — blogs, products, team directories, portfolios.',
+    details:{
+      objective:'Create or modify CMS collections, fields, and items in the Webflow site.',
+      trigger:'User asks to set up a blog, product catalog, team directory, portfolio, FAQ, or any dynamic content.',
+      inputs:['collection_type — blog posts, products, team members, etc.','fields — What data fields each item needs','sample_data — Optional sample items','site_id — The Webflow site ID'],
+      steps:['Check existing collections (data_cms_tool > get_collection_list)','Create the collection (data_cms_tool > create_collection)','Add fields — static, option, or reference fields','Add sample items (data_cms_tool > create_collection_items_live)','Publish items (data_cms_tool > publish_collection_items)','Report what was created'],
+      mcpTools:['data_cms_tool'],
+      edgeCases:['Collection exists → ask whether to update or create new','CMS-to-page binding must be done in Designer manually','Batch items into single create call for efficiency','ALWAYS confirm before deleting items']
+    }
+  },
+  {
+    id:'wf-publish-site', name:'Publish Site',
+    layer:'workflows', category:'WAT Framework',
+    short:'Publish the Webflow site — always requires explicit user confirmation before going live.',
+    details:{
+      objective:'Publish the Webflow site to make changes live.',
+      trigger:'User asks to publish, go live, push changes, or make updates visible.',
+      inputs:['site_id — The Webflow site ID','scope — Entire site or specific domains'],
+      steps:['Review what has changed in the current session','CONFIRM with the user — never auto-publish','Publish (data_sites_tool > publish_site)','Verify success and provide the live URL'],
+      mcpTools:['data_sites_tool'],
+      edgeCases:['NEVER publish without explicit user confirmation','Multiple custom domains → confirm which ones','Publish fails → check validation errors (alt text, broken links)','Unpublished CMS items → remind user and offer to publish first']
+    }
+  },
+  {
+    id:'wf-resolve-comments', name:'Resolve Comments',
+    layer:'workflows', category:'WAT Framework',
+    short:'Review and address design feedback comments left on elements or pages in the Webflow Designer.',
+    details:{
+      objective:'Review and address user feedback comments left on elements or pages.',
+      trigger:'User asks to check feedback, fix comments, or address design notes.',
+      inputs:['site_id — The Webflow site ID','scope — All comments or specific page'],
+      steps:['Fetch comments (data_comments_tool)','Summarize open comments — text, page, who, when','Prioritize by page and severity','Address each comment — navigate, find element, make changes','Take snapshot to verify each fix','Report which comments were addressed'],
+      mcpTools:['data_comments_tool','de_page_tool','element_tool','style_tool','element_snapshot_tool'],
+      edgeCases:['Element no longer exists → report as stale','Design decision needed → ask user','No open comments → tell user everything is clear']
+    }
+  },
+  {
+    id:'wf-setup-design-tokens', name:'Setup Design Tokens',
+    layer:'workflows', category:'WAT Framework',
+    short:'Create a variable collection with color, size, and typography tokens for consistent design.',
+    details:{
+      objective:'Create a variable collection with design tokens for consistent design across the site.',
+      trigger:'User asks to set up a design system, brand colors, or typography.',
+      inputs:['brand_colors — Primary, secondary, accent, neutral values','typography — Font families, size scale, line heights','spacing — Spacing scale','site_id — The Webflow site ID'],
+      steps:['Check existing variables (variable_tool > get_variable_collections)','Create the collection ("Design Tokens" or "Brand")','Create color variables — primary, secondary, accent, bg, text, border, etc.','Create size variables — xs, sm, md, lg, xl, 2xl, 3xl','Create font variables — heading and body font families','Create base styles that reference these variables','Report all tokens with values'],
+      mcpTools:['variable_tool','style_tool'],
+      edgeCases:['Collection exists → ask whether to update or create new','No brand colors yet → suggest professional default palette','Variables work like CSS custom properties — bindable to styles']
+    }
+  },
+  {
+    id:'wf-add-custom-code', name:'Add Custom Code',
+    layer:'workflows', category:'WAT Framework',
+    short:'Add custom JavaScript or embed code — analytics, tracking, third-party widgets, custom interactions.',
+    details:{
+      objective:'Add custom JavaScript or embed code to the Webflow site.',
+      trigger:'User asks to add analytics, tracking scripts, custom interactions, or third-party widgets.',
+      inputs:['script_content — The JavaScript or HTML embed code','placement — Head or body','site_id — The Webflow site ID'],
+      steps:['Review the code for issues (syntax errors, suspicious URLs)','Check existing scripts (data_scripts_tool > list_registered_scripts)','Add the script (data_scripts_tool > add_inline_site_script)','Verify addition and note if publishing is required'],
+      mcpTools:['data_scripts_tool'],
+      edgeCases:['ALWAYS review code before adding — never add blindly','Delete all scripts → ALWAYS confirm first','Third-party tags → verify tracking ID with user']
+    }
+  },
+  {
+    id:'wf-manage-assets', name:'Manage Assets',
+    layer:'workflows', category:'WAT Framework',
+    short:'Upload, organize, and apply image/file assets — folders, alt text, image previews.',
+    details:{
+      objective:'Upload, organize, and apply image and file assets to the Webflow site.',
+      trigger:'User asks to add images, organize media, update alt text, or manage files.',
+      inputs:['action — list, organize, update, or apply','site_id — The Webflow site ID'],
+      steps:['List current assets (asset_tool > get_all_assets_and_folders)','Organize — create folders, move assets','Update metadata — alt text, rename','Apply to elements (element_tool > set_image_asset)','Preview images (get_image_preview) to verify before applying'],
+      mcpTools:['asset_tool','element_tool','get_image_preview'],
+      edgeCases:['Image URL not yet an asset → user must upload via Dashboard','Always set alt text for accessibility and SEO','Too many assets → use search query to filter']
+    }
+  },
+
+  // ─── LOCAL TOOLS (4) ──────────────────────────
+  {
+    id:'tool-scraper', name:'scrape_single_site.py',
+    layer:'tools', category:'Data',
+    short:'Fetches a URL and saves parsed text content as JSON — strips scripts, styles, and HTML tags.',
+    details:{
+      purpose:'Fetch any URL and extract clean text content, saving as structured JSON.',
+      usage:'python tools/scrape_single_site.py --url https://example.com --output data/raw/result.json',
+      inputs:['--url — The URL to fetch','--output — Path to save the JSON result'],
+      outputs:['JSON file with: url, text (cleaned), blocks (paragraph count)'],
+      connections:['tool-transform','WAT Workflows']
+    }
+  },
+  {
+    id:'tool-transform', name:'transform_data.py',
+    layer:'tools', category:'Data',
+    short:'Reads JSON/CSV files, applies transforms, and writes processed results.',
+    details:{
+      purpose:'Load data from JSON or CSV, transform it, and save the result as JSON.',
+      usage:'python tools/transform_data.py --input data/raw/in.json --output data/processed/out.json',
+      inputs:['--input — Source file path (JSON or CSV)','--output — Destination file path'],
+      outputs:['Processed JSON file in data/processed/'],
+      connections:['tool-scraper','WAT Workflows']
+    }
+  },
+  {
+    id:'tool-tests', name:'run_tests.sh',
+    layer:'tools', category:'Quality',
+    short:'Placeholder test runner — add your project\'s test commands to this script.',
+    details:{
+      purpose:'Run project tests. Currently a placeholder awaiting configuration.',
+      usage:'bash tools/run_tests.sh',
+      inputs:['None (configure inside the script)'],
+      outputs:['Test results to stdout'],
+      connections:['plugin-superpowers (verification-before-completion)']
+    }
+  },
+  {
+    id:'tool-lint', name:'lint.sh',
+    layer:'tools', category:'Quality',
+    short:'Placeholder linter — add your linting commands for custom code and scripts.',
+    details:{
+      purpose:'Run linting on local scripts and custom code files. Currently a placeholder.',
+      usage:'bash tools/lint.sh',
+      inputs:['None (configure inside the script)'],
+      outputs:['Lint results to stdout'],
+      connections:['plugin-superpowers (verification-before-completion)']
+    }
+  },
+
+  // ─── HOOKS (7) ────────────────────────────────
+  {
+    id:'hook-session-start', name:'SessionStart',
+    layer:'hooks', category:'Lifecycle',
+    short:'Fires when a new Claude Code session begins — plays a greeting sound, loads compact context.',
+    details:{
+      event:'SessionStart',
+      timing:'Sync',
+      timeout:'10 seconds',
+      description:'Triggers at the start of every session. The Peon Ping system plays a greeting sound effect. Also loads compact session context and any additional context configured in hooks.',
+      connections:['peon-ping-config','peon-ping-use','plugin-superpowers (using-superpowers)']
+    }
+  },
+  {
+    id:'hook-user-prompt', name:'UserPromptSubmit',
+    layer:'hooks', category:'Input',
+    short:'Fires before a user prompt is processed — validates input, can inject additional context.',
+    details:{
+      event:'UserPromptSubmit',
+      timing:'Sync',
+      timeout:'10 seconds',
+      description:'Runs before the user\'s message is processed by Claude. Can validate input, inject additional context, or modify the prompt. The Peon Ping system uses this to play acknowledgment sounds.',
+      connections:['All Skills (triggers skill detection)','peon-ping-config']
+    }
+  },
+  {
+    id:'hook-pre-tool-use', name:'PreToolUse',
+    layer:'hooks', category:'Security',
+    short:'Fires before any tool executes — enforces security rules like blocking innerHTML usage.',
+    details:{
+      event:'PreToolUse',
+      timing:'Sync',
+      timeout:'10 seconds',
+      description:'Runs before every tool execution. Used for security enforcement (e.g., blocking innerHTML in code, validating file paths, preventing destructive operations). Can approve, deny, or modify tool calls.',
+      connections:['All MCP Servers','All Local Tools']
+    }
+  },
+  {
+    id:'hook-post-tool-use', name:'PostToolUse',
+    layer:'hooks', category:'Feedback',
+    short:'Fires after a tool finishes — plays completion sounds, logs results.',
+    details:{
+      event:'PostToolUse',
+      timing:'Async',
+      timeout:'10 seconds',
+      description:'Runs after a tool execution completes. Peon Ping plays tool completion sounds. Can log results, trigger follow-up actions, or update session state.',
+      connections:['All MCP Servers','All Local Tools','peon-ping-config']
+    }
+  },
+  {
+    id:'hook-subagent-start', name:'SubagentStart',
+    layer:'hooks', category:'Lifecycle',
+    short:'Fires when a subagent (Task tool) launches — plays a dispatch sound effect.',
+    details:{
+      event:'SubagentStart',
+      timing:'Async',
+      timeout:'10 seconds',
+      description:'Triggers when Claude launches a specialized subagent via the Task tool (Explore, Plan, Bash, etc.). Peon Ping plays a dispatch sound to indicate parallel work is starting.',
+      connections:['peon-ping-config','plugin-superpowers (dispatching-parallel-agents)']
+    }
+  },
+  {
+    id:'hook-notification', name:'Notification',
+    layer:'hooks', category:'Feedback',
+    short:'Fires when Claude sends a notification — plays alert sounds for important events.',
+    details:{
+      event:'Notification',
+      timing:'Async',
+      timeout:'10 seconds',
+      description:'Triggers on notification events. Peon Ping plays alert sounds to draw attention to important messages or state changes.',
+      connections:['peon-ping-config','peon-ping-toggle']
+    }
+  },
+  {
+    id:'hook-stop', name:'Stop',
+    layer:'hooks', category:'Lifecycle',
+    short:'Fires when a Claude Code session ends — plays a farewell sound, saves session state.',
+    details:{
+      event:'Stop',
+      timing:'Sync',
+      timeout:'10 seconds',
+      description:'Triggers when the session is ending. Peon Ping plays a farewell sound. Can perform cleanup, save session state, or log session summary.',
+      connections:['peon-ping-config','peon-ping-use']
+    }
+  }
+];
+
+
+/* ═══════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════ */
+const state = {
+  activeTab: 'all',
+  searchQuery: '',
+  expandedCards: new Set()
+};
+
+
+/* ═══════════════════════════════════════════
+   UTILITY FUNCTIONS
+   ═══════════════════════════════════════════ */
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text) e.textContent = text;
+  return e;
+}
+
+function getLayerColor(layer) {
+  return LAYERS[layer] ? LAYERS[layer].color : 'var(--body)';
+}
+
+function getLayerBg(layer) {
+  return LAYERS[layer] ? LAYERS[layer].bg : '#f0f0f0';
+}
+
+function filteredComponents() {
+  return COMPONENTS.filter(c => {
+    const matchTab = state.activeTab === 'all' || c.layer === state.activeTab;
+    if (!matchTab) return false;
+    if (!state.searchQuery) return true;
+    const q = state.searchQuery.toLowerCase();
+    return c.name.toLowerCase().includes(q) ||
+           c.short.toLowerCase().includes(q) ||
+           c.category.toLowerCase().includes(q);
+  });
+}
+
+
+/* ═══════════════════════════════════════════
+   RENDER: FLOW DIAGRAM
+   ═══════════════════════════════════════════ */
+function renderFlowDiagram() {
+  const container = document.getElementById('flow-diagram');
+  container.textContent = '';
+
+  const flowData = [
+    { icon: '💬', label: 'Your Message', sub: 'Text prompt', color: 'var(--dark)' },
+    { icon: '⚡', label: 'Hooks', sub: 'Pre-processing', color: 'var(--hook)' },
+    { icon: '🎯', label: 'Skills', sub: 'Expertise loads', color: 'var(--skill)' },
+    { icon: '🔌', label: 'Plugins', sub: 'Process discipline', color: 'var(--plugin)' },
+    { icon: '📋', label: 'Workflows', sub: 'Step-by-step SOPs', color: 'var(--workflow)' },
+    { icon: '🛠', label: 'MCP / Tools', sub: 'Execution', color: 'var(--mcp)' }
+  ];
+
+  const flow = el('div', 'flow');
+
+  flowData.forEach((item, i) => {
+    if (i > 0) {
+      const arrow = el('span', 'flow-arrow', '→');
+      flow.appendChild(arrow);
+    }
+    const step = el('div', 'flow-step');
+    const icon = el('div', 'flow-icon');
+    icon.textContent = item.icon;
+    icon.style.backgroundColor = item.color;
+    const label = el('div', 'flow-label', item.label);
+    const sub = el('div', 'flow-sub', item.sub);
+    step.appendChild(icon);
+    step.appendChild(label);
+    step.appendChild(sub);
+    flow.appendChild(step);
+  });
+
+  container.appendChild(flow);
+}
+
+
+/* ═══════════════════════════════════════════
+   RENDER: SWIM LANES
+   ═══════════════════════════════════════════ */
+function renderSwimLanes() {
+  const container = document.getElementById('swim-lanes');
+  container.textContent = '';
+
+  Object.entries(LAYERS).forEach(([layerKey, layerConf]) => {
+    const items = COMPONENTS.filter(c => c.layer === layerKey);
+    const lane = el('div', 'swim-lane');
+    lane.style.backgroundColor = layerConf.bg;
+
+    const label = el('div', 'lane-label');
+    const name = el('div', 'lane-name', layerConf.label);
+    name.style.color = layerConf.color;
+    const count = el('div', 'lane-count', items.length + ' component' + (items.length !== 1 ? 's' : ''));
+    label.appendChild(name);
+    label.appendChild(count);
+    lane.appendChild(label);
+
+    const pills = el('div', 'lane-pills');
+    items.forEach(item => {
+      const pill = el('button', 'pill', item.name);
+      pill.style.backgroundColor = layerConf.color;
+      pill.style.color = '#fff';
+      pill.addEventListener('click', () => {
+        state.activeTab = layerKey;
+        state.searchQuery = '';
+        document.getElementById('search').value = '';
+        state.expandedCards.clear();
+        state.expandedCards.add(item.id);
+        renderTabs();
+        renderCards();
+        setTimeout(() => {
+          const cardEl = document.getElementById('card-' + item.id);
+          if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      });
+      pills.appendChild(pill);
+    });
+    lane.appendChild(pills);
+    container.appendChild(lane);
+  });
+}
+
+
+/* ═══════════════════════════════════════════
+   RENDER: HOW IT WORKS
+   ═══════════════════════════════════════════ */
+function renderHowItWorks() {
+  const container = document.getElementById('how-it-works');
+  container.textContent = '';
+
+  const title = el('h3', '', 'How It All Works');
+  container.appendChild(title);
+
+  const stepsData = [
+    { color: 'var(--hook)', text: '<strong>Hooks fire first</strong> — Before your message is processed, session hooks run. Peon Ping plays a sound effect. Security hooks validate the request.' },
+    { color: 'var(--skill)', text: '<strong>Skills are checked</strong> — Claude scans your message for skill triggers. Asking about Webflow? webflow-mcp-expert loads. Building UI? frontend-design activates. Multiple skills can load at once.' },
+    { color: 'var(--plugin)', text: '<strong>Plugins enforce discipline</strong> — The superpowers plugin requires brainstorming before coding, verification before completion. Other plugins add playgrounds, Figma integration, and iterative loops.' },
+    { color: 'var(--workflow)', text: '<strong>Workflows guide execution</strong> — For Webflow tasks, Claude follows step-by-step SOPs from the workflows/ directory. Each workflow specifies which tools to call and in what order.' },
+    { color: 'var(--mcp)', text: '<strong>MCP Servers execute</strong> — The actual work happens here. Webflow MCP creates pages and elements. Figma MCP reads designs. Playwright tests pages. Context7 fetches fresh documentation.' },
+    { color: 'var(--tool)', text: '<strong>Local Tools handle the rest</strong> — Scraping websites, transforming data, running tests — anything outside Webflow goes through Python scripts and shell tools in the tools/ directory.' }
+  ];
+
+  const stepsContainer = el('div', 'how-steps');
+
+  stepsData.forEach((s, i) => {
+    const step = el('div', 'how-step');
+    const num = el('div', 'how-num', String(i + 1));
+    num.style.backgroundColor = s.color;
+    const text = el('div', 'how-text');
+    // Build text with bold parts using DOM
+    const parts = s.text.split(/<\/?strong>/);
+    parts.forEach((part, pi) => {
+      if (pi % 2 === 1) {
+        const b = el('strong', '', part);
+        text.appendChild(b);
+      } else {
+        text.appendChild(document.createTextNode(part));
+      }
+    });
+    step.appendChild(num);
+    step.appendChild(text);
+    stepsContainer.appendChild(step);
+  });
+
+  container.appendChild(stepsContainer);
+}
+
+
+/* ═══════════════════════════════════════════
+   RENDER: TABS
+   ═══════════════════════════════════════════ */
+function renderTabs() {
+  const container = document.getElementById('tab-bar');
+  container.textContent = '';
+
+  const tabs = [
+    { key: 'all', label: 'All' },
+    { key: 'skills', label: 'Skills' },
+    { key: 'plugins', label: 'Plugins' },
+    { key: 'mcp', label: 'MCP Servers' },
+    { key: 'workflows', label: 'Workflows' },
+    { key: 'tools', label: 'Tools' },
+    { key: 'hooks', label: 'Hooks' }
+  ];
+
+  tabs.forEach(t => {
+    const count = t.key === 'all' ? COMPONENTS.length : COMPONENTS.filter(c => c.layer === t.key).length;
+    const tab = el('button', 'tab' + (state.activeTab === t.key ? ' active' : ''));
+    tab.textContent = t.label + ' (' + count + ')';
+    tab.addEventListener('click', () => {
+      state.activeTab = t.key;
+      state.expandedCards.clear();
+      renderTabs();
+      renderCards();
+    });
+    container.appendChild(tab);
+  });
+}
+
+
+/* ═══════════════════════════════════════════
+   RENDER: CARD DETAILS
+   ═══════════════════════════════════════════ */
+function buildCardDetails(comp) {
+  const body = el('div', 'card-body');
+  const d = comp.details;
+
+  // Skills
+  if (d.triggers) {
+    const h = el('h4', '', 'When It Triggers');
+    body.appendChild(h);
+    const ul = el('ul');
+    d.triggers.forEach(t => { const li = el('li', '', t); ul.appendChild(li); });
+    body.appendChild(ul);
+  }
+
+  if (d.capabilities) {
+    const h = el('h4', '', 'Capabilities');
+    body.appendChild(h);
+    const ul = el('ul');
+    d.capabilities.forEach(t => { const li = el('li', '', t); ul.appendChild(li); });
+    body.appendChild(ul);
+  }
+
+  // Plugins
+  if (d.description) {
+    const h = el('h4', '', 'Description');
+    body.appendChild(h);
+    const p = el('p', '', d.description);
+    body.appendChild(p);
+  }
+
+  if (d.subSkills) {
+    const h = el('h4', '', 'Sub-Skills');
+    body.appendChild(h);
+    const ul = el('ul');
+    d.subSkills.forEach(s => {
+      const li = el('li');
+      const b = el('strong', '', s.name);
+      li.appendChild(b);
+      li.appendChild(document.createTextNode(' — ' + s.desc));
+      ul.appendChild(li);
+    });
+    body.appendChild(ul);
+  }
+
+  // MCP Servers
+  if (d.toolGroups) {
+    const h = el('h4', '', 'Tool Inventory');
+    body.appendChild(h);
+    d.toolGroups.forEach(g => {
+      const gh = el('h4', '');
+      gh.style.fontSize = '12px';
+      gh.style.color = 'var(--caption)';
+      gh.style.marginBottom = '4px';
+      gh.textContent = g.group;
+      body.appendChild(gh);
+      const grid = el('div', 'tool-grid');
+      g.tools.forEach(t => {
+        const item = el('div', 'tool-item', t);
+        grid.appendChild(item);
+      });
+      body.appendChild(grid);
+    });
+  }
+
+  // Workflows
+  if (d.objective) {
+    const h = el('h4', '', 'Objective');
+    body.appendChild(h);
+    const p = el('p', '', d.objective);
+    body.appendChild(p);
+  }
+
+  if (d.trigger) {
+    const h = el('h4', '', 'When to Use');
+    body.appendChild(h);
+    const p = el('p', '', d.trigger);
+    body.appendChild(p);
+  }
+
+  if (d.inputs) {
+    const h = el('h4', '', 'Required Inputs');
+    body.appendChild(h);
+    const ul = el('ul');
+    d.inputs.forEach(t => { const li = el('li', '', t); ul.appendChild(li); });
+    body.appendChild(ul);
+  }
+
+  if (d.steps) {
+    const h = el('h4', '', 'Steps');
+    body.appendChild(h);
+    const stepsDiv = el('div');
+    d.steps.forEach((s, i) => {
+      const step = el('div', 'step');
+      const num = el('div', 'step-num', String(i + 1));
+      const text = el('div', 'step-text', s);
+      step.appendChild(num);
+      step.appendChild(text);
+      stepsDiv.appendChild(step);
+    });
+    body.appendChild(stepsDiv);
+  }
+
+  if (d.mcpTools) {
+    const h = el('h4', '', 'MCP Tools Used');
+    body.appendChild(h);
+    const tags = el('div', 'tag-list');
+    d.mcpTools.forEach(t => {
+      const tag = el('span', 'tag', t);
+      tags.appendChild(tag);
+    });
+    body.appendChild(tags);
+  }
+
+  if (d.edgeCases) {
+    const h = el('h4', '', 'Edge Cases');
+    body.appendChild(h);
+    const ul = el('ul');
+    d.edgeCases.forEach(t => { const li = el('li', '', t); ul.appendChild(li); });
+    body.appendChild(ul);
+  }
+
+  // Local Tools
+  if (d.purpose) {
+    const h = el('h4', '', 'Purpose');
+    body.appendChild(h);
+    const p = el('p', '', d.purpose);
+    body.appendChild(p);
+  }
+
+  if (d.usage) {
+    const h = el('h4', '', 'Usage');
+    body.appendChild(h);
+    const code = el('code', '', d.usage);
+    code.style.display = 'block';
+    code.style.padding = '10px 14px';
+    code.style.background = '#faf9f8';
+    code.style.borderRadius = '10px';
+    code.style.fontSize = '12px';
+    code.style.fontFamily = 'monospace';
+    code.style.overflowX = 'auto';
+    body.appendChild(code);
+  }
+
+  if (d.inputs && d.outputs && d.purpose) {
+    // Already rendered inputs above for tools
+    const h2 = el('h4', '', 'Outputs');
+    body.appendChild(h2);
+    const ul2 = el('ul');
+    d.outputs.forEach(t => { const li = el('li', '', t); ul2.appendChild(li); });
+    body.appendChild(ul2);
+  }
+
+  // Hooks
+  if (d.event) {
+    const pairs = [
+      ['Event', d.event],
+      ['Timing', d.timing],
+      ['Timeout', d.timeout]
+    ];
+    const h = el('h4', '', 'Configuration');
+    body.appendChild(h);
+    const tags = el('div', 'tag-list');
+    pairs.forEach(([k, v]) => {
+      const tag = el('span', 'tag', k + ': ' + v);
+      tags.appendChild(tag);
+    });
+    body.appendChild(tags);
+
+    if (d.description) {
+      const h2 = el('h4', '', 'What It Does');
+      body.appendChild(h2);
+      const p = el('p', '', d.description);
+      body.appendChild(p);
+    }
+  }
+
+  // Connections (all types)
+  const conns = d.connections || comp.details.connections;
+  if (conns && conns.length) {
+    const h = el('h4', '', 'Connections');
+    body.appendChild(h);
+    const connList = el('div', 'conn-list');
+    conns.forEach(c => {
+      const conn = el('span', 'conn', c);
+      // Try to find the target component for coloring
+      const target = COMPONENTS.find(comp => comp.id === c || comp.name === c);
+      if (target) {
+        conn.style.backgroundColor = getLayerBg(target.layer);
+        conn.style.color = getLayerColor(target.layer);
+        conn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          state.expandedCards.clear();
+          state.expandedCards.add(target.id);
+          // Switch tab if needed
+          if (state.activeTab !== 'all' && state.activeTab !== target.layer) {
+            state.activeTab = target.layer;
+            renderTabs();
+          }
+          renderCards();
+          setTimeout(() => {
+            const cardEl = document.getElementById('card-' + target.id);
+            if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 100);
+        });
+      } else {
+        conn.style.backgroundColor = '#f0eeec';
+        conn.style.color = 'var(--body)';
+      }
+      connList.appendChild(conn);
+    });
+    body.appendChild(connList);
+  }
+
+  return body;
+}
+
+
+/* ═══════════════════════════════════════════
+   RENDER: CARDS
+   ═══════════════════════════════════════════ */
+function renderCards() {
+  const container = document.getElementById('card-grid');
+  container.textContent = '';
+
+  const filtered = filteredComponents();
+  const statsEl = document.getElementById('stats');
+  statsEl.textContent = 'Showing ' + filtered.length + ' of ' + COMPONENTS.length + ' components';
+
+  filtered.forEach(comp => {
+    const isExpanded = state.expandedCards.has(comp.id);
+    const card = el('div', 'card' + (isExpanded ? ' expanded' : ''));
+    card.id = 'card-' + comp.id;
+
+    // Header
+    const header = el('div', 'card-header');
+
+    const badge = el('span', 'card-badge', LAYERS[comp.layer] ? LAYERS[comp.layer].label : comp.layer);
+    badge.style.backgroundColor = getLayerBg(comp.layer);
+    badge.style.color = getLayerColor(comp.layer);
+
+    const info = el('div', 'card-info');
+    const name = el('div', 'card-name', comp.name);
+    const short = el('div', 'card-short', comp.short);
+    info.appendChild(name);
+    info.appendChild(short);
+
+    const chevron = el('span', 'card-chevron', '▼');
+
+    header.appendChild(badge);
+    header.appendChild(info);
+    header.appendChild(chevron);
+    card.appendChild(header);
+
+    // Details
+    const details = el('div', 'card-details');
+    if (isExpanded) {
+      details.appendChild(buildCardDetails(comp));
+    }
+    card.appendChild(details);
+
+    // Click handler
+    card.addEventListener('click', () => {
+      const wasExpanded = state.expandedCards.has(comp.id);
+      if (wasExpanded) {
+        state.expandedCards.delete(comp.id);
+      } else {
+        state.expandedCards.add(comp.id);
+      }
+      renderCards();
+      if (!wasExpanded) {
+        setTimeout(() => {
+          const cardEl = document.getElementById('card-' + comp.id);
+          if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 50);
+      }
+    });
+
+    container.appendChild(card);
+  });
+}
+
+
+/* ═══════════════════════════════════════════
+   RENDER: FOOTER
+   ═══════════════════════════════════════════ */
+function renderFooter() {
+  const footer = document.getElementById('footer');
+  const counts = {};
+  Object.keys(LAYERS).forEach(k => { counts[k] = COMPONENTS.filter(c => c.layer === k).length; });
+  footer.textContent = COMPONENTS.length + ' components — ' +
+    counts.skills + ' skills, ' +
+    counts.plugins + ' plugins, ' +
+    counts.mcp + ' MCP servers, ' +
+    counts.workflows + ' workflows, ' +
+    counts.tools + ' tools, ' +
+    counts.hooks + ' hooks';
+}
+
+
+/* ═══════════════════════════════════════════
+   SEARCH HANDLER
+   ═══════════════════════════════════════════ */
+document.getElementById('search').addEventListener('input', function() {
+  state.searchQuery = this.value;
+  state.expandedCards.clear();
+  renderCards();
+});
+
+
+/* ═══════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════ */
+function init() {
+  renderFlowDiagram();
+  renderSwimLanes();
+  renderHowItWorks();
+  renderTabs();
+  renderCards();
+  renderFooter();
+}
+
+init();
+</script>
+</body>
+</html>
