@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POC 1 — Strikethrough + Fade Swap</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: #0F1923;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+  }
+
+  .hero-headline {
+    font-size: clamp(40px, 5vw, 60px);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    color: #FFFFFF;
+    text-align: center;
+    max-width: 900px;
+    padding: 0 24px;
+  }
+
+  .accent-wrapper {
+    display: inline;
+    position: relative;
+  }
+
+  .accent-old, .accent-new {
+    color: #C3F73A;
+    text-shadow: 0 0 60px rgba(195, 247, 58, 0.25);
+  }
+
+  .accent-old {
+    position: relative;
+    display: inline;
+  }
+
+  .accent-old::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 4px;
+    width: 0;
+    background: #C3F73A;
+    transform: translateY(-50%);
+    border-radius: 2px;
+    box-shadow: 0 0 20px rgba(195, 247, 58, 0.5);
+  }
+
+  .accent-old.striking::after {
+    animation: strikethrough 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .accent-old.fading {
+    animation: fadeOut 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: 0.4s;
+  }
+
+  .accent-new {
+    display: none;
+    opacity: 0;
+  }
+
+  .accent-new.entering {
+    display: inline;
+    animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  @keyframes strikethrough {
+    0%   { width: 0; }
+    100% { width: 100%; }
+  }
+
+  @keyframes fadeOut {
+    0%   { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes fadeIn {
+    0%   { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .replay-btn {
+    margin-top: 60px;
+    padding: 12px 28px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #FFFFFF;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.3s, color 0.3s;
+  }
+
+  .replay-btn:hover {
+    border-color: #C3F73A;
+    color: #C3F73A;
+  }
+
+  .label {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+
+<div class="label">POC 1 — Strikethrough + Fade Swap</div>
+
+<h1 class="hero-headline">
+  A céged következő<br>
+  munkatársa<br>
+  <span class="accent-wrapper">
+    <span class="accent-old" id="oldText">nem ember lesz</span>
+    <span class="accent-new" id="newText">AI alkalmazott lesz!</span>
+  </span>
+</h1>
+
+<button class="replay-btn" id="replayBtn">Replay</button>
+
+<script>
+  const oldText = document.getElementById('oldText');
+  const newText = document.getElementById('newText');
+  const replayBtn = document.getElementById('replayBtn');
+
+  function runAnimation() {
+    // Reset
+    oldText.className = 'accent-old';
+    oldText.style.display = 'inline';
+    oldText.style.opacity = '1';
+    newText.className = 'accent-new';
+    newText.style.display = 'none';
+
+    // Step 1: Strikethrough (at 2s)
+    setTimeout(() => {
+      oldText.classList.add('striking');
+    }, 2000);
+
+    // Step 2: Fade out old text (at 2.4s)
+    setTimeout(() => {
+      oldText.classList.add('fading');
+    }, 2400);
+
+    // Step 3: Hide old, show new (at 2.9s)
+    setTimeout(() => {
+      oldText.style.display = 'none';
+      newText.classList.add('entering');
+    }, 2900);
+  }
+
+  replayBtn.addEventListener('click', runAnimation);
+  runAnimation();
+</script>
+
+</body>
+</html>

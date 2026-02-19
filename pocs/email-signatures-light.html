@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4YES — Email Signatures (Light)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: #E8E6E3;
+  min-height: 100vh;
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 56px;
+}
+
+:root {
+  --warm: #EEECEA;
+  --warm-alt: #F5F4F2;
+  --white: #FFFFFF;
+  --dark: #0F1923;
+  --accent: #C3F73A;
+  --accent-muted: rgba(195,247,58,0.12);
+  --body: #555F6A;
+  --caption: #8E969E;
+  --border: rgba(0,0,0,0.06);
+  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+}
+
+.page-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--caption); text-align: center;
+}
+
+.variant-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--caption); text-align: center;
+  margin-bottom: -32px;
+}
+
+/* Icons */
+.ic { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ic svg { width: 100%; height: 100%; }
+
+/* ============================================
+   V1 — HORIZON (horizontal split, green separator)
+   ============================================ */
+.v1 {
+  max-width: 580px; width: 100%; display: flex; align-items: center;
+  gap: 0; background: var(--white); border-radius: 14px;
+  border: 1px solid var(--border); box-shadow: var(--shadow);
+  padding: 0; overflow: hidden;
+}
+
+.v1-photo {
+  width: 100px; height: 100px; flex-shrink: 0;
+  margin: 24px 0 24px 24px; border-radius: 12px;
+  background: linear-gradient(145deg, #f0eee9 0%, #e4e1dc 100%);
+  overflow: hidden; position: relative;
+}
+.v1-photo img { width: 120%; height: 120%; object-fit: contain; object-position: bottom center; position: absolute; bottom: -4px; left: -10%; }
+
+.v1-sep {
+  width: 1.5px; height: 64px; flex-shrink: 0;
+  background: linear-gradient(180deg, var(--accent), rgba(195,247,58,0.15));
+  margin: 0 24px; border-radius: 1px;
+}
+
+.v1-info { flex: 1; padding: 24px 28px 24px 0; }
+.v1-name { font-size: 19px; font-weight: 800; color: var(--dark); letter-spacing: -0.02em; line-height: 1.1; }
+.v1-title { font-size: 12px; font-weight: 500; color: var(--caption); margin-top: 4px; }
+.v1-contacts { display: flex; flex-wrap: wrap; gap: 4px 0; margin-top: 14px; font-size: 12px; color: var(--body); font-weight: 500; }
+.v1-contacts span { white-space: nowrap; }
+.v1-contacts .dot { color: var(--caption); margin: 0 8px; font-size: 8px; }
+.v1-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; }
+.v1-brand { font-size: 12px; font-weight: 800; color: var(--dark); letter-spacing: -0.01em; opacity: 0.3; }
+
+/* ============================================
+   V2 — EDITORIAL (typographic, name dominant)
+   ============================================ */
+.v2 {
+  max-width: 480px; width: 100%; padding: 28px 0;
+}
+
+.v2-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.v2-name { font-size: 30px; font-weight: 900; color: var(--dark); letter-spacing: -0.04em; line-height: 0.95; }
+.v2-photo {
+  width: 44px; height: 44px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  background: linear-gradient(135deg, #e8e5e0, #ddd9d4);
+}
+.v2-photo img { width: 130%; height: 130%; object-fit: contain; object-position: bottom center; margin-left: -15%; margin-top: 10%; }
+.v2-title {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--caption); margin-top: 8px;
+}
+.v2-rule {
+  height: 2px; margin: 16px 0;
+  background: linear-gradient(90deg, var(--accent), rgba(195,247,58,0.05) 80%);
+  border-radius: 1px;
+}
+.v2-contacts {
+  display: flex; flex-wrap: wrap; gap: 0; font-size: 12px; font-weight: 500; color: var(--body);
+}
+.v2-contacts span { white-space: nowrap; }
+.v2-contacts .sep { color: var(--caption); margin: 0 10px; opacity: 0.3; }
+.v2-brand { font-size: 10px; font-weight: 600; color: var(--caption); margin-top: 12px; opacity: 0.4; letter-spacing: 0.06em; }
+
+/* ============================================
+   V3 — CARD (compact, centered, app-like)
+   ============================================ */
+.v3 {
+  max-width: 340px; width: 100%; background: var(--white);
+  border-radius: 16px; border: 1px solid var(--border);
+  box-shadow: var(--shadow); padding: 28px 24px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.v3::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 3px; background: linear-gradient(90deg, var(--accent), rgba(195,247,58,0.2));
+}
+.v3-photo {
+  width: 72px; height: 72px; border-radius: 50%; margin: 0 auto;
+  background: linear-gradient(135deg, #ece9e4, #e0ddd8); overflow: hidden;
+  border: 2.5px solid rgba(195,247,58,0.25);
+  box-shadow: 0 0 0 5px rgba(195,247,58,0.06);
+}
+.v3-photo img { width: 130%; height: 130%; object-fit: contain; object-position: bottom center; margin-left: -15%; margin-top: 10%; }
+.v3-name { font-size: 18px; font-weight: 800; color: var(--dark); margin-top: 14px; letter-spacing: -0.02em; }
+.v3-title {
+  display: inline-flex; padding: 4px 12px; border-radius: 100px;
+  background: var(--accent-muted); border: 1px solid rgba(195,247,58,0.15);
+  font-size: 11px; font-weight: 600; color: #4a7a00; margin-top: 8px;
+  letter-spacing: 0.01em;
+}
+.v3-contacts {
+  display: flex; flex-direction: column; gap: 6px; margin-top: 16px;
+  font-size: 12px; font-weight: 500; color: var(--body); text-align: left;
+}
+.v3-contact-row { display: flex; align-items: center; gap: 10px; }
+.v3-contact-row .ic { width: 14px; height: 14px; color: var(--caption); }
+.v3-logo {
+  width: 28px; height: 28px; border-radius: 6px; background: var(--dark);
+  display: flex; align-items: center; justify-content: center;
+  margin: 16px auto 0; font-size: 9px; font-weight: 900; color: var(--accent);
+}
+
+/* ============================================
+   V4 — MINIMAL (barely there, pure typography)
+   ============================================ */
+.v4 {
+  max-width: 520px; width: 100%; display: flex; align-items: center; gap: 16px;
+  padding: 4px 0;
+}
+.v4-photo {
+  width: 52px; height: 52px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  background: #e8e5e0;
+}
+.v4-photo img { width: 130%; height: 130%; object-fit: contain; object-position: bottom center; margin-left: -15%; margin-top: 10%; }
+.v4-content { flex: 1; }
+.v4-row1 { display: flex; align-items: baseline; gap: 8px; }
+.v4-name { font-size: 15px; font-weight: 700; color: var(--dark); letter-spacing: -0.01em; }
+.v4-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 1px; }
+.v4-title { font-size: 12px; font-weight: 500; color: var(--caption); }
+.v4-contacts { font-size: 12px; font-weight: 400; color: var(--body); margin-top: 4px; opacity: 0.7; }
+.v4-contacts a { color: var(--body); text-decoration: none; }
+
+/* ============================================
+   V5 — GRID (structured two-column, editorial)
+   ============================================ */
+.v5 {
+  max-width: 540px; width: 100%; display: flex; gap: 0;
+  background: var(--warm-alt); border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.04); overflow: hidden;
+  position: relative;
+}
+.v5::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; background: var(--accent);
+}
+.v5-left { flex: 1; padding: 24px 0 24px 24px; display: flex; flex-direction: column; gap: 4px; }
+.v5-photo {
+  width: 64px; height: 64px; border-radius: 8px; overflow: hidden;
+  background: linear-gradient(135deg, #e4e1dc, #d9d6d1);
+}
+.v5-photo img { width: 130%; height: 130%; object-fit: contain; object-position: bottom center; margin-left: -15%; }
+.v5-name { font-size: 17px; font-weight: 800; color: var(--dark); letter-spacing: -0.02em; margin-top: 10px; }
+.v5-title { font-size: 11px; font-weight: 500; color: var(--caption); }
+
+.v5-right {
+  width: 200px; flex-shrink: 0; padding: 24px 24px 24px 0;
+  display: flex; flex-direction: column; justify-content: center; gap: 8px;
+  border-left: 1px solid rgba(0,0,0,0.04); margin-left: 20px; padding-left: 20px;
+}
+.v5-contact { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: var(--body); }
+.v5-contact .ic { width: 13px; height: 13px; color: var(--caption); }
+.v5-brand { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.v5-brand-badge {
+  width: 22px; height: 22px; border-radius: 5px; background: var(--dark);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 7px; font-weight: 900; color: var(--accent);
+}
+.v5-brand-text { font-size: 11px; font-weight: 700; color: var(--dark); opacity: 0.25; }
+
+/* ============================================
+   V6 — STRIP (ultra-compact single row)
+   ============================================ */
+.v6 {
+  max-width: 600px; width: 100%; display: flex; align-items: center; gap: 14px;
+  background: var(--white); border-radius: 100px; padding: 8px 20px 8px 8px;
+  border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+.v6-photo {
+  width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  background: #e8e5e0;
+}
+.v6-photo img { width: 130%; height: 130%; object-fit: contain; object-position: bottom center; margin-left: -15%; margin-top: 10%; }
+.v6-identity { display: flex; align-items: baseline; gap: 8px; flex-shrink: 0; }
+.v6-name { font-size: 14px; font-weight: 700; color: var(--dark); white-space: nowrap; }
+.v6-title { font-size: 11px; font-weight: 500; color: var(--caption); white-space: nowrap; }
+.v6-sep { width: 1px; height: 20px; background: rgba(0,0,0,0.08); flex-shrink: 0; }
+.v6-contacts { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.v6-contact-item { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; color: var(--body); white-space: nowrap; }
+.v6-contact-item .ic { width: 12px; height: 12px; color: var(--caption); }
+.v6-accent-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="page-title">4YES Email Signatures — Light Variants</div>
+
+<!-- V1 — HORIZON -->
+<div class="variant-label">1 / Horizon</div>
+<div class="v1">
+  <div class="v1-photo">
+    <img src="https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/6996dd219ea1905e9981a98d_ZG-no%20BG.png" alt="Zöldhegyi Gábor">
+  </div>
+  <div class="v1-sep"></div>
+  <div class="v1-info">
+    <div class="v1-name">Zöldhegyi Gábor</div>
+    <div class="v1-title">CEO & Co-Founder at 4YES Consulting</div>
+    <div class="v1-contacts">
+      <span>+36 20 929 8698</span>
+      <span class="dot">&#9679;</span>
+      <span>zg@4yes.hu</span>
+      <span class="dot">&#9679;</span>
+      <span>4yes.hu</span>
+    </div>
+    <div class="v1-bottom">
+      <div class="v1-brand">4YES</div>
+    </div>
+  </div>
+</div>
+
+<!-- V2 — EDITORIAL -->
+<div class="variant-label">2 / Editorial</div>
+<div class="v2">
+  <div class="v2-header">
+    <div>
+      <div class="v2-name">Zöldhegyi<br>Gábor</div>
+      <div class="v2-title">CEO & Co-Founder — 4YES Consulting</div>
+    </div>
+    <div class="v2-photo">
+      <img src="https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/6996dd219ea1905e9981a98d_ZG-no%20BG.png" alt="ZG">
+    </div>
+  </div>
+  <div class="v2-rule"></div>
+  <div class="v2-contacts">
+    <span>+36 20 929 8698</span>
+    <span class="sep">|</span>
+    <span>zg@4yes.hu</span>
+    <span class="sep">|</span>
+    <span>4yes.hu</span>
+  </div>
+</div>
+
+<!-- V3 — CARD -->
+<div class="variant-label">3 / Card</div>
+<div class="v3">
+  <div class="v3-photo">
+    <img src="https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/6996dd219ea1905e9981a98d_ZG-no%20BG.png" alt="ZG">
+  </div>
+  <div class="v3-name">Zöldhegyi Gábor</div>
+  <div class="v3-title">CEO & Co-Founder</div>
+  <div class="v3-contacts">
+    <div class="v3-contact-row">
+      <span class="ic"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+      <span>+36 20 929 8698</span>
+    </div>
+    <div class="v3-contact-row">
+      <span class="ic"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>
+      <span>zg@4yes.hu</span>
+    </div>
+    <div class="v3-contact-row">
+      <span class="ic"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+      <span>4yes.hu</span>
+    </div>
+  </div>
+  <div class="v3-logo">4Y</div>
+</div>
+
+<!-- V4 — MINIMAL -->
+<div class="variant-label">4 / Minimal</div>
+<div class="v4">
+  <div class="v4-photo">
+    <img src="https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/6996dd219ea1905e9981a98d_ZG-no%20BG.png" alt="ZG">
+  </div>
+  <div class="v4-content">
+    <div class="v4-row1">
+      <span class="v4-name">Zöldhegyi Gábor</span>
+      <span class="v4-dot"></span>
+      <span class="v4-title">CEO & Co-Founder, 4YES</span>
+    </div>
+    <div class="v4-contacts">+36 20 929 8698 &nbsp;&middot;&nbsp; zg@4yes.hu &nbsp;&middot;&nbsp; 4yes.hu</div>
+  </div>
+</div>
+
+<!-- V5 — GRID -->
+<div class="variant-label">5 / Grid</div>
+<div class="v5">
+  <div class="v5-left">
+    <div class="v5-photo">
+      <img src="https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/6996dd219ea1905e9981a98d_ZG-no%20BG.png" alt="ZG">
+    </div>
+    <div class="v5-name">Zöldhegyi Gábor</div>
+    <div class="v5-title">CEO & Co-Founder</div>
+  </div>
+  <div class="v5-right">
+    <div class="v5-contact">
+      <span class="ic"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+      <span>+36 20 929 8698</span>
+    </div>
+    <div class="v5-contact">
+      <span class="ic"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>
+      <span>zg@4yes.hu</span>
+    </div>
+    <div class="v5-contact">
+      <span class="ic"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+      <span>4yes.hu</span>
+    </div>
+    <div class="v5-brand">
+      <div class="v5-brand-badge">4Y</div>
+      <span class="v5-brand-text">4YES Consulting</span>
+    </div>
+  </div>
+</div>
+
+<!-- V6 — STRIP -->
+<div class="variant-label">6 / Strip</div>
+<div class="v6">
+  <div class="v6-photo">
+    <img src="https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/6996dd219ea1905e9981a98d_ZG-no%20BG.png" alt="ZG">
+  </div>
+  <div class="v6-identity">
+    <span class="v6-name">Zöldhegyi Gábor</span>
+    <span class="v6-title">CEO & Co-Founder</span>
+  </div>
+  <div class="v6-accent-dot"></div>
+  <div class="v6-sep"></div>
+  <div class="v6-contacts">
+    <div class="v6-contact-item">
+      <span class="ic"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+      <span>+36 20 929 8698</span>
+    </div>
+    <div class="v6-contact-item">
+      <span class="ic"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>
+      <span>zg@4yes.hu</span>
+    </div>
+    <div class="v6-contact-item">
+      <span class="ic"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+      <span>4yes.hu</span>
+    </div>
+  </div>
+</div>
+
+<div style="height: 40px;"></div>
+
+</body>
+</html>

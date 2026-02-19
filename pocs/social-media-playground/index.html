@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4YES Social Media Kit</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #080C12;
+    --bg-card: #0F1923;
+    --bg-elevated: #162030;
+    --accent: #C3F73A;
+    --accent-dim: rgba(195, 247, 58, 0.12);
+    --accent-glow: rgba(195, 247, 58, 0.25);
+    --text: #FFFFFF;
+    --text-dim: rgba(255, 255, 255, 0.4);
+    --text-mid: rgba(255, 255, 255, 0.65);
+    --border: rgba(255, 255, 255, 0.06);
+    --sidebar-w: 260px;
+    --topbar-h: 56px;
+  }
+
+  body {
+    font-family: 'Outfit', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── TOPBAR ─────────────────────────────── */
+  .topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--topbar-h);
+    background: rgba(8, 12, 18, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    z-index: 100;
+    gap: 14px;
+  }
+
+  .topbar-logo { width: 80px; height: 32px; opacity: 0.9; }
+  .topbar-logo svg { width: 100%; height: 100%; }
+  .topbar-sep { width: 1px; height: 20px; background: var(--border); }
+
+  .topbar-title {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+  }
+
+  .topbar-count {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .topbar-count strong { color: var(--accent); font-weight: 600; }
+
+  /* ─── SIDEBAR ────────────────────────────── */
+  .sidebar {
+    position: fixed;
+    top: var(--topbar-h);
+    left: 0; bottom: 0;
+    width: var(--sidebar-w);
+    background: rgba(8, 12, 18, 0.5);
+    border-right: 1px solid var(--border);
+    padding: 16px 0;
+    overflow-y: auto;
+    z-index: 90;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    padding: 10px 20px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
+    margin: 1px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-mid);
+    border: 1px solid transparent;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.03); color: var(--text); }
+
+  .nav-item.active {
+    background: var(--accent-dim);
+    color: var(--accent);
+    border-color: rgba(195, 247, 58, 0.1);
+    font-weight: 600;
+  }
+
+  .nav-icon { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.5; }
+  .nav-item.active .nav-icon { opacity: 1; }
+
+  .nav-count {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.04);
+    padding: 2px 7px;
+    border-radius: 10px;
+  }
+
+  .nav-item.active .nav-count { background: rgba(195,247,58,0.08); color: var(--accent); }
+
+  /* ─── MAIN ───────────────────────────────── */
+  .main {
+    margin-left: var(--sidebar-w);
+    margin-top: var(--topbar-h);
+    padding: 28px 32px;
+    min-height: calc(100vh - var(--topbar-h));
+  }
+
+  .main-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .main-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .main-header span { font-size: 13px; color: var(--text-dim); }
+
+  /* ─── GRID ───────────────────────────────── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+
+  /* ─── CARD ───────────────────────────────── */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .card:hover {
+    border-color: rgba(195, 247, 58, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(195, 247, 58, 0.05);
+  }
+
+  /* ─── CARD PREVIEW ──────────────────────── */
+  .card-preview {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: #080C12;
+  }
+
+  .card-canvas {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-card);
+  }
+
+  /* Subtle grain on previews */
+  .card-canvas::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' seed='2'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    z-index: 4;
+  }
+
+  .tpl-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    z-index: 2;
+  }
+
+  /* Layout variants for preview */
+  .tpl-inner.lay-left,
+  .tpl-inner.lay-banner,
+  .tpl-inner.lay-typographic {
+    align-items: flex-start;
+  }
+
+  .tpl-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 2;
+  }
+
+  .tpl-inner.lay-left .tpl-text-group,
+  .tpl-inner.lay-banner .tpl-text-group,
+  .tpl-inner.lay-typographic .tpl-text-group { align-items: flex-start; }
+
+  .tpl-inner:not(.lay-left):not(.lay-banner):not(.lay-typographic) .tpl-text-group { align-items: center; }
+
+  /* Logo SVG in preview */
+  .tpl-logo-svg { z-index: 2; opacity: 0.9; }
+  .tpl-logo-svg svg { width: 100%; height: auto; }
+
+  .tpl-icon-svg { z-index: 2; }
+  .tpl-icon-svg svg { width: 100%; height: auto; }
+
+  .tpl-headline {
+    font-weight: 800;
+    color: var(--accent);
+    text-shadow: 0 0 30px var(--accent-glow);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    z-index: 2;
+  }
+
+  .tpl-sub {
+    font-weight: 300;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.35;
+    z-index: 2;
+  }
+
+  .tpl-detail {
+    font-weight: 400;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    z-index: 2;
+  }
+
+  /* Single subtle orb */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+    width: 55%;
+    height: 60%;
+    top: -15%;
+    right: -10%;
+    background: radial-gradient(circle, rgba(195,247,58,0.03) 0%, transparent 60%);
+  }
+
+  /* Glass panel for glass treatment */
+  .glass-panel {
+    position: absolute;
+    background: rgba(44, 61, 85, 0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(195, 247, 58, 0.06);
+    border-radius: 8px;
+    z-index: 1;
+  }
+
+  /* Dot grid treatment */
+  .dotgrid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(195,247,58,0.05) 1px, transparent 1px);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Safe zone overlay */
+  .safe-circle {
+    position: absolute;
+    inset: 8%;
+    border: 1.5px dashed rgba(195, 247, 58, 0.15);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* Platform badge */
+  .platform-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
+    padding: 3px 8px 3px 5px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-mid);
+    z-index: 6;
+  }
+
+  .platform-badge svg { width: 12px; height: 12px; }
+
+  /* ─── CARD META ──────────────────────────── */
+  .card-meta {
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .card-info { flex: 1; }
+
+  .card-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .card-dims {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card-dims .ratio { margin-left: 6px; color: var(--accent); opacity: 0.5; }
+
+  .card-btn {
+    padding: 7px 14px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--bg);
+    background: var(--accent);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+    white-space: nowrap;
+  }
+
+  .card-btn:hover { opacity: 0.85; transform: scale(1.03); }
+
+  /* ─── RESPONSIVE ─────────────────────────── */
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } }
+  @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo" id="topLogo"></div>
+  <div class="topbar-sep"></div>
+  <div class="topbar-title">Social Media Kit</div>
+  <div class="topbar-count"><strong id="countNum">31</strong> templates</div>
+</div>
+
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-label">Platforms</div>
+  <div class="nav-item active" data-platform="all">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+    <span>All Templates</span>
+    <span class="nav-count" id="allCount">31</span>
+  </div>
+  <div id="navItems"></div>
+</nav>
+
+<main class="main">
+  <div class="main-header">
+    <h2 id="mainTitle">All Templates</h2>
+    <span id="mainSub"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<script src="templates.js"></script>
+<script>
+(function() {
+  // Insert logo in topbar
+  document.getElementById('topLogo').innerHTML = SVG_LOGO_LIGHT;
+
+  var sidebar = document.getElementById('sidebar');
+  var navItems = document.getElementById('navItems');
+  var grid = document.getElementById('grid');
+  var mainTitle = document.getElementById('mainTitle');
+  var mainSub = document.getElementById('mainSub');
+  var allCount = document.getElementById('allCount');
+  var countNum = document.getElementById('countNum');
+
+  var activePlatform = 'all';
+
+  // Build sidebar
+  PLATFORMS.forEach(function(p) {
+    var count = TEMPLATES.filter(function(t) { return t.platform === p.id; }).length;
+    var div = document.createElement('div');
+    div.className = 'nav-item';
+    div.dataset.platform = p.id;
+    div.innerHTML = '<span class="nav-icon" style="color:'+p.color+'">'+PLATFORM_ICONS[p.icon]+'</span><span>'+p.id+'</span><span class="nav-count">'+count+'</span>';
+    navItems.appendChild(div);
+  });
+
+  allCount.textContent = TEMPLATES.length;
+  countNum.textContent = TEMPLATES.length;
+
+  sidebar.addEventListener('click', function(e) {
+    var item = e.target.closest('.nav-item');
+    if (!item) return;
+    sidebar.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+    item.classList.add('active');
+    activePlatform = item.dataset.platform;
+    renderGrid();
+  });
+
+  function previewHeight(t) {
+    var ratio = t.h / t.w;
+    return Math.min(Math.max(ratio * 100, 25), 180);
+  }
+
+  function ratioLabel(w, h) {
+    var known = {'820:312':'2.6:1','1920:1005':'1.9:1','1200:627':'1.9:1','1200:628':'1.9:1','1200:631':'1.9:1','1200:630':'1.9:1','1536:768':'2:1','1500:500':'3:1'};
+    var key = w+':'+h;
+    if (known[key]) return known[key];
+    function gcd(a,b){return b===0?a:gcd(b,a%b);}
+    var g=gcd(w,h), rw=w/g, rh=h/g;
+    if(rw>20||rh>20) return (w/h).toFixed(1)+':1';
+    return rw+':'+rh;
+  }
+
+  function renderGrid() {
+    var templates = activePlatform === 'all' ? TEMPLATES : TEMPLATES.filter(function(t) { return t.platform === activePlatform; });
+    mainTitle.textContent = activePlatform === 'all' ? 'All Templates' : activePlatform;
+    mainSub.textContent = templates.length + ' template' + (templates.length !== 1 ? 's' : '');
+    countNum.textContent = templates.length;
+    grid.innerHTML = '';
+
+    templates.forEach(function(t) {
+      var ph = previewHeight(t);
+      var ratio = ratioLabel(t.w, t.h);
+      var ct = CONTENT[t.content] || CONTENT.brand;
+      var isProfile = t.layout === 'profile';
+      var ar = t.w / t.h;
+
+      // Preview padding
+      var padPct;
+      if (isProfile) padPct = 18;
+      else if (ar >= 2) padPct = 10;
+      else if (ar >= 0.9) padPct = 15;
+      else padPct = 14;
+
+      // Scale font sizes for preview
+      var sc = Math.sqrt(t.w * t.h) / 1000;
+      var logoW = isProfile ? 0 : (t.layout === 'banner' ? 55 : 48);
+      var iconW = isProfile ? 38 : 26;
+      var hlSize = isProfile ? 0 : Math.max(14, 20 * sc);
+      var subSize = isProfile ? 0 : Math.max(8, 8.5 * sc);
+      var detSize = Math.max(7, 6.5 * sc);
+
+      // Layout class
+      var layClass = '';
+      if (t.layout === 'left' || t.layout === 'banner' || t.layout === 'typographic') layClass = 'lay-left';
+
+      // ONE logo element based on logoType
+      var logoHtml = '';
+      if (t.logoType === 'icon') {
+        logoHtml = '<div class="tpl-icon-svg" style="width:'+iconW+'px">'+SVG_ICON+'</div>';
+      } else if (t.logoType === 'logo') {
+        logoHtml = '<div class="tpl-logo-svg" style="width:'+logoW+'px">'+SVG_LOGO_LIGHT+'</div>';
+      }
+      // logoType 'none' = no logo
+
+      // Treatment layers (simple)
+      var treatHtml = '';
+      if (!isProfile) {
+        treatHtml += '<div class="orb"></div>';
+      }
+      if (t.treatment === 'glass' && !isProfile) {
+        treatHtml += '<div class="glass-panel" style="inset:'+Math.max(8, padPct-3)+'%;border-radius:8px"></div>';
+      }
+      if (t.treatment === 'dotgrid' && !isProfile) {
+        treatHtml += '<div class="dotgrid" style="background-size:14px 14px"></div>';
+      }
+
+      // Safe zone
+      var safeHtml = '';
+      if (t.safe && t.safe.circle) safeHtml = '<div class="safe-circle"></div>';
+
+      // Text content
+      var headlineHtml = ct.headline ? '<div class="tpl-headline" style="font-size:'+hlSize+'px">'+ct.headline.replace(/\n/g,'<br>')+'</div>' : '';
+      var subHtml = ct.sub ? '<div class="tpl-sub" style="font-size:'+subSize+'px">'+ct.sub.replace(/\n/g,'<br>')+'</div>' : '';
+      var detailHtml = ct.detail ? '<div class="tpl-detail" style="font-size:'+detSize+'px">'+ct.detail+'</div>' : '';
+
+      var card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML =
+        '<div class="card-preview">' +
+          '<div class="card-canvas" style="padding-top:'+ph+'%">' +
+            treatHtml +
+            '<div class="tpl-inner '+layClass+'" style="padding:'+padPct+'%">' +
+              logoHtml +
+              '<div class="tpl-text-group">' +
+                headlineHtml +
+                subHtml +
+                detailHtml +
+              '</div>' +
+            '</div>' +
+            safeHtml +
+            '<div class="platform-badge">'+PLATFORM_ICONS[(PLATFORMS.find(function(p){return p.id===t.platform;})||{icon:'misc'}).icon]+' '+t.name+'</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="card-meta">' +
+          '<div class="card-info">' +
+            '<div class="card-name">'+t.platform+' — '+t.name+'</div>' +
+            '<div class="card-dims">'+t.w+' x '+t.h+' px <span class="ratio">'+ratio+'</span></div>' +
+          '</div>' +
+          '<button class="card-btn" onclick="window.open(\'render.html?id='+t.id+'\',\'_blank\')">Full Size</button>' +
+        '</div>';
+      grid.appendChild(card);
+    });
+  }
+
+  renderGrid();
+})();
+</script>
+
+</body>
+</html>

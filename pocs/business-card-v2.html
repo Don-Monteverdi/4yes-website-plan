@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4YES — Business Card Redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: #E8E6E3;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 80px;
+  padding: 60px 24px;
+}
+
+:root {
+  --bg-warm: #EEECEA;
+  --bg-warm-alt: #F5F4F2;
+  --bg-white: #FFFFFF;
+  --bg-dark: #0F1923;
+  --accent: #C3F73A;
+  --accent-hover: #d4ff5a;
+  --accent-muted: rgba(195,247,58,0.10);
+  --text-heading: #0F1923;
+  --text-body: #555F6A;
+  --text-caption: #8E969E;
+  --border-card: rgba(0,0,0,0.06);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 100px;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-caption);
+  text-align: center;
+}
+
+/* ============================================
+   VARIANT 1 — SIGNATURE STRIP (Email Footer)
+   ============================================ */
+.sig-card {
+  width: 100%;
+  max-width: 560px;
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  display: flex;
+  position: relative;
+}
+
+.sig-left {
+  flex: 1;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+}
+
+/* Accent bar */
+.sig-left::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent) 0%, rgba(195,247,58,0.2) 100%);
+}
+
+.sig-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sig-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: var(--bg-dark);
+  border-radius: var(--radius-sm);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  position: relative;
+}
+
+.sig-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sig-brand-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-heading);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.sig-brand-sub {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-caption);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.sig-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sig-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-heading);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.sig-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-body);
+  line-height: 1.3;
+}
+
+.sig-divider {
+  width: 32px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.sig-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sig-contact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.sig-contact:hover .sig-contact-icon {
+  background: var(--accent);
+  color: var(--text-heading);
+}
+
+.sig-contact:hover .sig-contact-text {
+  color: var(--text-heading);
+}
+
+.sig-contact-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-warm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sig-contact-icon svg {
+  width: 13px;
+  height: 13px;
+  color: var(--text-body);
+  transition: color 0.2s;
+}
+
+.sig-contact:hover .sig-contact-icon svg {
+  color: var(--text-heading);
+}
+
+.sig-contact-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-body);
+  transition: color 0.2s;
+}
+
+.sig-photo {
+  width: 180px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.sig-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  filter: grayscale(20%);
+}
+
+.sig-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, #1a2838 0%, #0F1923 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56px;
+  font-weight: 800;
+  color: rgba(195,247,58,0.15);
+  letter-spacing: -0.03em;
+}
+
+/* ============================================
+   VARIANT 2 — DARK CARD (Premium / Print)
+   ============================================ */
+.card-dark {
+  width: 100%;
+  max-width: 520px;
+  background: var(--bg-dark);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.1),
+    0 8px 24px rgba(0,0,0,0.15),
+    0 24px 48px rgba(0,0,0,0.1);
+}
+
+/* Subtle grid pattern */
+.card-dark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(195,247,58,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(195,247,58,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+.card-dark-inner {
+  padding: 36px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.card-dark-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.card-dark-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-dark-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid rgba(195,247,58,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+}
+
+.card-dark-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.card-dark-brand-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.card-dark-brand-sub {
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(131,153,162,0.6);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.card-dark-accent-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px rgba(195,247,58,0.4);
+  margin-top: 6px;
+}
+
+.card-dark-body {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+}
+
+.card-dark-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card-dark-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-dark-name {
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.card-dark-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(131,153,162,0.7);
+  line-height: 1.3;
+}
+
+.card-dark-title span {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.card-dark-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-dark-contact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.card-dark-contact:hover .cdc-icon {
+  border-color: var(--accent);
+  background: rgba(195,247,58,0.08);
+}
+
+.card-dark-contact:hover .cdc-text {
+  color: #fff;
+}
+
+.cdc-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(131,153,162,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cdc-icon svg {
+  width: 13px;
+  height: 13px;
+  color: rgba(131,153,162,0.5);
+  transition: color 0.2s;
+}
+
+.card-dark-contact:hover .cdc-icon svg {
+  color: var(--accent);
+}
+
+.cdc-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(131,153,162,0.6);
+  transition: color 0.2s;
+}
+
+.card-dark-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid rgba(195,247,58,0.15);
+  box-shadow: 0 0 0 6px rgba(195,247,58,0.04);
+}
+
+.card-dark-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(30%) contrast(1.05);
+}
+
+.card-dark-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(195,247,58,0.08) 0%, rgba(195,247,58,0.02) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 800;
+  color: rgba(195,247,58,0.2);
+}
+
+/* Accent bar at bottom */
+.card-dark-bar {
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), rgba(195,247,58,0.1));
+}
+
+/* ============================================
+   VARIANT 3 — COMPACT SIGNATURE (Inline)
+   ============================================ */
+.sig-compact {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  padding: 20px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sig-compact::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent);
+}
+
+.sig-compact-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 0 4px rgba(195,247,58,0.08);
+}
+
+.sig-compact-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sig-compact-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.sig-compact-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sig-compact-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.sig-compact-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-heading);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.sig-compact-sep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--text-caption);
+  flex-shrink: 0;
+}
+
+.sig-compact-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-caption);
+  white-space: nowrap;
+}
+
+.sig-compact-contacts {
+  display: flex;
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.sig-compact-contact {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-body);
+  transition: color 0.2s;
+}
+
+.sig-compact-contact:hover {
+  color: var(--text-heading);
+}
+
+.sig-compact-contact svg {
+  width: 12px;
+  height: 12px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.sig-compact-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding-left: 20px;
+  border-left: 1px solid rgba(0,0,0,0.06);
+}
+
+.sig-compact-logo {
+  width: 32px;
+  height: 32px;
+  background: var(--bg-dark);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.sig-compact-brand-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-caption);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 600px) {
+  .sig-card { flex-direction: column-reverse; }
+  .sig-photo { width: 100%; height: 200px; }
+  .sig-left { padding: 24px 20px; }
+  .sig-name { font-size: 20px; }
+  .card-dark-inner { padding: 24px; }
+  .card-dark-name { font-size: 22px; }
+  .card-dark-body { flex-direction: column; align-items: flex-start; }
+  .card-dark-avatar { width: 72px; height: 72px; }
+  .sig-compact { flex-direction: column; text-align: center; }
+  .sig-compact::before { top: 0; left: 0; right: 0; bottom: auto; width: 100%; height: 3px; }
+  .sig-compact-brand { border-left: none; padding-left: 0; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 12px; }
+  .sig-compact-contacts { justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============== VARIANT 1 — EMAIL SIGNATURE ============== -->
+<p class="section-label">Email Signature</p>
+<div class="sig-card">
+  <div class="sig-left">
+    <div class="sig-brand">
+      <div class="sig-logo">4Y</div>
+      <div class="sig-brand-text">
+        <div class="sig-brand-name">4YES</div>
+        <div class="sig-brand-sub">Consulting</div>
+      </div>
+    </div>
+
+    <div class="sig-identity">
+      <div class="sig-name">Zöldhegyi Gábor</div>
+      <div class="sig-title">CEO & Co-Founder</div>
+    </div>
+
+    <div class="sig-divider"></div>
+
+    <div class="sig-contacts">
+      <a href="tel:+36209298698" class="sig-contact">
+        <div class="sig-contact-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </div>
+        <span class="sig-contact-text">+36 20 929 8698</span>
+      </a>
+      <a href="mailto:zg@4yes.hu" class="sig-contact">
+        <div class="sig-contact-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        </div>
+        <span class="sig-contact-text">zg@4yes.hu</span>
+      </a>
+      <a href="https://4yes.hu" class="sig-contact">
+        <div class="sig-contact-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <span class="sig-contact-text">4yes.hu</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="sig-photo">
+    <div class="sig-photo-placeholder">ZG</div>
+  </div>
+</div>
+
+<!-- ============== VARIANT 2 — DARK PREMIUM CARD ============== -->
+<p class="section-label">Premium Card — Dark</p>
+<div class="card-dark">
+  <div class="card-dark-inner">
+    <div class="card-dark-header">
+      <div class="card-dark-brand">
+        <div class="card-dark-logo">4Y</div>
+        <div class="card-dark-brand-text">
+          <div class="card-dark-brand-name">4YES</div>
+          <div class="card-dark-brand-sub">Consulting</div>
+        </div>
+      </div>
+      <div class="card-dark-accent-dot"></div>
+    </div>
+
+    <div class="card-dark-body">
+      <div class="card-dark-info">
+        <div class="card-dark-identity">
+          <div class="card-dark-name">Zöldhegyi Gábor</div>
+          <div class="card-dark-title">CEO & Co-Founder at <span>4YES</span></div>
+        </div>
+
+        <div class="card-dark-contacts">
+          <a href="tel:+36209298698" class="card-dark-contact">
+            <div class="cdc-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <span class="cdc-text">+36 20 929 8698</span>
+          </a>
+          <a href="mailto:zg@4yes.hu" class="card-dark-contact">
+            <div class="cdc-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </div>
+            <span class="cdc-text">zg@4yes.hu</span>
+          </a>
+          <a href="https://4yes.hu" class="card-dark-contact">
+            <div class="cdc-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <span class="cdc-text">4yes.hu</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="card-dark-avatar">
+        <div class="card-dark-avatar-placeholder">ZG</div>
+      </div>
+    </div>
+  </div>
+  <div class="card-dark-bar"></div>
+</div>
+
+<!-- ============== VARIANT 3 — COMPACT INLINE ============== -->
+<p class="section-label">Compact Signature</p>
+<div class="sig-compact">
+  <div class="sig-compact-avatar">
+    <div class="sig-compact-avatar-placeholder">ZG</div>
+  </div>
+  <div class="sig-compact-info">
+    <div class="sig-compact-row">
+      <div class="sig-compact-name">Zöldhegyi Gábor</div>
+      <div class="sig-compact-sep"></div>
+      <div class="sig-compact-title">CEO & Co-Founder</div>
+    </div>
+    <div class="sig-compact-contacts">
+      <a href="tel:+36209298698" class="sig-compact-contact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        +36 20 929 8698
+      </a>
+      <a href="mailto:zg@4yes.hu" class="sig-compact-contact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        zg@4yes.hu
+      </a>
+      <a href="https://4yes.hu" class="sig-compact-contact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        4yes.hu
+      </a>
+    </div>
+  </div>
+  <div class="sig-compact-brand">
+    <div class="sig-compact-logo">4Y</div>
+    <div class="sig-compact-brand-label">Consulting</div>
+  </div>
+</div>
+
+</body>
+</html>

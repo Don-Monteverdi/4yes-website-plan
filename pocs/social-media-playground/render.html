@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4YES Template — Render</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #080C12;
+    --bg-card: #0F1923;
+    --accent: #C3F73A;
+    --accent-glow: rgba(195, 247, 58, 0.25);
+    --dark-fill: #2C3D55;
+    --text: #FFFFFF;
+    --text-dim: rgba(255, 255, 255, 0.35);
+    --border: rgba(255, 255, 255, 0.06);
+  }
+
+  body {
+    font-family: 'Outfit', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  /* ─── TOOLBAR ────────────────────────────── */
+  .toolbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 44px;
+    background: rgba(8, 12, 18, 0.9);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    font-size: 12px;
+  }
+
+  .toolbar a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .toolbar a:hover { color: var(--accent); }
+  .tb-sep { width: 1px; height: 18px; background: var(--border); }
+  .tb-name { font-weight: 600; color: var(--text); font-size: 13px; }
+  .tb-dims { color: var(--text-dim); font-variant-numeric: tabular-nums; }
+  .tb-hint { margin-left: auto; color: rgba(255,255,255,0.2); font-size: 11px; }
+  .tb-hint kbd { background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px; font-family: inherit; }
+
+  /* ─── CANVAS WRAPPER ─────────────────────── */
+  .canvas-wrap {
+    margin-top: 68px;
+    position: relative;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 24px 80px rgba(0,0,0,0.5);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .canvas {
+    position: relative;
+    background: var(--bg-card);
+    overflow: hidden;
+  }
+
+  /* ─── BACKGROUND ────────────────────────── */
+  .bg-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(155deg, #0F1923 0%, #162030 50%, #0F1923 100%);
+    z-index: 0;
+  }
+
+  /* Single subtle orb */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Grain overlay */
+  .grain {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' seed='3'/%3E%3C/filter%3E%3Crect width='512' height='512' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    z-index: 10;
+  }
+
+  /* Glass panel */
+  .glass {
+    position: absolute;
+    background: rgba(44, 61, 85, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(195, 247, 58, 0.06);
+    border-radius: 16px;
+    box-shadow: inset 0 1px 0 rgba(238, 242, 243, 0.04);
+    z-index: 2;
+  }
+
+  /* Dot grid */
+  .dotgrid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(195,247,58,0.05) 1px, transparent 1px);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ─── CONTENT LAYERS ─────────────────────── */
+  .content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    z-index: 5;
+  }
+
+  .content.lay-centered {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .content.lay-profile {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .content.lay-left {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    text-align: left;
+  }
+
+  .content.lay-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    text-align: left;
+  }
+
+  .content.lay-story {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .content.lay-typographic {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    text-align: left;
+  }
+
+  .content.lay-minimal {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* ─── TEXT STYLES ────────────────────────── */
+  .t-logo svg { width: 100%; height: auto; }
+  .t-icon svg { width: 100%; height: auto; filter: drop-shadow(0 0 30px rgba(195, 247, 58, 0.15)); }
+
+  .t-headline {
+    font-weight: 800;
+    color: var(--accent);
+    text-shadow: 0 0 60px var(--accent-glow);
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+  }
+
+  .t-sub {
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.45;
+  }
+
+  .t-detail {
+    font-weight: 400;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+
+  .t-divider {
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    border-radius: 1px;
+    opacity: 0.35;
+  }
+
+  /* ─── SAFE ZONES ─────────────────────────── */
+  .safe-circle {
+    position: absolute;
+    inset: 8%;
+    border: 2px dashed rgba(195, 247, 58, 0.12);
+    border-radius: 50%;
+    z-index: 12;
+    pointer-events: none;
+  }
+
+  .safe-rect {
+    position: absolute;
+    border: 1.5px dashed rgba(195, 247, 58, 0.1);
+    z-index: 12;
+    pointer-events: none;
+  }
+
+  .safe-label {
+    position: absolute;
+    font-size: 11px;
+    color: rgba(195, 247, 58, 0.25);
+    font-family: 'Outfit', sans-serif;
+    background: rgba(15, 25, 35, 0.6);
+    padding: 2px 8px;
+    border-radius: 3px;
+    z-index: 12;
+  }
+
+  /* Dimension markers */
+  .dim { position: absolute; font-size: 10px; color: rgba(255,255,255,0.08); font-variant-numeric: tabular-nums; z-index: 12; }
+  .dim-w { bottom: 6px; left: 50%; transform: translateX(-50%); }
+  .dim-h { right: 6px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+
+  /* ─── ZOOM BAR ───────────────────────────── */
+  .zoom-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(8, 12, 18, 0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 10px;
+    z-index: 100;
+  }
+
+  .z-btn {
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 5px;
+    color: rgba(255,255,255,0.5);
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .z-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .z-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    min-width: 40px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .z-sep { width: 1px; height: 18px; background: var(--border); }
+
+  .z-text {
+    padding: 3px 8px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 5px;
+    color: rgba(255,255,255,0.4);
+    font-size: 10px;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .z-text:hover { border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <a href="index.html">&larr; Kit</a>
+  <div class="tb-sep"></div>
+  <span class="tb-name" id="tplName">—</span>
+  <span class="tb-dims" id="tplDims">—</span>
+  <span class="tb-hint">Screenshot: <kbd>Cmd+Shift+4</kbd></span>
+</div>
+
+<div class="canvas-wrap" id="canvasWrap">
+  <div class="canvas" id="canvas"></div>
+</div>
+
+<div class="zoom-bar">
+  <button class="z-btn" id="zoomOut">-</button>
+  <span class="z-label" id="zoomLabel">100%</span>
+  <button class="z-btn" id="zoomIn">+</button>
+  <div class="z-sep"></div>
+  <button class="z-text" id="zoomFit">Fit</button>
+  <button class="z-text" id="zoom100">1:1</button>
+</div>
+
+<script src="templates.js"></script>
+<script>
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  if (!id) { document.body.innerHTML = '<p style="padding:40px;color:rgba(255,255,255,0.4)">No template ID. <a href="index.html" style="color:#C3F73A">Back to kit</a></p>'; return; }
+
+  const t = TEMPLATES.find(x => x.id === id);
+  if (!t) { document.body.innerHTML = '<p style="padding:40px;color:rgba(255,255,255,0.4)">Template "'+id+'" not found. <a href="index.html" style="color:#C3F73A">Back to kit</a></p>'; return; }
+
+  document.title = '4YES — ' + t.platform + ' ' + t.name;
+  document.getElementById('tplName').textContent = t.platform + ' — ' + t.name;
+  document.getElementById('tplDims').textContent = t.w + ' x ' + t.h + ' px';
+
+  const canvas = document.getElementById('canvas');
+  const canvasWrap = document.getElementById('canvasWrap');
+  canvas.style.width = t.w + 'px';
+  canvas.style.height = t.h + 'px';
+
+  const ct = CONTENT[t.content] || CONTENT.brand;
+  const minD = Math.min(t.w, t.h);
+  const isProfile = t.layout === 'profile';
+  const ratio = t.w / t.h;
+
+  // ─── PADDING by aspect ratio ─────────────
+  let padX, padY;
+  if (isProfile) {
+    padX = 0.18; padY = 0.18;
+  } else if (ratio >= 2) {
+    // Wide banners
+    padX = 0.10; padY = 0.12;
+  } else if (ratio >= 1.5) {
+    // OG images, cards, thumbnails
+    padX = 0.10; padY = 0.14;
+  } else if (ratio >= 0.9) {
+    // Square-ish
+    padX = 0.18; padY = 0.18;
+  } else if (ratio >= 0.7) {
+    // Portrait
+    padX = 0.14; padY = 0.14;
+  } else {
+    // Story / tall
+    padX = 0.18; padY = 0.22;
+  }
+
+  // Story safe zones need extra bottom padding
+  if (t.layout === 'story') {
+    padY = 0.22;
+  }
+
+  const pxL = Math.round(t.w * padX);
+  const pxR = pxL;
+  const pxT = Math.round(t.h * padY);
+  const pxB = t.layout === 'story' ? Math.round(t.h * 0.26) : pxT;
+
+  // ─── FONT SIZING ────────────────────────
+  let logoW, iconW, hlSize, subSize, detSize, divW, gap;
+
+  if (isProfile) {
+    iconW = minD * 0.38;
+    logoW = 0;
+    hlSize = 0; subSize = 0; detSize = 0; divW = 0; gap = 0;
+  } else if (t.layout === 'banner') {
+    logoW = t.h * 0.28;
+    iconW = t.h * 0.30;
+    hlSize = t.h * 0.12; subSize = t.h * 0.055; detSize = t.h * 0.035;
+    divW = t.h * 0.10; gap = Math.round(t.h * 0.035);
+  } else if (t.layout === 'story') {
+    iconW = t.w * 0.22;
+    logoW = t.w * 0.30;
+    hlSize = t.w * 0.09; subSize = t.w * 0.038; detSize = t.w * 0.026;
+    divW = t.w * 0.06; gap = Math.round(t.w * 0.04);
+  } else {
+    // centered, left, typographic, minimal
+    const ref = minD;
+    logoW = ref * 0.24;
+    iconW = ref * 0.28;
+    hlSize = ref * 0.13; subSize = ref * 0.042; detSize = ref * 0.026;
+    divW = ref * 0.06; gap = Math.round(ref * 0.03);
+  }
+
+  // ─── BUILD HTML ─────────────────────────
+  let html = '';
+
+  // Background gradient
+  html += '<div class="bg-gradient"></div>';
+
+  // Single subtle orb (not on profiles)
+  if (!isProfile) {
+    html += '<div class="orb" style="width:55%;height:55%;top:-18%;right:-12%;background:radial-gradient(circle,rgba(195,247,58,0.03) 0%,transparent 60%)"></div>';
+  }
+
+  // Treatment layer (ONE only)
+  if (t.treatment === 'glass' && !isProfile) {
+    const gL = (padX * 100 - 2).toFixed(0);
+    const gT = (padY * 100 - 2).toFixed(0);
+    const gW = (100 - 2 * (padX * 100 - 2)).toFixed(0);
+    const gH = (100 - (padY * 100 - 2) - (t.layout === 'story' ? 24 : (padY * 100 - 2))).toFixed(0);
+    html += '<div class="glass" style="left:'+gL+'%;top:'+gT+'%;width:'+gW+'%;height:'+gH+'%;border-radius:'+Math.round(minD*0.015)+'px"></div>';
+  }
+
+  if (t.treatment === 'dotgrid' && !isProfile) {
+    const gridPx = Math.max(20, minD / 16);
+    html += '<div class="dotgrid" style="background-size:'+gridPx+'px '+gridPx+'px"></div>';
+  }
+
+  // ─── CONTENT ────────────────────────────
+  // Logo element (ONE only, based on logoType)
+  let logoEl = '';
+  if (t.logoType === 'icon') {
+    logoEl = '<div class="t-icon" style="width:'+iconW+'px">'+SVG_ICON+'</div>';
+  } else if (t.logoType === 'logo') {
+    logoEl = '<div class="t-logo" style="width:'+logoW+'px">'+SVG_LOGO_LIGHT+'</div>';
+  }
+  // logoType === 'none' → no logo element
+
+  // Text elements
+  const headlineEl = ct.headline ? '<div class="t-headline" style="font-size:'+hlSize+'px">'+ct.headline.replace(/\n/g,'<br>')+'</div>' : '';
+  const subEl = ct.sub ? '<div class="t-sub" style="font-size:'+subSize+'px">'+ct.sub.replace(/\n/g,'<br>')+'</div>' : '';
+  const detailEl = ct.detail ? '<div class="t-detail" style="font-size:'+detSize+'px">'+ct.detail+'</div>' : '';
+  const dividerEl = divW > 0 && (ct.sub || ct.headline) ? '<div class="t-divider" style="width:'+divW+'px"></div>' : '';
+
+  // Assemble content based on layout
+  const padStyle = 'padding:'+pxT+'px '+pxR+'px '+pxB+'px '+pxL+'px;gap:'+gap+'px;';
+
+  if (isProfile) {
+    html += '<div class="content lay-profile" style="'+padStyle+'">'+logoEl+'</div>';
+  } else if (t.layout === 'banner') {
+    html += '<div class="content lay-banner" style="'+padStyle+'">'+logoEl+headlineEl+dividerEl+subEl+detailEl+'</div>';
+  } else if (t.layout === 'story') {
+    html += '<div class="content lay-story" style="'+padStyle+'">'+logoEl+headlineEl+dividerEl+subEl+detailEl+'</div>';
+  } else if (t.layout === 'left') {
+    html += '<div class="content lay-left" style="'+padStyle+'">'+logoEl+headlineEl+dividerEl+subEl+detailEl+'</div>';
+  } else if (t.layout === 'typographic') {
+    html += '<div class="content lay-typographic" style="'+padStyle+'">'+logoEl+headlineEl+dividerEl+subEl+detailEl+'</div>';
+  } else if (t.layout === 'minimal') {
+    html += '<div class="content lay-minimal" style="'+padStyle+'">'+logoEl+dividerEl+subEl+'</div>';
+  } else {
+    // centered (default)
+    html += '<div class="content lay-centered" style="'+padStyle+'">'+logoEl+headlineEl+dividerEl+subEl+detailEl+'</div>';
+  }
+
+  // ─── SAFE ZONES ─────────────────────────
+  if (t.safe && t.safe.circle) {
+    html += '<div class="safe-circle"></div>';
+  }
+  if (t.safe && t.safe.x !== undefined) {
+    const sx=(t.safe.x/t.w*100).toFixed(2), sy=(t.safe.y/t.h*100).toFixed(2);
+    const sw=(t.safe.w/t.w*100).toFixed(2), sh=(t.safe.h/t.h*100).toFixed(2);
+    html += '<div class="safe-rect" style="left:'+sx+'%;top:'+sy+'%;width:'+sw+'%;height:'+sh+'%"></div>';
+    html += '<span class="safe-label" style="left:'+sx+'%;top:calc('+sy+'% - 20px)">Safe area</span>';
+  }
+  if (t.safe && t.safe.top) {
+    const topPct=(t.safe.top/t.h*100).toFixed(2);
+    const botH=(t.safe.bottom/t.h*100).toFixed(2);
+    const botTop=(100-parseFloat(botH)).toFixed(2);
+    html += '<div class="safe-rect" style="left:0;top:0;width:100%;height:'+topPct+'%;background:rgba(255,50,50,0.03)"></div>';
+    html += '<div class="safe-rect" style="left:0;top:'+botTop+'%;width:100%;height:'+botH+'%;background:rgba(255,50,50,0.03)"></div>';
+    html += '<span class="safe-label" style="left:16px;top:8px">UI overlay</span>';
+    html += '<span class="safe-label" style="left:16px;bottom:8px">CTA zone</span>';
+  }
+
+  // Grain (always, very subtle)
+  html += '<div class="grain"></div>';
+
+  // Dimension markers
+  html += '<div class="dim dim-w">'+t.w+'px</div><div class="dim dim-h">'+t.h+'px</div>';
+
+  canvas.innerHTML = html;
+
+  // ─── ZOOM ───────────────────────────────
+  let zoom = 1;
+  const zL = document.getElementById('zoomLabel');
+
+  function applyZoom(z) {
+    zoom = Math.max(0.05, Math.min(3, z));
+    canvasWrap.style.transform = 'scale(' + zoom + ')';
+    canvasWrap.style.transformOrigin = 'top center';
+    zL.textContent = Math.round(zoom * 100) + '%';
+  }
+
+  function fitToWindow() {
+    const pw = window.innerWidth - 60, ph = window.innerHeight - 140;
+    applyZoom(Math.min(pw / t.w, ph / t.h, 1));
+  }
+
+  document.getElementById('zoomIn').addEventListener('click', function() { applyZoom(zoom + 0.1); });
+  document.getElementById('zoomOut').addEventListener('click', function() { applyZoom(zoom - 0.1); });
+  document.getElementById('zoom100').addEventListener('click', function() { applyZoom(1); });
+  document.getElementById('zoomFit').addEventListener('click', fitToWindow);
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === '+' || e.key === '=') applyZoom(zoom + 0.1);
+    if (e.key === '-') applyZoom(zoom - 0.1);
+    if (e.key === '0') applyZoom(1);
+    if (e.key === 'f' || e.key === 'F') fitToWindow();
+  });
+
+  document.fonts.ready.then(fitToWindow);
+  window.addEventListener('resize', fitToWindow);
+})();
+</script>
+
+</body>
+</html>

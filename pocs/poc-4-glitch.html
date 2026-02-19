@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POC 4 — Glitch Scramble</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: #0F1923;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+  }
+
+  .hero-headline {
+    font-size: clamp(40px, 5vw, 60px);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    color: #FFFFFF;
+    text-align: center;
+    max-width: 900px;
+    padding: 0 24px;
+  }
+
+  .accent-text {
+    color: #C3F73A;
+    text-shadow: 0 0 60px rgba(195, 247, 58, 0.25);
+    position: relative;
+    display: inline;
+  }
+
+  .accent-text.glitching {
+    animation: glitchGlow 0.1s steps(2) infinite;
+  }
+
+  @keyframes glitchGlow {
+    0%   { text-shadow: 0 0 60px rgba(195, 247, 58, 0.25); }
+    25%  { text-shadow: -2px 0 20px rgba(195, 247, 58, 0.6), 2px 0 20px rgba(58, 200, 247, 0.3); }
+    50%  { text-shadow: 0 0 60px rgba(195, 247, 58, 0.25); }
+    75%  { text-shadow: 2px 0 20px rgba(195, 247, 58, 0.6), -2px 0 20px rgba(247, 58, 120, 0.3); }
+    100% { text-shadow: 0 0 60px rgba(195, 247, 58, 0.25); }
+  }
+
+  .accent-text.resolved {
+    animation: resolvePulse 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  @keyframes resolvePulse {
+    0%   { text-shadow: 0 0 80px rgba(195, 247, 58, 0.6); }
+    100% { text-shadow: 0 0 60px rgba(195, 247, 58, 0.25); }
+  }
+
+  .replay-btn {
+    margin-top: 60px;
+    padding: 12px 28px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #FFFFFF;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.3s, color 0.3s;
+  }
+
+  .replay-btn:hover {
+    border-color: #C3F73A;
+    color: #C3F73A;
+  }
+
+  .label {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+
+<div class="label">POC 4 — Glitch Scramble</div>
+
+<h1 class="hero-headline">
+  A céged következő<br>
+  munkatársa<br>
+  <span class="accent-text" id="accentText">nem ember lesz</span>
+</h1>
+
+<button class="replay-btn" id="replayBtn">Replay</button>
+
+<script>
+  const accentText = document.getElementById('accentText');
+  const replayBtn = document.getElementById('replayBtn');
+
+  const oldPhrase = 'nem ember lesz';
+  const newPhrase = 'AI alkalmazott lesz!';
+  const glitchChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*+=<>?/';
+
+  const scrambleDuration = 1200;   // total scramble time in ms
+  const frameInterval = 40;        // ms between scramble frames
+
+  let animFrame = null;
+
+  function randomChar() {
+    return glitchChars[Math.floor(Math.random() * glitchChars.length)];
+  }
+
+  function runAnimation() {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    accentText.textContent = oldPhrase;
+    accentText.className = 'accent-text';
+
+    setTimeout(() => {
+      accentText.classList.add('glitching');
+      scramble();
+    }, 2000);
+  }
+
+  function scramble() {
+    const target = newPhrase;
+    const maxLen = Math.max(oldPhrase.length, target.length);
+    const startTime = performance.now();
+
+    function frame(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / scrambleDuration, 1);
+
+      // Characters resolve left to right based on progress
+      const resolvedCount = Math.floor(progress * target.length);
+
+      let display = '';
+      for (let i = 0; i < maxLen; i++) {
+        if (i < resolvedCount) {
+          // This character is resolved
+          display += i < target.length ? target[i] : '';
+        } else if (i < target.length) {
+          // Still scrambling
+          display += randomChar();
+        } else {
+          // Excess chars from old phrase shrinking away
+          if (Math.random() > progress) {
+            display += randomChar();
+          }
+        }
+      }
+
+      accentText.textContent = display;
+
+      if (progress < 1) {
+        animFrame = requestAnimationFrame(frame);
+      } else {
+        // Final state
+        accentText.textContent = target;
+        accentText.classList.remove('glitching');
+        accentText.classList.add('resolved');
+      }
+    }
+
+    animFrame = requestAnimationFrame(frame);
+  }
+
+  replayBtn.addEventListener('click', runAnimation);
+  runAnimation();
+</script>
+
+</body>
+</html>

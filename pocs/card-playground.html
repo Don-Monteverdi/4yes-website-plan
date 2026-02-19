@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4YES — Card & Signature Playground</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --ui-bg: #111;
+  --ui-surface: #1a1a1a;
+  --ui-surface-2: #222;
+  --ui-border: #333;
+  --ui-text: #ccc;
+  --ui-text-dim: #777;
+  --ui-accent: #C3F73A;
+  --ui-radius: 8px;
+}
+
+html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  height: 100vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  grid-template-rows: 1fr auto;
+}
+
+/* ========== SIDEBAR ========== */
+.sidebar {
+  grid-row: 1 / 3;
+  background: var(--ui-surface);
+  border-right: 1px solid var(--ui-border);
+  overflow-y: auto;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+.sidebar-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ui-accent);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--ui-border);
+}
+
+.control-group { display: flex; flex-direction: column; gap: 8px; }
+
+.control-group-label {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ui-text-dim);
+}
+
+.control { display: flex; flex-direction: column; gap: 4px; }
+
+.control label {
+  font-size: 11px; font-weight: 500; color: var(--ui-text-dim);
+  display: flex; justify-content: space-between;
+}
+
+.control label span { color: var(--ui-accent); font-family: 'SF Mono', 'Fira Code', monospace; font-size: 10px; }
+
+.control select,
+.control input[type="range"] {
+  width: 100%; appearance: none; -webkit-appearance: none;
+  background: var(--ui-surface-2); border: 1px solid var(--ui-border);
+  border-radius: 6px; color: var(--ui-text);
+  font-family: inherit; font-size: 12px; padding: 5px 8px;
+  cursor: pointer; outline: none; transition: border-color 0.15s;
+}
+
+.control select:focus { border-color: var(--ui-accent); }
+.control select option { background: var(--ui-surface-2); }
+
+input[type="range"] { height: 4px; padding: 0; border: none; background: var(--ui-border); border-radius: 2px; }
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--ui-accent); cursor: pointer; border: 2px solid var(--ui-bg);
+}
+
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 2px 0; }
+.toggle-row span { font-size: 11px; color: var(--ui-text-dim); }
+
+.toggle {
+  width: 34px; height: 18px; background: var(--ui-border); border-radius: 9px;
+  position: relative; cursor: pointer; transition: background 0.2s;
+  border: none; outline: none; flex-shrink: 0;
+}
+.toggle.active { background: var(--ui-accent); }
+.toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 14px; height: 14px; border-radius: 50%; background: white;
+  transition: transform 0.2s;
+}
+.toggle.active::after { transform: translateX(16px); }
+
+.preset-section-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ui-text-dim);
+  padding: 4px 0 0;
+}
+
+.presets { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
+
+.preset-btn {
+  padding: 6px 4px; border-radius: 6px; background: var(--ui-surface-2);
+  border: 1px solid var(--ui-border); color: var(--ui-text);
+  font-size: 10px; font-weight: 600; cursor: pointer;
+  transition: all 0.15s; text-align: center;
+}
+.preset-btn:hover { border-color: var(--ui-accent); color: var(--ui-accent); }
+.preset-btn.active { background: var(--ui-accent); color: #111; border-color: var(--ui-accent); }
+
+/* ========== PREVIEW ========== */
+.preview-area {
+  background: #0a0a0a;
+  overflow-y: auto;
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+}
+
+/* ========== PROMPT ========== */
+.prompt-area {
+  background: var(--ui-surface); border-top: 1px solid var(--ui-border);
+  padding: 12px 20px; display: flex; align-items: flex-start; gap: 12px; min-height: 56px;
+}
+
+.prompt-text {
+  flex: 1; font-size: 12px; line-height: 1.6; color: var(--ui-text-dim);
+  font-family: 'SF Mono', 'Fira Code', monospace; max-height: 72px; overflow-y: auto;
+}
+
+.copy-btn {
+  padding: 6px 14px; border-radius: 6px; background: var(--ui-accent); color: #111;
+  font-size: 11px; font-weight: 700; border: none; cursor: pointer;
+  white-space: nowrap; transition: opacity 0.15s; flex-shrink: 0;
+}
+.copy-btn:hover { opacity: 0.85; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-title">4YES Card Playground</div>
+
+  <div class="control-group">
+    <div class="control-group-label">Presets</div>
+    <div class="preset-section-label">Dark</div>
+    <div class="presets" id="presets-dark"></div>
+    <div class="preset-section-label">Light / Warm</div>
+    <div class="presets" id="presets-light"></div>
+  </div>
+
+  <div class="control-group">
+    <div class="control-group-label">Theme</div>
+    <div class="control">
+      <select id="ctl-theme" onchange="s('theme',this.value)">
+        <option value="dark">Dark</option>
+        <option value="light">Light (white)</option>
+        <option value="warm">Warm (cream)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="control-group-label">Layout</div>
+    <div class="control">
+      <label>Direction</label>
+      <select id="ctl-layout" onchange="s('layout',this.value)">
+        <option value="horizontal">Horizontal (photo right)</option>
+        <option value="horizontal-reverse">Horizontal (photo left)</option>
+        <option value="vertical">Vertical</option>
+      </select>
+    </div>
+    <div class="control">
+      <label>Card Width <span id="v-width">520px</span></label>
+      <input type="range" id="ctl-width" min="300" max="640" value="520" oninput="s('width',+this.value)">
+    </div>
+    <div class="control">
+      <label>Padding <span id="v-padding">36px</span></label>
+      <input type="range" id="ctl-padding" min="8" max="52" value="36" oninput="s('padding',+this.value)">
+    </div>
+    <div class="control">
+      <label>Corner Radius <span id="v-radius">20px</span></label>
+      <input type="range" id="ctl-radius" min="0" max="100" value="20" oninput="s('radius',+this.value)">
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="control-group-label">Photo</div>
+    <div class="control">
+      <label>Style</label>
+      <select id="ctl-photoStyle" onchange="s('photoStyle',this.value)">
+        <option value="large-panel">Large panel</option>
+        <option value="rounded">Rounded square</option>
+        <option value="circle">Circle</option>
+        <option value="none">Hidden</option>
+      </select>
+    </div>
+    <div class="control">
+      <label>Size <span id="v-photoSize">90px</span></label>
+      <input type="range" id="ctl-photoSize" min="36" max="120" value="90" oninput="s('photoSize',+this.value)">
+    </div>
+    <div class="toggle-row">
+      <span>Green glow</span>
+      <button class="toggle" id="ctl-photoGlow" onclick="toggleBtn(this,'photoGlow')"></button>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="control-group-label">Accent Bar</div>
+    <div class="control">
+      <label>Position</label>
+      <select id="ctl-accentPos" onchange="s('accentPos',this.value)">
+        <option value="bottom">Bottom</option>
+        <option value="top">Top</option>
+        <option value="left">Left</option>
+        <option value="none">None</option>
+      </select>
+    </div>
+    <div class="control">
+      <label>Thickness <span id="v-accentSize">3px</span></label>
+      <input type="range" id="ctl-accentSize" min="1" max="6" value="3" oninput="s('accentSize',+this.value)">
+    </div>
+    <div class="control">
+      <label>Style</label>
+      <select id="ctl-accentStyle" onchange="s('accentStyle',this.value)">
+        <option value="gradient">Gradient fade</option>
+        <option value="solid">Solid</option>
+        <option value="pulse">Center glow</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="control-group-label">Brand Badge</div>
+    <div class="control">
+      <label>Style</label>
+      <select id="ctl-brandStyle" onchange="s('brandStyle',this.value)">
+        <option value="filled">Filled dark</option>
+        <option value="outlined">Outlined green</option>
+        <option value="minimal">Logo only</option>
+        <option value="accent-filled">Filled green</option>
+      </select>
+    </div>
+    <div class="toggle-row">
+      <span>Show "Consulting"</span>
+      <button class="toggle active" id="ctl-showConsulting" onclick="toggleBtn(this,'showConsulting')"></button>
+    </div>
+    <div class="toggle-row">
+      <span>Accent dot</span>
+      <button class="toggle active" id="ctl-accentDot" onclick="toggleBtn(this,'accentDot')"></button>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="control-group-label">Typography</div>
+    <div class="control">
+      <label>Name Size <span id="v-nameSize">28px</span></label>
+      <input type="range" id="ctl-nameSize" min="13" max="40" value="28" oninput="s('nameSize',+this.value)">
+    </div>
+    <div class="control">
+      <label>Name Weight</label>
+      <select id="ctl-nameWeight" onchange="s('nameWeight',this.value)">
+        <option value="900">Black (900)</option>
+        <option value="800">ExtraBold (800)</option>
+        <option value="700">Bold (700)</option>
+        <option value="600">SemiBold (600)</option>
+        <option value="300">Light (300)</option>
+      </select>
+    </div>
+    <div class="control">
+      <label>Title Style</label>
+      <select id="ctl-titleStyle" onchange="s('titleStyle',this.value)">
+        <option value="muted">Muted gray</option>
+        <option value="accent-highlight">Accent company name</option>
+        <option value="badge">Pill badge</option>
+        <option value="uppercase">Uppercase tracked</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="control-group-label">Contacts</div>
+    <div class="control">
+      <label>Display</label>
+      <select id="ctl-contactStyle" onchange="s('contactStyle',this.value)">
+        <option value="icon-text">Icons + text</option>
+        <option value="text-only">Text only</option>
+        <option value="pills">Pill badges</option>
+        <option value="icons-only">Icons only</option>
+      </select>
+    </div>
+    <div class="control">
+      <label>Icon Container</label>
+      <select id="ctl-iconContainer" onchange="s('iconContainer',this.value)">
+        <option value="circle-border">Circle outlined</option>
+        <option value="circle-filled">Circle filled</option>
+        <option value="square">Rounded square</option>
+        <option value="none">No container</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="control-group-label">Surface</div>
+    <div class="toggle-row">
+      <span>Grid pattern</span>
+      <button class="toggle active" id="ctl-gridPattern" onclick="toggleBtn(this,'gridPattern')"></button>
+    </div>
+    <div class="toggle-row">
+      <span>Outer shadow</span>
+      <button class="toggle active" id="ctl-shadow" onclick="toggleBtn(this,'shadow')"></button>
+    </div>
+    <div class="control">
+      <label>Background</label>
+      <select id="ctl-bgStyle" onchange="s('bgStyle',this.value)">
+        <option value="solid">Solid</option>
+        <option value="gradient">Subtle gradient</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- PREVIEW -->
+<div class="preview-area" id="preview"></div>
+
+<!-- PROMPT -->
+<div class="prompt-area">
+  <div class="prompt-text" id="prompt-text">Adjust controls to customize...</div>
+  <button class="copy-btn" id="copy-btn" onclick="copyPrompt()">Copy Prompt</button>
+</div>
+
+<script>
+var PHOTO_URL = 'https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/6996dd219ea1905e9981a98d_ZG-no%20BG.png';
+var LOGO_URL = 'https://cdn.prod.website-files.com/6989f9be35b7f0cfaa382d0e/698fc7061807226f8ff432cf_4YES%20-%20Full%20White.png';
+
+var PHONE_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
+var EMAIL_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>';
+var WEB_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>';
+
+/* ---- theme color palettes ---- */
+var colors = null;
+
+function getColors(theme) {
+  var G = '#C3F73A';
+  if (theme === 'light') return {
+    cardBg: '#FFFFFF', cardBgGrad: 'linear-gradient(145deg, #FFFFFF, #FAFAF9)',
+    previewBg: '#E8E6E3',
+    name: '#0F1923', title: '#8E969E', titleAccent: '#4a7a00',
+    contact: '#555F6A', contactIcon: '#8E969E',
+    consulting: 'rgba(142,150,158,0.7)',
+    accent: G, accentMuted: 'rgba(195,247,58,0.1)',
+    badgeFilledBg: '#0F1923', badgeBorder: '1.5px solid rgba(195,247,58,0.3)',
+    brandName: '#0F1923',
+    pillBg: 'rgba(0,0,0,0.03)', pillBorder: '1px solid rgba(0,0,0,0.06)',
+    iconFilledBg: 'rgba(195,247,58,0.08)', iconBorder: '1px solid rgba(0,0,0,0.08)',
+    cardBorder: '1px solid rgba(0,0,0,0.06)',
+    cardShadow: '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.05)',
+    gridLine: 'rgba(0,0,0,0.03)',
+    photoBorder: '2px solid rgba(0,0,0,0.06)',
+    photoGlowBorder: '2.5px solid rgba(195,247,58,0.25)',
+    photoGlowShadow: '0 0 0 5px rgba(195,247,58,0.06)',
+    photoFallback: '#e8e5e0', photoFallbackText: 'rgba(0,0,0,0.15)',
+    dotGlow: '0 0 8px rgba(195,247,58,0.3)',
+    titleBadgeBg: 'rgba(195,247,58,0.1)',
+    titleBadgeBorder: '1px solid rgba(195,247,58,0.15)',
+    titleBadgeColor: '#4a7a00',
+    useLogo: false
+  };
+  if (theme === 'warm') return {
+    cardBg: '#F5F4F2', cardBgGrad: 'linear-gradient(145deg, #F5F4F2, #EEECEA)',
+    previewBg: '#E0DDD8',
+    name: '#0F1923', title: '#8E969E', titleAccent: '#4a7a00',
+    contact: '#555F6A', contactIcon: '#8E969E',
+    consulting: 'rgba(142,150,158,0.7)',
+    accent: G, accentMuted: 'rgba(195,247,58,0.1)',
+    badgeFilledBg: '#0F1923', badgeBorder: '1.5px solid rgba(195,247,58,0.3)',
+    brandName: '#0F1923',
+    pillBg: 'rgba(0,0,0,0.025)', pillBorder: '1px solid rgba(0,0,0,0.04)',
+    iconFilledBg: 'rgba(195,247,58,0.08)', iconBorder: '1px solid rgba(0,0,0,0.06)',
+    cardBorder: '1px solid rgba(0,0,0,0.04)',
+    cardShadow: '0 1px 2px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.03)',
+    gridLine: 'rgba(0,0,0,0.025)',
+    photoBorder: '2px solid rgba(0,0,0,0.04)',
+    photoGlowBorder: '2.5px solid rgba(195,247,58,0.2)',
+    photoGlowShadow: '0 0 0 5px rgba(195,247,58,0.05)',
+    photoFallback: '#e4e1dc', photoFallbackText: 'rgba(0,0,0,0.12)',
+    dotGlow: '0 0 8px rgba(195,247,58,0.25)',
+    titleBadgeBg: 'rgba(195,247,58,0.1)',
+    titleBadgeBorder: '1px solid rgba(195,247,58,0.12)',
+    titleBadgeColor: '#4a7a00',
+    useLogo: false
+  };
+  return {
+    cardBg: '#0F1923', cardBgGrad: 'linear-gradient(145deg, #162230 0%, #0F1923 50%, #0a1219 100%)',
+    previewBg: '#0a0a0a',
+    name: '#fff', title: 'rgba(131,153,162,0.7)', titleAccent: G,
+    contact: 'rgba(131,153,162,0.6)', contactIcon: 'rgba(131,153,162,0.5)',
+    consulting: 'rgba(131,153,162,0.5)',
+    accent: G, accentMuted: 'rgba(195,247,58,0.08)',
+    badgeFilledBg: 'rgba(15,25,35,0.8)', badgeBorder: '1.5px solid rgba(195,247,58,0.2)',
+    brandName: '#fff',
+    pillBg: 'rgba(255,255,255,0.04)', pillBorder: '1px solid rgba(131,153,162,0.1)',
+    iconFilledBg: 'rgba(195,247,58,0.08)', iconBorder: '1px solid rgba(131,153,162,0.15)',
+    cardBorder: 'none',
+    cardShadow: '0 2px 4px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.15), 0 24px 48px rgba(0,0,0,0.1)',
+    gridLine: 'rgba(195,247,58,0.03)',
+    photoBorder: '2px solid rgba(131,153,162,0.1)',
+    photoGlowBorder: '2px solid rgba(195,247,58,0.25)',
+    photoGlowShadow: '0 0 0 6px rgba(195,247,58,0.05), 0 0 20px rgba(195,247,58,0.08)',
+    photoFallback: 'rgba(195,247,58,0.05)', photoFallbackText: 'rgba(195,247,58,0.2)',
+    dotGlow: '0 0 12px rgba(195,247,58,0.4)',
+    titleBadgeBg: 'rgba(195,247,58,0.08)',
+    titleBadgeBorder: '1px solid rgba(195,247,58,0.15)',
+    titleBadgeColor: G,
+    useLogo: true
+  };
+}
+
+/* ---- defaults & presets ---- */
+var DEFAULTS = {
+  theme: 'dark', layout: 'horizontal', width: 520, padding: 36, radius: 20,
+  accentPos: 'bottom', accentSize: 3, accentStyle: 'gradient',
+  photoStyle: 'large-panel', photoSize: 90, photoGlow: false,
+  brandStyle: 'filled', showConsulting: true, accentDot: true,
+  nameSize: 28, nameWeight: '800', titleStyle: 'accent-highlight',
+  contactStyle: 'icon-text', iconContainer: 'circle-border',
+  gridPattern: true, shadow: true, bgStyle: 'solid'
+};
+
+var PRESETS = {
+  /* ---- dark ---- */
+  executive: JSON.parse(JSON.stringify(DEFAULTS)),
+  editorial: {
+    theme: 'dark', layout: 'horizontal-reverse', width: 560, padding: 40, radius: 16,
+    accentPos: 'left', accentSize: 4, accentStyle: 'solid',
+    photoStyle: 'large-panel', photoSize: 90, photoGlow: false,
+    brandStyle: 'minimal', showConsulting: false, accentDot: false,
+    nameSize: 24, nameWeight: '700', titleStyle: 'uppercase',
+    contactStyle: 'text-only', iconContainer: 'none',
+    gridPattern: false, shadow: true, bgStyle: 'gradient'
+  },
+  minimal: {
+    theme: 'dark', layout: 'vertical', width: 400, padding: 32, radius: 12,
+    accentPos: 'none', accentSize: 2, accentStyle: 'solid',
+    photoStyle: 'circle', photoSize: 90, photoGlow: false,
+    brandStyle: 'minimal', showConsulting: true, accentDot: false,
+    nameSize: 24, nameWeight: '600', titleStyle: 'muted',
+    contactStyle: 'text-only', iconContainer: 'none',
+    gridPattern: false, shadow: false, bgStyle: 'solid'
+  },
+  bold: {
+    theme: 'dark', layout: 'horizontal', width: 560, padding: 40, radius: 24,
+    accentPos: 'top', accentSize: 5, accentStyle: 'solid',
+    photoStyle: 'large-panel', photoSize: 90, photoGlow: true,
+    brandStyle: 'accent-filled', showConsulting: true, accentDot: true,
+    nameSize: 32, nameWeight: '900', titleStyle: 'badge',
+    contactStyle: 'pills', iconContainer: 'circle-filled',
+    gridPattern: true, shadow: true, bgStyle: 'solid'
+  },
+  tech: {
+    theme: 'dark', layout: 'horizontal', width: 520, padding: 32, radius: 8,
+    accentPos: 'bottom', accentSize: 2, accentStyle: 'pulse',
+    photoStyle: 'rounded', photoSize: 90, photoGlow: true,
+    brandStyle: 'outlined', showConsulting: true, accentDot: true,
+    nameSize: 22, nameWeight: '600', titleStyle: 'uppercase',
+    contactStyle: 'icons-only', iconContainer: 'square',
+    gridPattern: true, shadow: true, bgStyle: 'gradient'
+  },
+  luxury: {
+    theme: 'dark', layout: 'vertical', width: 460, padding: 44, radius: 0,
+    accentPos: 'top', accentSize: 1, accentStyle: 'gradient',
+    photoStyle: 'circle', photoSize: 90, photoGlow: false,
+    brandStyle: 'outlined', showConsulting: true, accentDot: false,
+    nameSize: 28, nameWeight: '300', titleStyle: 'uppercase',
+    contactStyle: 'icon-text', iconContainer: 'none',
+    gridPattern: false, shadow: true, bgStyle: 'gradient'
+  },
+  /* ---- light / warm (from email signature research) ---- */
+  horizon: {
+    theme: 'light', layout: 'horizontal-reverse', width: 560, padding: 28, radius: 14,
+    accentPos: 'left', accentSize: 2, accentStyle: 'gradient',
+    photoStyle: 'rounded', photoSize: 80, photoGlow: false,
+    brandStyle: 'minimal', showConsulting: true, accentDot: false,
+    nameSize: 20, nameWeight: '800', titleStyle: 'accent-highlight',
+    contactStyle: 'text-only', iconContainer: 'none',
+    gridPattern: false, shadow: true, bgStyle: 'solid'
+  },
+  'type-lt': {
+    theme: 'warm', layout: 'horizontal', width: 480, padding: 32, radius: 0,
+    accentPos: 'bottom', accentSize: 2, accentStyle: 'gradient',
+    photoStyle: 'circle', photoSize: 44, photoGlow: false,
+    brandStyle: 'minimal', showConsulting: true, accentDot: false,
+    nameSize: 30, nameWeight: '900', titleStyle: 'uppercase',
+    contactStyle: 'text-only', iconContainer: 'none',
+    gridPattern: false, shadow: false, bgStyle: 'solid'
+  },
+  'card-lt': {
+    theme: 'light', layout: 'vertical', width: 340, padding: 28, radius: 16,
+    accentPos: 'bottom', accentSize: 3, accentStyle: 'gradient',
+    photoStyle: 'circle', photoSize: 72, photoGlow: true,
+    brandStyle: 'filled', showConsulting: false, accentDot: false,
+    nameSize: 18, nameWeight: '800', titleStyle: 'badge',
+    contactStyle: 'icon-text', iconContainer: 'none',
+    gridPattern: false, shadow: true, bgStyle: 'solid'
+  },
+  'clean-lt': {
+    theme: 'warm', layout: 'horizontal-reverse', width: 520, padding: 16, radius: 0,
+    accentPos: 'none', accentSize: 1, accentStyle: 'solid',
+    photoStyle: 'circle', photoSize: 52, photoGlow: false,
+    brandStyle: 'minimal', showConsulting: true, accentDot: true,
+    nameSize: 16, nameWeight: '700', titleStyle: 'muted',
+    contactStyle: 'text-only', iconContainer: 'none',
+    gridPattern: false, shadow: false, bgStyle: 'solid'
+  },
+  'grid-lt': {
+    theme: 'warm', layout: 'horizontal', width: 540, padding: 24, radius: 14,
+    accentPos: 'left', accentSize: 3, accentStyle: 'solid',
+    photoStyle: 'rounded', photoSize: 64, photoGlow: false,
+    brandStyle: 'filled', showConsulting: true, accentDot: false,
+    nameSize: 18, nameWeight: '800', titleStyle: 'muted',
+    contactStyle: 'icon-text', iconContainer: 'none',
+    gridPattern: false, shadow: false, bgStyle: 'solid'
+  },
+  'strip-lt': {
+    theme: 'light', layout: 'horizontal-reverse', width: 560, padding: 12, radius: 100,
+    accentPos: 'none', accentSize: 1, accentStyle: 'solid',
+    photoStyle: 'circle', photoSize: 40, photoGlow: false,
+    brandStyle: 'minimal', showConsulting: false, accentDot: true,
+    nameSize: 14, nameWeight: '700', titleStyle: 'muted',
+    contactStyle: 'icons-only', iconContainer: 'none',
+    gridPattern: false, shadow: true, bgStyle: 'solid'
+  }
+};
+
+var DARK_PRESETS = ['executive', 'editorial', 'minimal', 'bold', 'tech', 'luxury'];
+var LIGHT_PRESETS = ['horizon', 'type-lt', 'card-lt', 'clean-lt', 'grid-lt', 'strip-lt'];
+var PRESET_NAMES = DARK_PRESETS.concat(LIGHT_PRESETS);
+var DISPLAY_NAMES = {
+  executive: 'Executive', editorial: 'Editorial', minimal: 'Minimal',
+  bold: 'Bold', tech: 'Tech', luxury: 'Luxury',
+  horizon: 'Horizon', 'type-lt': 'Typographic', 'card-lt': 'Card',
+  'clean-lt': 'Clean', 'grid-lt': 'Grid', 'strip-lt': 'Strip'
+};
+
+var selectedPreset = 'executive';
+var state = JSON.parse(JSON.stringify(DEFAULTS));
+
+/* ---- helpers ---- */
+function mk(tag, styles, text) {
+  var node = document.createElement(tag);
+  if (styles) Object.keys(styles).forEach(function(k) { node.style[k] = styles[k]; });
+  if (text) node.textContent = text;
+  return node;
+}
+
+function parseSvg(svgStr, size, color) {
+  var wrap = mk('div', { width: size, height: size, color: color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' });
+  try {
+    var doc = new DOMParser().parseFromString(svgStr, 'image/svg+xml');
+    var parseError = doc.querySelector('parsererror');
+    if (parseError) throw new Error('SVG parse error');
+    var svg = document.importNode(doc.documentElement, true);
+    svg.style.width = '100%';
+    svg.style.height = '100%';
+    wrap.appendChild(svg);
+  } catch (e) {
+    wrap.textContent = '\u2022';
+    wrap.style.fontSize = size;
+    wrap.style.color = color;
+  }
+  return wrap;
+}
+
+/* ---- state management ---- */
+function s(key, val) {
+  state[key] = val;
+  syncValueDisplays();
+  updateAll();
+}
+
+function toggleBtn(el, key) {
+  state[key] = !state[key];
+  el.classList.toggle('active', state[key]);
+  updateAll();
+}
+
+function selectPreset(name) {
+  selectedPreset = name;
+  state = JSON.parse(JSON.stringify(PRESETS[name]));
+  document.querySelectorAll('.preset-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.preset === name);
+  });
+  syncControls();
+  updateAll();
+}
+
+function syncControls() {
+  ['theme','layout','accentPos','accentStyle','photoStyle','brandStyle','nameWeight','titleStyle','contactStyle','iconContainer','bgStyle'].forEach(function(k) {
+    var el = document.getElementById('ctl-' + k);
+    if (el) el.value = state[k];
+  });
+  syncValueDisplays();
+  ['photoGlow','showConsulting','accentDot','gridPattern','shadow'].forEach(function(k) {
+    var el = document.getElementById('ctl-' + k);
+    if (el) el.classList.toggle('active', state[k]);
+  });
+}
+
+function syncValueDisplays() {
+  ['width','padding','radius','accentSize','nameSize','photoSize'].forEach(function(k) {
+    var el = document.getElementById('ctl-' + k);
+    if (el) el.value = state[k];
+    var v = document.getElementById('v-' + k);
+    if (v) v.textContent = state[k] + 'px';
+  });
+}
+
+/* ---- card builders (theme-aware via global `colors`) ---- */
+function buildBrand(st) {
+  var c = mk('div', { display: 'flex', alignItems: 'center', gap: '10px' });
+
+  if (st.brandStyle === 'minimal') {
+    if (colors.useLogo) {
+      var img = document.createElement('img');
+      img.src = LOGO_URL;
+      img.alt = '4YES';
+      img.style.height = '16px';
+      img.style.width = 'auto';
+      img.onerror = function() { var fb = mk('div', { fontSize: '15px', fontWeight: '800', color: colors.brandName, letterSpacing: '-0.02em' }, '4YES'); this.parentNode.replaceChild(fb, this); };
+      c.appendChild(img);
+    } else {
+      c.appendChild(mk('div', { fontSize: '15px', fontWeight: '800', color: colors.brandName, letterSpacing: '-0.02em', opacity: '0.3' }, '4YES'));
+    }
+    if (st.showConsulting) {
+      c.appendChild(mk('div', { fontSize: '10px', fontWeight: '500', color: colors.consulting, letterSpacing: '0.04em', textTransform: 'uppercase', marginLeft: '2px' }, 'Consulting'));
+    }
+    return c;
+  }
+
+  var badgeS = { width: '34px', height: '34px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '900', lineHeight: '1', flexShrink: '0' };
+
+  if (st.brandStyle === 'filled') {
+    badgeS.background = colors.badgeFilledBg; badgeS.border = colors.badgeBorder; badgeS.color = colors.accent;
+  } else if (st.brandStyle === 'outlined') {
+    badgeS.border = '1.5px solid rgba(195,247,58,0.4)'; badgeS.color = colors.accent; badgeS.background = 'transparent';
+  } else {
+    badgeS.background = colors.accent; badgeS.color = '#0F1923';
+  }
+  c.appendChild(mk('div', badgeS, '4Y'));
+
+  var textW = mk('div', { display: 'flex', flexDirection: 'column', gap: '1px' });
+  var nameC = st.brandStyle === 'outlined' ? colors.titleAccent : colors.brandName;
+  textW.appendChild(mk('div', { fontSize: '14px', fontWeight: '800', color: nameC, letterSpacing: '-0.02em', lineHeight: '1' }, '4YES'));
+  if (st.showConsulting) {
+    textW.appendChild(mk('div', { fontSize: '9px', fontWeight: '500', color: colors.consulting, letterSpacing: '0.06em', textTransform: 'uppercase' }, 'Consulting'));
+  }
+  c.appendChild(textW);
+  return c;
+}
+
+function buildIdentity(st) {
+  var c = mk('div', { display: 'flex', flexDirection: 'column', gap: '6px' });
+  c.appendChild(mk('div', { fontSize: st.nameSize + 'px', fontWeight: st.nameWeight, color: colors.name, letterSpacing: '-0.03em', lineHeight: '1.05' }, 'Zöldhegyi Gábor'));
+
+  if (st.titleStyle === 'muted') {
+    c.appendChild(mk('div', { fontSize: '13px', fontWeight: '500', color: colors.title, lineHeight: '1.3' }, 'CEO & Co-Founder'));
+  } else if (st.titleStyle === 'accent-highlight') {
+    var t = mk('div', { fontSize: '13px', fontWeight: '500', color: colors.title, lineHeight: '1.3' });
+    t.appendChild(document.createTextNode('CEO & Co-Founder at '));
+    t.appendChild(mk('span', { color: colors.titleAccent, fontWeight: '600' }, '4YES'));
+    c.appendChild(t);
+  } else if (st.titleStyle === 'badge') {
+    c.appendChild(mk('div', { display: 'inline-flex', padding: '4px 12px', borderRadius: '100px', background: colors.titleBadgeBg, border: colors.titleBadgeBorder, fontSize: '11px', fontWeight: '600', color: colors.titleBadgeColor, letterSpacing: '0.02em', alignSelf: 'flex-start' }, 'CEO & Co-Founder'));
+  } else {
+    c.appendChild(mk('div', { fontSize: '10px', fontWeight: '600', color: colors.consulting, letterSpacing: '0.12em', textTransform: 'uppercase', lineHeight: '1.3' }, 'CEO & Co-Founder'));
+  }
+  return c;
+}
+
+function buildContacts(st) {
+  var items = [
+    { svg: PHONE_SVG, text: '+36 20 929 8698' },
+    { svg: EMAIL_SVG, text: 'zg@4yes.hu' },
+    { svg: WEB_SVG, text: '4yes.hu' }
+  ];
+
+  if (st.contactStyle === 'text-only') {
+    var w = mk('div', { display: 'flex', flexWrap: 'wrap', gap: '4px 14px' });
+    items.forEach(function(c) { w.appendChild(mk('span', { fontSize: '12px', fontWeight: '500', color: colors.contact }, c.text)); });
+    return w;
+  }
+
+  if (st.contactStyle === 'pills') {
+    var w = mk('div', { display: 'flex', flexWrap: 'wrap', gap: '5px' });
+    items.forEach(function(c) {
+      var pill = mk('div', { display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '5px 12px', borderRadius: '100px', background: colors.pillBg, border: colors.pillBorder });
+      pill.appendChild(parseSvg(c.svg, '11px', colors.contactIcon));
+      pill.appendChild(mk('span', { fontSize: '11px', fontWeight: '500', color: colors.contact }, c.text));
+      w.appendChild(pill);
+    });
+    return w;
+  }
+
+  if (st.contactStyle === 'icons-only') {
+    var w = mk('div', { display: 'flex', gap: '8px' });
+    items.forEach(function(c) {
+      var iw;
+      if (st.iconContainer === 'circle-filled') {
+        iw = mk('div', { width: '32px', height: '32px', borderRadius: '50%', background: colors.iconFilledBg, display: 'flex', alignItems: 'center', justifyContent: 'center' });
+        iw.appendChild(parseSvg(c.svg, '14px', colors.accent));
+      } else if (st.iconContainer === 'square') {
+        iw = mk('div', { width: '32px', height: '32px', borderRadius: '8px', border: colors.iconBorder, display: 'flex', alignItems: 'center', justifyContent: 'center' });
+        iw.appendChild(parseSvg(c.svg, '14px', colors.contactIcon));
+      } else if (st.iconContainer === 'circle-border') {
+        iw = mk('div', { width: '32px', height: '32px', borderRadius: '50%', border: colors.iconBorder, display: 'flex', alignItems: 'center', justifyContent: 'center' });
+        iw.appendChild(parseSvg(c.svg, '14px', colors.contactIcon));
+      } else {
+        iw = parseSvg(c.svg, '18px', colors.contactIcon);
+      }
+      iw.title = c.text;
+      w.appendChild(iw);
+    });
+    return w;
+  }
+
+  /* icon-text default */
+  var w = mk('div', { display: 'flex', flexDirection: 'column', gap: '8px' });
+  items.forEach(function(c) {
+    var row = mk('div', { display: 'flex', alignItems: 'center', gap: '10px' });
+    if (st.iconContainer === 'circle-filled') {
+      var iw = mk('div', { width: '26px', height: '26px', borderRadius: '50%', background: colors.iconFilledBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' });
+      iw.appendChild(parseSvg(c.svg, '12px', colors.accent));
+      row.appendChild(iw);
+    } else if (st.iconContainer === 'square') {
+      var iw = mk('div', { width: '26px', height: '26px', borderRadius: '6px', border: colors.iconBorder, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' });
+      iw.appendChild(parseSvg(c.svg, '12px', colors.contactIcon));
+      row.appendChild(iw);
+    } else if (st.iconContainer === 'circle-border') {
+      var iw = mk('div', { width: '26px', height: '26px', borderRadius: '50%', border: colors.iconBorder, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: '0' });
+      iw.appendChild(parseSvg(c.svg, '12px', colors.contactIcon));
+      row.appendChild(iw);
+    } else {
+      row.appendChild(parseSvg(c.svg, '13px', colors.contactIcon));
+    }
+    row.appendChild(mk('span', { fontSize: '12px', fontWeight: '500', color: colors.contact }, c.text));
+    w.appendChild(row);
+  });
+  return w;
+}
+
+function buildSmallPhoto(st) {
+  if (st.photoStyle === 'none') return null;
+  if (st.photoStyle === 'large-panel') return null;
+  var size = st.photoSize + 'px';
+  var bRadius = st.photoStyle === 'circle' ? '50%' : '14px';
+  var border = st.photoGlow ? colors.photoGlowBorder : colors.photoBorder;
+  var shadow = st.photoGlow ? colors.photoGlowShadow : 'none';
+
+  var outer = mk('div', { width: size, height: size, borderRadius: bRadius, overflow: 'hidden', flexShrink: '0', border: border, boxShadow: shadow });
+  var img = document.createElement('img');
+  img.src = PHOTO_URL; img.alt = 'ZG';
+  img.style.width = '100%'; img.style.height = '100%';
+  img.style.objectFit = 'cover'; img.style.objectPosition = 'top center';
+  img.onerror = function() {
+    var fb = mk('div', { width: '100%', height: '100%', background: colors.photoFallback, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: Math.round(st.photoSize * 0.36) + 'px', fontWeight: '800', color: colors.photoFallbackText }, 'ZG');
+    this.parentNode.replaceChild(fb, this);
+  };
+  outer.appendChild(img);
+  return outer;
+}
+
+function buildLargePhotoPanel(st) {
+  var panel = mk('div', { width: '38%', position: 'relative', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', flexShrink: '0', overflow: 'hidden' });
+  var img = document.createElement('img');
+  img.src = PHOTO_URL; img.alt = 'Zöldhegyi Gábor';
+  img.style.width = '110%'; img.style.height = '100%';
+  img.style.objectFit = 'contain'; img.style.objectPosition = 'bottom center';
+  img.style.marginBottom = '-2px';
+  img.onerror = function() {
+    var fb = mk('div', { width: '100%', height: '100%', background: colors.photoFallback, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', fontWeight: '800', color: colors.photoFallbackText }, 'ZG');
+    this.parentNode.replaceChild(fb, this);
+  };
+  panel.appendChild(img);
+
+  if (st.photoGlow) {
+    panel.appendChild(mk('div', { position: 'absolute', bottom: '0', left: '50%', transform: 'translateX(-50%)', width: '140px', height: '80px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(195,247,58,0.12) 0%, transparent 70%)', pointerEvents: 'none' }));
+  }
+  return panel;
+}
+
+function addOverlays(card, st) {
+  if (st.gridPattern) {
+    card.appendChild(mk('div', { position: 'absolute', top: '0', left: '0', right: '0', bottom: '0', pointerEvents: 'none', backgroundImage: 'linear-gradient(' + colors.gridLine + ' 1px, transparent 1px), linear-gradient(90deg, ' + colors.gridLine + ' 1px, transparent 1px)', backgroundSize: '40px 40px' }));
+  }
+
+  if (st.accentPos !== 'none') {
+    var bs = { position: 'absolute', zIndex: '2' };
+    var grad;
+    if (st.accentStyle === 'gradient') grad = (st.accentPos === 'left') ? 'linear-gradient(180deg, #C3F73A, rgba(195,247,58,0.1))' : 'linear-gradient(90deg, #C3F73A, rgba(195,247,58,0.1))';
+    else if (st.accentStyle === 'solid') grad = '#C3F73A';
+    else grad = 'radial-gradient(ellipse at center, #C3F73A 0%, rgba(195,247,58,0) 70%)';
+    bs.background = grad;
+
+    if (st.accentPos === 'top') { bs.top = '0'; bs.left = '0'; bs.right = '0'; bs.height = st.accentSize + 'px'; }
+    else if (st.accentPos === 'bottom') { bs.bottom = '0'; bs.left = '0'; bs.right = '0'; bs.height = st.accentSize + 'px'; }
+    else if (st.accentPos === 'left') { bs.top = '0'; bs.left = '0'; bs.bottom = '0'; bs.width = st.accentSize + 'px'; }
+    card.appendChild(mk('div', bs));
+  }
+}
+
+function buildCard(st) {
+  var isLarge = st.photoStyle === 'large-panel';
+  var isH = st.layout.startsWith('horizontal');
+  var isRev = st.layout === 'horizontal-reverse';
+  var bgCSS = st.bgStyle === 'gradient' ? colors.cardBgGrad : colors.cardBg;
+  var shadowCSS = st.shadow ? colors.cardShadow : 'none';
+
+  var card = mk('div', {
+    fontFamily: "'Outfit', sans-serif", width: st.width + 'px', maxWidth: '100%',
+    background: bgCSS, borderRadius: st.radius + 'px', boxShadow: shadowCSS,
+    position: 'relative', overflow: 'hidden'
+  });
+  if (colors.cardBorder !== 'none') card.style.border = colors.cardBorder;
+  addOverlays(card, st);
+
+  /* Header: brand + dot */
+  var header = mk('div', { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' });
+  header.appendChild(buildBrand(st));
+  if (st.accentDot) {
+    header.appendChild(mk('div', { width: '7px', height: '7px', borderRadius: '50%', background: colors.accent, boxShadow: colors.dotGlow, marginTop: '6px', flexShrink: '0' }));
+  }
+
+  if (isLarge) {
+    card.style.display = 'flex';
+    card.style.flexDirection = 'row';
+    card.style.minHeight = '260px';
+
+    var content = mk('div', { flex: '1', padding: st.padding + 'px', display: 'flex', flexDirection: 'column', gap: '18px', justifyContent: 'center', position: 'relative', zIndex: '1', minWidth: '0' });
+    content.appendChild(header);
+    content.appendChild(buildIdentity(st));
+    content.appendChild(buildContacts(st));
+
+    var photo = buildLargePhotoPanel(st);
+    if (isRev) { card.appendChild(photo); card.appendChild(content); }
+    else { card.appendChild(content); card.appendChild(photo); }
+
+  } else if (isH) {
+    var inner = mk('div', { padding: st.padding + 'px', position: 'relative', zIndex: '1', display: 'flex', alignItems: 'center', gap: '20px' });
+    var infoCol = mk('div', { flex: '1', display: 'flex', flexDirection: 'column', gap: '16px' });
+    infoCol.appendChild(header);
+    infoCol.appendChild(buildIdentity(st));
+    infoCol.appendChild(buildContacts(st));
+
+    var photo = buildSmallPhoto(st);
+    if (isRev && photo) { inner.appendChild(photo); inner.appendChild(infoCol); }
+    else { inner.appendChild(infoCol); if (photo) inner.appendChild(photo); }
+    card.appendChild(inner);
+
+  } else {
+    /* vertical */
+    var inner = mk('div', { padding: st.padding + 'px', position: 'relative', zIndex: '1', display: 'flex', flexDirection: 'column', gap: '20px' });
+    inner.appendChild(header);
+
+    var photo = buildSmallPhoto(st);
+    if (photo) {
+      var bodyRow = mk('div', { display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '16px' });
+      bodyRow.appendChild(buildIdentity(st));
+      bodyRow.appendChild(photo);
+      inner.appendChild(bodyRow);
+    } else {
+      inner.appendChild(buildIdentity(st));
+    }
+    inner.appendChild(buildContacts(st));
+    card.appendChild(inner);
+  }
+
+  return card;
+}
+
+/* ---- rendering ---- */
+function renderPreview() {
+  var preview = document.getElementById('preview');
+  while (preview.firstChild) preview.removeChild(preview.firstChild);
+  try {
+    preview.appendChild(buildCard(state));
+  } catch (e) {
+    var errCard = mk('div', { fontFamily: "'Outfit', sans-serif", width: state.width + 'px', maxWidth: '100%', background: colors.cardBg, borderRadius: '12px', padding: '32px', border: '1px solid rgba(255,60,60,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '200px' });
+    errCard.appendChild(mk('div', { color: 'rgba(255,60,60,0.6)', fontSize: '12px', textAlign: 'center' }, 'Render error: ' + e.message));
+    preview.appendChild(errCard);
+  }
+}
+
+function updatePrompt() {
+  var st = state;
+  var d = DEFAULTS;
+  var parts = [];
+
+  parts.push('Start from the "' + selectedPreset + '" preset');
+
+  var themeNames = { dark: 'dark', light: 'light/white', warm: 'warm/cream' };
+  if (st.theme !== d.theme) parts.push(themeNames[st.theme] + ' theme');
+
+  var layoutNames = { vertical: 'vertical stacked', horizontal: 'horizontal with photo on the right', 'horizontal-reverse': 'horizontal with photo on the left' };
+  if (st.layout !== d.layout) parts.push(layoutNames[st.layout] + ' layout');
+  if (st.width !== d.width) parts.push(st.width + 'px wide');
+  if (st.padding !== d.padding) parts.push(st.padding + 'px inner padding');
+  if (st.radius !== d.radius) parts.push(st.radius === 0 ? 'sharp corners' : st.radius + 'px corners');
+
+  if (st.accentPos !== d.accentPos) {
+    if (st.accentPos === 'none') parts.push('no accent bar');
+    else parts.push(st.accentSize + 'px ' + st.accentStyle + ' accent bar on ' + st.accentPos);
+  }
+
+  var photoNames = { 'large-panel': 'large photo panel', rounded: 'rounded photo', circle: 'circular photo', none: 'no photo' };
+  if (st.photoStyle !== d.photoStyle) parts.push(photoNames[st.photoStyle]);
+  if (st.photoSize !== d.photoSize) parts.push(st.photoSize + 'px photo');
+  if (st.photoGlow) parts.push('green glow on photo');
+
+  var brandNames = { filled: 'filled dark logo badge', outlined: 'green outlined logo', minimal: 'logo-only brand', 'accent-filled': 'green filled logo badge' };
+  if (st.brandStyle !== d.brandStyle) parts.push(brandNames[st.brandStyle]);
+  if (!st.showConsulting) parts.push('hide "Consulting"');
+  if (!st.accentDot) parts.push('no accent dot');
+
+  if (st.nameSize !== d.nameSize) parts.push(st.nameSize + 'px name');
+  if (st.nameWeight !== d.nameWeight) parts.push('weight ' + st.nameWeight + ' name');
+  var titleNames = { muted: 'muted title', 'accent-highlight': 'accent-highlighted company', badge: 'pill badge title', uppercase: 'uppercase tracked title' };
+  if (st.titleStyle !== d.titleStyle) parts.push(titleNames[st.titleStyle]);
+
+  var contactNames = { 'icon-text': 'icons+text contacts', 'text-only': 'text-only contacts', pills: 'pill contacts', 'icons-only': 'icon-only contacts' };
+  if (st.contactStyle !== d.contactStyle) parts.push(contactNames[st.contactStyle]);
+
+  if (!st.gridPattern && d.gridPattern) parts.push('no grid pattern');
+  if (st.gridPattern && !d.gridPattern) parts.push('grid pattern overlay');
+  if (!st.shadow) parts.push('no shadow');
+  if (st.bgStyle !== d.bgStyle) parts.push(st.bgStyle === 'gradient' ? 'gradient background' : 'solid background');
+
+  var themeDesc = { dark: 'premium dark', light: 'clean light', warm: 'warm-toned' };
+  document.getElementById('prompt-text').textContent = parts.length > 1
+    ? 'Build a ' + themeDesc[st.theme] + ' business card / email signature for Zoldhegyi Gabor (CEO & Co-Founder, 4YES Consulting) with: ' + parts.join(', ') + '. Use Outfit font, #C3F73A acid green accent. Contact: +36 20 929 8698, zg@4yes.hu, 4yes.hu.'
+    : 'Default executive card with large photo panel. Adjust controls to customize.';
+}
+
+function copyPrompt() {
+  var text = document.getElementById('prompt-text').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy Prompt'; }, 1500);
+  });
+}
+
+function updateAll() {
+  colors = getColors(state.theme);
+  document.getElementById('preview').style.background = colors.previewBg;
+  renderPreview();
+  updatePrompt();
+}
+
+/* ---- init ---- */
+(function() {
+  function addPresetButtons(names, containerId) {
+    var container = document.getElementById(containerId);
+    names.forEach(function(name) {
+      var btn = document.createElement('button');
+      btn.className = 'preset-btn' + (name === 'executive' ? ' active' : '');
+      btn.dataset.preset = name;
+      btn.textContent = DISPLAY_NAMES[name] || name;
+      btn.addEventListener('click', function() { selectPreset(name); });
+      container.appendChild(btn);
+    });
+  }
+  addPresetButtons(DARK_PRESETS, 'presets-dark');
+  addPresetButtons(LIGHT_PRESETS, 'presets-light');
+  syncControls();
+  updateAll();
+})();
+</script>
+</body>
+</html>

@@ -245,7 +245,7 @@ const HomePage = ({ onNavigate }) => {
       </section>
       <section className="py-20 px-6 bg-slate-50">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12"><p className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Ismerős?</p><h2 className="text-3xl font-bold text-slate-900">A legtöbb cég ezekkel küzd</h2></div>
+          <div className="text-center mb-12"><p className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Ismerős?</p><h2 className="text-3xl font-bold text-slate-900">A manuális adminisztráció és az unalmas, <span className="underline decoration-[#C3F73A] decoration-2 underline-offset-4">repetitív feladatok elviszik az időt.</span></h2></div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{painPoints.map((p, i) => (<div key={i} className="bg-white rounded-xl p-6 flex items-start gap-4 border border-slate-100"><div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0"><p.icon size={20} className="text-slate-500" /></div><p className="text-base text-slate-700 leading-relaxed">{p.text}</p></div>))}</div>
           <div className="text-center mt-10"><p className="text-lg font-semibold text-slate-900">Ha legalább egy pontnál bólogattál, beszélnünk kell.</p></div>
         </div>
